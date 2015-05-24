@@ -10,6 +10,10 @@ simulation testbench.
 The idea is to create a barebones CPU core people can use in their own project, for educational
 purposes, or for whatever else they can think of!
 
+Current documentation can be found for the [ISA](http://ben-marshall.github.io/tim/doc/isa/index.html)
+on the projects website. Software and hardware module documentation will follow once the specification
+is complete.
+
 
 Getting Started
 ---------------------------------
