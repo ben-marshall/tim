@@ -1,4 +1,6 @@
 /*!
+@ingroup sw-asm
+@{
 @file asm.c
 @brief Main source file for the assembler. Contains main function and argument parser.
 */
@@ -127,3 +129,5 @@ int main(int argc, char ** argv)
 
     return 0;
 }
+
+//! }@

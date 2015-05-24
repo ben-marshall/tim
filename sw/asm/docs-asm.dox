@@ -1,0 +1,9 @@
+/*!
+
+@defgroup sw-asm Assembler
+@ingroup sw
+@brief API and usage information on the assembler.
+
+
+
+*/

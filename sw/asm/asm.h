@@ -1,4 +1,6 @@
 /*!
+@ingroup sw-asm
+@{
 @file asm.h
 @brief Header file for data types and functions used by the assembler.
 */
@@ -77,3 +79,6 @@ typedef struct asm_context_t
 
 
 #endif
+
+
+//! }@
