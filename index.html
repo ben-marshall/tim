@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>T.I.M</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><img src="images/logo.png" style="height:40px; vertical-align:middle;">&nbsp;&nbsp;T.I.M</h1>
+
+        <p>
+            A <b>T</b>iny <b>I</b>nstruction <b>M</b>achine Written In VHDL.
+        </p>
+
+        <p class="view"><a target="_blank" href="https://github.com/ben-marshall/tim">View the Project on GitHub <small>ben-marshall/tim</small></a></p>
+
+        <ul>
+        <li><a href="">Instruction Set<strong>Architecture</strong></a></li>
+        <li><a href="">Documentation<strong>Hardware</strong></a></li>
+        <li><a href="">Documentation<strong>Software</strong></a></li>
+        </ul>
+
+      </header>
+<section>
+
+<p><b>TIM</b> is a very simple RISC CPU implemented in VHDL and designed to be synthesisable onto an FPGA.</p>
+
+<p>Eventually the project will contain a fully documented micro-architecture consisting of:
+<ul>
+<li>A full CPU implemented in VHDL with accompanying test benches.</li>
+<li>A small set of associated hardware modules to make it easy to connect to RAM blocks. This
+    will be the method by which programs are loaded, sourced and exectuted.</li>
+    <li>A complete assembler along with the documented ISA. This will target either raw binary to be
+    executed on the synthesised hardware or VHDL bus files for simulation and testing.</li>
+    <li>A high level language compiler to target the ISA. This might take a while though!</li>
+    <li>Example test programs and hopefully a little interactive demo.</li>
+    </ul>
+    </p>
+
+    <p>Documentation is split between hardware and software. Hardware contains the HDL modules that
+    make up the actual CPU and peripherals. Software contains the tests, assembler, compiler and any
+    other programs used to run the CPU.
+    </p>
+
+    <p>
+    Note that this will change ALOT because the project is at such an early stage. Please dont hurt 
+    yourself by studying it too closely at the moment! You can also track the progress of the project 
+    on 
+    <a href="https://github.com/ben-marshall/tim"><strong>GitHub</strong></a>
+    </p>
+
+</section>
+      <footer>
+        <p style="text-align: middle;"><small>
+         This project is maintained by <a href="https://github.com/ben-marshall">ben-marshall</a>
+        </small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
