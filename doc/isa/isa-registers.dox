@@ -1,0 +1,296 @@
+/*!
+
+@page isa-registers ISA Registers
+
+@brief This page lists all registers that are part of the ISA. 
+
+@tableofcontents
+
+Registers are divided into two broad
+classes: general purpose and special purpose. There are sixteen registers in each class, addressable
+using four bits.
+
+@section registers-gp General Purpose Registers
+
+There are 16 general purpose registers that can be used for general computation. They are addressed
+using the memonics `R0, R1, ... , R15`. It is these registers that can be used as source and
+destination registers for the operation instructions, as well as loading, storing and jumping.
+
+Each register is 32 bits wide and addressed using four bits where `0000` corresponds to `R0`, `0011`
+to `R3` and so on.
+
+@section registers-sp Special Purpose Registers
+
+There are 16 special purpose registers. Each one fulfills a particular role within the CPU and can
+only be accessed or modified in particular ways. All special purpose registers can have their values
+coppied to a general purpose register using the MOVSR instruction. General purpose
+registers can also have their values coppied into certain special registers using the
+MOVRS instruction. Not all special registers can be written to under all conditions
+though.
+
+  Memonic | Register              | Description
+  --------|-----------------------|------------------------------------------------------------
+  `PC`    | @subpage registers-sp-pc  | The program counter, contains address of next instruction.
+  `SP`    | @subpage registers-sp-sp  | Holds the address of the top stack element
+  `LR`    | @subpage registers-sp-lr  | Holds the return address of the current function call.
+  `TR`    | @subpage registers-sp-tr  | Holds the results of TEST instructions and overflows.
+  `SR`    | @subpage registers-sp-sr  | Stores various status bits.
+  `IR`/`IS`    | @subpage registers-sp-ir  | Used for servicing hardware interrupts.
+  `Tx`    | @subpage registers-sp-tmp | Eight temporary storage registers for variable spilling.
+
+The two unused registers are reserved for future features. Behavior of any instruction when
+addressing them is undefined.
+
+@page registers-sp-pc Program Counter
+
+Address: `0000`, Memonic: `PC`
+
+### Functionality:
+
+Stores the address of the *next* instruction to be fetched from memory into the execution pipeline.
+Because of the variable instruction lengths, addresses need not be 4-byte aligned. Each time an
+instruction is fetched, its length in bytes is added to the `PC`
+
+The initial value of the program counter after reset is zero.
+
+This register is 32 bits wide.
+
+### Access
+
+The `PC` can only be read directly by the MOVSR instruction, which coppies its value
+into a general purpose register. Other instructions such as JUMPI, JUMPR
+and CALLI / CALLR implicitly modify it's value as well as performing
+other operations on other registers. The PUSH and POP instructions can also
+directly access the `PC` for calling and returning from functions.
+
+Can be read by:
+
+-   MOVSR
+-   PUSH
+-   TEST
+
+Can be written by:
+
+-   JUMPI
+-   JUMPR
+-   CALLR
+-   CALLI
+-   POP
+-   RETURN
+
+
+@page registers-sp-lr Link Register
+
+Address: `0010`, Memonic: `LR`
+
+### Functionality:
+
+Stores the return address for the currently executing function. It's contents is moved into the
+Program Counter when a RETURN instruction is
+encountered. Whenever either the CALLR or CALLI instructions are
+executed, the *next* instruction address is loaded into the link register. The old value is then
+pushed to the top of the call stack.
+
+The initial value of the link register after reset is undefined.
+
+This register is 32 bits wide.
+
+### Access
+
+Can be read by...
+
+-   MOVSR
+-   TEST
+-   RETURN
+
+Can be written by...
+
+-   CALLR
+-   CALLI
+
+
+@page registers-sp-sp Stack Pointer
+
+Address: `0001`, Memonic: `SP`
+
+### Functionality:
+
+Stores the address of the top element of the stack. This means that when loading from memory the
+value in the stack pointer, we get the top element. When pushing to the stack, the stackpointer is
+first *decremented* and we then store to that decremented address.
+
+The initial value of the stack pointer after reset is undefined.
+
+This register is 32 bits wide.
+
+### Access
+
+Can be read by:
+
+-   MOVSR
+-   PUSH
+-   POP
+-   TEST
+-   RETURN
+
+Can be written by:
+
+-   MOVRS
+-   POP
+-   PUSH
+-   JUMPI
+-   JUMPR
+-   CALLR
+-   CALLI
+
+
+@page registers-sp-tr Test Result
+
+Address: `0011`, Memonic: `TR`
+
+### Functionality:
+
+Stores the results of TEST instructions. A TEST instruction can perform
+all of the normal boolean comparisons between two values stored in registers. The result is a single
+bit representing either TRUE or FALSE. Whenever a new result is encountered (i.e. a
+TEST instruction is executed) the entire register value is shifted one bit to the left
+and the new value placed in the LSB. In this way, the results of the previous 32 TEST
+instructions are stored and can be accessed and queried using the MOVSR instruction.
+
+The initial value of the test result register after reset is undefined.
+
+This register is 32 bits wide.
+
+### Access
+
+The test result register is read implicitly by all instructions which are executed conditionally. It
+is also written implicitly with each TEST instruction.
+
+This can be read directly by:
+
+-   MOVSR
+
+This can be written by:
+
+-   TEST
+-   MOVRS
+
+
+@page registers-sp-tmp Temporary Registers
+
+Addresses: `1000` to `1111`, Memonics: `T0`, `T1`, ... `T7`
+
+### Functionality:
+
+These are simple temporary register that are used as a very fast caching system to avoid spilling
+values into memory. Although they cannot be used as source or destination registers, they can be
+accessed using the MOV\* instructions.
+
+### Access
+
+This can be read by:
+
+-   MOVSR
+-   TEST
+
+This can be written by...
+
+-   MOVRS
+
+@page registers-sp-ir Interrupt Registers
+
+Interrupt Address Register: `0101`, Memonic: `IR`
+
+Interrupt Service Register: `0110`, Memonic: `IS`
+
+### Functionality:
+
+These two registers are used to service hardware interrupts. The first register, `IR` contains the
+address of the device or object that needs servicing. The second register, `IS` contains the memory
+address of the interrupt service routine that is called each time an interrupt is recieved.
+
+Whenever this happens, the interrupt service routine is called. It is the ISR's responsibility to
+save all GP register values to the stack and restore them again before returning. It may however
+assume that the link register contains the correct return address.
+
+The contents of `IS` must be specified by the programmer using the MOVRS instruction.
+
+The `IS` and `IR` Registers are both 32 bits wide and initialised to zero on reset. Note that if an
+interrupt is pending and the `IS` register is zero, the interrupt will go un-serviced until the `IS`
+register takes a non-zero value. By this method, interrupt handling can be switched on or off.
+
+### Access
+
+This can be read by:
+
+-   MOVSR
+-   TEST
+
+This can be written by:
+
+-   MOVRS
+
+
+@page registers-sp-sr Status Register
+
+Address: `0100`, Memonic: `SR`
+
+### Functionality:
+
+Stores various status bits each indicating different pieces of information. This register cannot be
+written too in the normal way. Its value may only be queried using the [TEST](TEST.html) instruction
+and coppied to a general purpose register using [MOVSR](MOVSR.html).
+
+The following pieces of information are stored in the status register and are updated automatically:
+
+Bit  | Description
+-----|--------------------------------------------------------------------------------------------
+0    | Zero Flag. Set if the result of the previous operation was zero.
+1    | Carry Flag. Set if the result of the previous operation did not fit in the register.
+2    | Negative Flag. Set if the result of the previous operation was negative.
+3    | Overflow Flag. Indicates the result of an arithmetic operation did not fit in the target register.
+4    | Undefined / Reserved.
+5    | Interrupt Servicing Flag. Set high if the currently executing function is handling an interrupt.
+6    | Supervisor Flag. When set all operations are valid. When unset certain memory regions are not accessable.
+7    | Undefined / Reserved.
+
+This register is 8 bits wide.
+
+### Access
+
+This can be read by:
+
+-   TEST
+-   MOVSR
+
+The only permissable write operations on the status register are performed on the Supervisor and
+Interrupt servicing flag. Both flags may only be written too when the supervisor flag is set.
+Otherwise, the write is treated as a NOP.
+
+To perform the write, A bit mask must be constructed in a general purpose register, with the desired
+bit values set or unset. The [MOVRS](MOVRS.html) instruction is then used to move the mask into the
+status register. Only bits corresponding to the supervisor and interrupt servicing flag are cared
+about.
+
+To avoid accidentally setting or unsetting the supervisor flag and the interrupt service flag, the
+least significant bit is used to select between the interrupt flag and the supervisor flag. When
+zero, the interrupt flag is set, when one, the supervisor flag is written too. The other mask bits
+can take any value and will have no effect.
+
+The example below shows how to set and then un-set the interrupt servicing flag.
+
+@code
+0xAB0000 | MOVI R0 0b00100000 ; Set the mask bits
+0xAB0004 | MOVRS R0 SR ; Move the mask into the test register.
+...
+... ; Interrupt handling occurs here.
+...
+0xAB0502 | MOVI R0 0b00000000 ; Set the mask bits, this time a zero
+0xAB0506 | MOVRS R0 SR ; Move the mask and unset bit 5
+@endcode
+
+Note that whenever a zero is written to the Interrupt servicing flag, this is taken to mean that the
+interrupt has been completely serviced.
+
+
+*/

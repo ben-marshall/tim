@@ -1,0 +1,1890 @@
+/*!
+
+@page instructions ISA Instructions
+
+@tableofcontents
+
+@brief This page lists all of the instructions used in the ISA along with their memory layouts.
+
+@section Layouts
+
+There are several different instruction layout types. All instructions are either 1, 2, 3 or 4 bytes
+long. The first byte always has the same layout. The first six bits are the opcode, the next two
+make up the condition code. See Conditional Execution. Thus, all instructions have the following 
+very general layout:
+
+@code
+Opcode | CC | Optional extra arguments.
+?????? | ?? | .............................
+@endcode
+
+All instructions are packed together in memeory with no byte gaps. The only requirement is that they
+are single byte-aligned. Hence a sequence of instructions such as: 3-byte, 1-byte, 2-byte, 4-byte
+would be packed as below. Note a nibble is shown as one letter for conciseness.
+
+@code
+AA AA AA BB CC CC DD DD DD DD
+@endcode
+
+While the following (unpacked) 4-byte aligned sequence is invalid and its behavior unspecified:
+
+@code
+AA AA AA 00 BB 00 00 00 CC CC 00 00 DD DD DD DD
+@endcode
+
+@subsection byte1 1-Byte Instructions.
+
+These are the simplest instructions. Usually they perform a very precise operation or collection of
+operations in parts of the CPU not accessable by the rest of the instruction set. Their layout is as
+follows:
+
+@code
+Opcode | CC
+?????? | ??
+@endcode
+
+@subsection byte2 2-Byte instructions
+
+Usually register to register operations for simple movement / value copying between registers.
+
+@code
+Opcode | CC | Arguments
+?????? | ?? | ????????
+@endcode
+
+@subsection byte3 3-Byte instructions
+
+Most instructions are 3 bytes in length. This includes all instructions with three register
+operands.
+
+@code
+Opcode | CC | Arguments
+?????? | ?? | ???????? | ????????
+@endcode
+
+
+@subsection byte4 4-Byte instructions
+
+4 Byte instructions usually include 16 bits of immediate.
+
+@code
+Opcode | CC | Arguments
+?????? | ?? | ???????? | ???????? | ????????
+@endcode
+
+
+@section conditional-execution Conditional Execution
+
+All instructions support conditional execution. The two bits following the opcode in every
+instruction are a condition code which specifies the predicate to be satisfied if the instruction is
+to be executed:
+
+-   `00` - Always execute the instruction.
+-   `01` - Execute if and only if the last test was TRUE.
+-   `10` - Execute if and only if the last test was FALSE.
+-   `11` - Execute if and only if zero flag in the Status Register is
+
+The result of each TEST instruction is stored in the Test Result register, and updated with each 
+subsequent TEST instruction. Note that the TEST instruction itself can also be conditionally 
+executed, meaning complex expressions can be built from sequences of tests.
+
+@section instructions-list Instructions Quick Reference
+
+Memonic               | Description
+----------------------|------------------------------------------------------------------------------
+@subpage  LOADR       | Load to register X from address in register Y with offset in register Z.
+@subpage  LOADI       | Load to register X from address in register Y with immediate offset.
+@subpage  STORI       | Store register X to address in register Y with offset in register Z.
+@subpage  STORR       | Store register X to address in register Y with immediate offset.
+@subpage  PUSH        | Push register X onto the top of the stack and decrement the stack pointer.
+@subpage  POP         | Pop element at top of stack into register X and increment the stack pointer.
+@subpage  MOVR        | Move the content of register X into register Y
+@subpage  MOVI        | Move immediate I into register X
+@subpage  MOVSR       | Move content of special register X into general register Y
+@subpage  MOVRS       | Move content of general register X into special register Y
+@subpage  JUMPR       | Jump to address contained within register X
+@subpage  JUMPI       | Jump to address contained within instruction immediate.
+@subpage  CALLR       | Call to function who's address is contained within register X
+@subpage  CALLI       | Call to function who's address is contained within instruction immediate.
+@subpage  RETURN      | Return from the last function call.
+@subpage  TEST        | Test two general or special registers and set comparison bits.
+@subpage  HALT        | Stop processing and wait to be reset.
+@subpage  ANDR        | Bitwise AND two registers together.
+@subpage  NANDR       | Bitwise NAND two registers together.
+@subpage  ORR         | Bitwise OR two registers together.
+@subpage  NORR        | Bitwise NOR two registers together.
+@subpage  XORR        | Bitwise XOR two registers together.
+@subpage  LSLR        | Logical shift left the bits in register X by the value in register Y.
+@subpage  LSRR        | Logical shift right the bits in register X by the value in register Y.
+@subpage  NOTR        | Bitwise invert the specificed register.
+@subpage  ANDI        | Bitwise AND two registers together.
+@subpage  NANDI       | Bitwise NAND two registers together.
+@subpage  ORI         | Bitwise OR two registers together.
+@subpage  NORI        | Bitwise NOR two registers together.
+@subpage  XORI        | Bitwise XOR two registers together.
+@subpage  LSLI        | Logical shift left the bits in register X by the immediate value
+@subpage  LSRI        | Logical shift right the bits in register X by the immediate value
+@subpage  IADDI       | Integer Add register X to immediate value.
+@subpage  ISUBI       | Integer Subtract immediate value from register X.
+@subpage  IMULI       | Integer Multiply register X by immediate value.
+@subpage  IDIVI       | Integer Divide register X by immediate value.
+@subpage  IALSI       | Integer Arithmetic shift register X left by immediate value.
+@subpage  IASRI       | Integer Arithmetic shift register X right immediate value.
+@subpage  IADDR       | Integer Add register X to register Y.
+@subpage  ISUBR       | Integer Subtract register X from register Y.
+@subpage  IMULR       | Integer Multiply register X by register Y.
+@subpage  IDIVR       | Integer Divide register X by register Y.
+@subpage  IASLR       | Integer Arithmetic shift register X left by value in register Y.
+@subpage  IASRR       | Integer Arithmetic shift register X right value in register Y.
+@subpage  FADDI       | Floating point Add register X to immediate value.
+@subpage  FSUBI       | Floating point Subtract immediate value from register X.
+@subpage  FMULI       | Floating point Multiply register X by immediate value.
+@subpage  FDIVI       | Floating point Divide register X by immediate value.
+@subpage  FASLI       | Floating point Arithmetic shift register X left by immediate value.
+@subpage  FASRI       | Floating point Arithmetic shift register X right immediate value.
+@subpage  FADDR       | Floating point Add register X to register Y.
+@subpage  FSUBR       | Floating point Subtract register X from register Y.
+@subpage  FMULR       | Floating point Multiply register X by register Y.
+@subpage  FDIVR       | Floating point Divide register X by register Y.
+@subpage  FASLR       | Floating point Arithmetic shift register X left by value in register Y.
+@subpage  FASRR       | Floating point Arithmetic shift register X right value in register Y.
+
+
+
+@page  LOADR  LOADR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  LOADI  LOADI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  STORI  STORI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  STORR  STORR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  PUSH   PUSH   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  POP    POP    
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  MOVR   MOVR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  MOVI   MOVI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  MOVSR  MOVSR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  MOVRS  MOVRS  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  JUMPR  JUMPR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  JUMPI  JUMPI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  CALLR  CALLR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  CALLI  CALLI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  RETURN RETURN 
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  TEST   TEST   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  HALT   HALT   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ANDR   ANDR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  NANDR  NANDR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ORR    ORR    
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  NORR   NORR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  XORR   XORR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  LSLR   LSLR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  LSRR   LSRR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  NOTR   NOTR   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ANDI   ANDI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  NANDI  NANDI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ORI    ORI    
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  NORI   NORI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  XORI   XORI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  LSLI   LSLI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  LSRI   LSRI   
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IADDI  IADDI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ISUBI  ISUBI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IMULI  IMULI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IDIVI  IDIVI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IALSI  IALSI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IASRI  IASRI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IADDR  IADDR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  ISUBR  ISUBR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IMULR  IMULR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IDIVR  IDIVR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IASLR  IASLR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  IASRR  IASRR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FADDI  FADDI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FSUBI  FSUBI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FMULI  FMULI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FDIVI  FDIVI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FASLI  FASLI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FASRI  FASRI  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FADDR  FADDR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FSUBR  FSUBR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FMULR  FMULR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FDIVR  FDIVR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FASLR  FASLR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+@page  FASRR  FASRR  
+
+###Description
+
+
+
+###Register Access
+
+
+
+###Memory Layout
+
+This is a X byte instruction
+
+ ```
+
+
+```
+
+### Assembly Code Examples
+
+```
+
+
+```
+
+@see @ref instructions-list
+
+
+---
+
+*/

@@ -1,0 +1,13 @@
+build/
+
+*__pycache__*
+
+*.swp
+*.vim
+*.cmake
+*.pyc
+*~
+
+CMakeFiles
+Makefile
+CMakeCache.txt
