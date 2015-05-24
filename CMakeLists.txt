@@ -7,6 +7,9 @@ set (PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR} )
 set (EXECUTABLE_OUTPUT_PATH ${PROJECT_ROOT}/build )
 set (LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH} )
 
+execute_process(COMMAND git branch -q OUTPUT_VARIABLE GIT_BRANCH)
+execute_process(COMMAND git log --pretty=format:%H -n 1 OUTPUT_VARIABLE GIT_COMMIT)
+
 
 add_custom_target(gitclean
     git clean -dfx
@@ -27,5 +30,7 @@ MESSAGE( STATUS "PROJECT NAME:           " ${PROJECT_NAME} )
 MESSAGE( STATUS "PROJECT ROOT FOLDER:    " ${PROJECT_ROOT} )
 MESSAGE( STATUS "EXECUTABLE OUTPUT PATH: " ${EXECUTABLE_OUTPUT_PATH} )
 MESSAGE( STATUS "LIBRARY OUTPUT PATH:    " ${LIBRARY_OUTPUT_PATH} )
-MESSAGE( STATUS "BUILD TYPE:             " ${CMAKE_BUILD_TYPE} )
+MESSAGE( STATUS "BUILD TYPE:             " ${CMAKE_BUILD_TYPE} "\n")
+MESSAGE( STATUS "GIT COMMIT HASH:        " ${GIT_COMMIT} )
+MESSAGE( STATUS "GIT BRANCH:             " ${GIT_BRANCH} )
 MESSAGE( STATUS "------------------------------------------------------------------------------" )
