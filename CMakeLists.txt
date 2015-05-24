@@ -21,16 +21,16 @@ add_custom_target(gitlog
     git log --decorate --pretty=oneline --graph
 )
 
+MESSAGE( STATUS "------------------------[ PROJECT INFORMATION ]-------------------------------" )
+
 add_subdirectory(sw)
 add_subdirectory(hw)
 add_subdirectory(doc)
 
-MESSAGE( STATUS "------------------------[ PROJECT INFORMATION ]-------------------------------" )
-MESSAGE( STATUS "PROJECT NAME:           " ${PROJECT_NAME} )
-MESSAGE( STATUS "PROJECT ROOT FOLDER:    " ${PROJECT_ROOT} )
-MESSAGE( STATUS "EXECUTABLE OUTPUT PATH: " ${EXECUTABLE_OUTPUT_PATH} )
-MESSAGE( STATUS "LIBRARY OUTPUT PATH:    " ${LIBRARY_OUTPUT_PATH} )
-MESSAGE( STATUS "BUILD TYPE:             " ${CMAKE_BUILD_TYPE} "\n")
-MESSAGE( STATUS "GIT COMMIT HASH:        " ${GIT_COMMIT} )
-MESSAGE( STATUS "GIT BRANCH:             " ${GIT_BRANCH} )
+MESSAGE( STATUS "PROJECT NAME:            " ${PROJECT_NAME} )
+MESSAGE( STATUS "PROJECT ROOT FOLDER:     " ${PROJECT_ROOT} )
+MESSAGE( STATUS "EXECUTABLE OUTPUT PATH:  " ${EXECUTABLE_OUTPUT_PATH} )
+MESSAGE( STATUS "LIBRARY OUTPUT PATH:     " ${LIBRARY_OUTPUT_PATH} )
+MESSAGE( STATUS "BUILD TYPE:              " ${CMAKE_BUILD_TYPE} "\n")
+MESSAGE( STATUS "CURRENT GIT COMMIT HASH: " ${GIT_COMMIT} )
 MESSAGE( STATUS "------------------------------------------------------------------------------" )
