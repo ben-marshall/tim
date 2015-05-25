@@ -128,25 +128,21 @@ Memonic               | Description
 @subpage  ISUBI       | Integer Subtract immediate value from register X.
 @subpage  IMULI       | Integer Multiply register X by immediate value.
 @subpage  IDIVI       | Integer Divide register X by immediate value.
-@subpage  IALSI       | Integer Arithmetic shift register X left by immediate value.
 @subpage  IASRI       | Integer Arithmetic shift register X right immediate value.
 @subpage  IADDR       | Integer Add register X to register Y.
 @subpage  ISUBR       | Integer Subtract register X from register Y.
 @subpage  IMULR       | Integer Multiply register X by register Y.
 @subpage  IDIVR       | Integer Divide register X by register Y.
-@subpage  IASLR       | Integer Arithmetic shift register X left by value in register Y.
 @subpage  IASRR       | Integer Arithmetic shift register X right value in register Y.
 @subpage  FADDI       | Floating point Add register X to immediate value.
 @subpage  FSUBI       | Floating point Subtract immediate value from register X.
 @subpage  FMULI       | Floating point Multiply register X by immediate value.
 @subpage  FDIVI       | Floating point Divide register X by immediate value.
-@subpage  FASLI       | Floating point Arithmetic shift register X left by immediate value.
 @subpage  FASRI       | Floating point Arithmetic shift register X right immediate value.
 @subpage  FADDR       | Floating point Add register X to register Y.
 @subpage  FSUBR       | Floating point Subtract register X from register Y.
 @subpage  FMULR       | Floating point Multiply register X by register Y.
 @subpage  FDIVR       | Floating point Divide register X by register Y.
-@subpage  FASLR       | Floating point Arithmetic shift register X left by value in register Y.
 @subpage  FASRR       | Floating point Arithmetic shift register X right value in register Y.
 
 

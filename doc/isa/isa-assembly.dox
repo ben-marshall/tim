@@ -102,12 +102,30 @@ example make no sense as an argment to an integer arithmetic instruction.
 cannot be represented in the desired number of bits, the upper bits that do not fit are simply
 discarded.
 
+@section asm-macros Macros and Special Instructions.
+
+There are some assembly instructions that are actually aliases for other instructions in a
+particular form, or that do not actually represent an operation.
+
+@subsection asm-macros-nop NOP
+
+The `NOP` instruction stands for *no-operation* and has no side effects, it simply takes a single
+instruction cycle to execute. It is an alias for the @ref ANDR instruction with all register
+operands set to R0.
+
+@subsection asm-macros-data DATA
+
+The `DATA` instruction does not actually execute anything. It simply reserves 4 bytes of memory
+space for its single immediate value. It should be used to load constants into global or heap
+memory.
 
 ---
 
 @section grammar Grammar
 
 @code
+
+NULL                  ::= 
 
 NEWLINE               ::= '\r' | '\n' | '\r\n'
 
@@ -127,6 +145,137 @@ IMM_HEX               ::= '0h' ('0'..'9' | 'A'..'F')+
 IMM_FLOAT             ::= '0f' ('0'..'9')+ ('.' ('0'..'9')+)? ('e' ('-')? ('0'..'9')+)?
 IMMEDIATE             ::= (IMM_BINARY | IMM_HEX | IMM_DECIMAL | IMM_FLOAT)
 
+PROGRAM               ::= (LINE NEWLINE)+
+
+LINE                  ::= COMMENT | 
+                          LABEL_DECLARATION (INSTRUCTION)? COMMENT |
+                          NULL
+                          
+
+INSTRUCTION           ::= I_LOAD   |
+                          I_STORE  |
+                          I_PUSH   |    
+                          I_POP    |
+                          I_MOV    |
+                          I_JUMP   |
+                          I_CALL   |
+                          I_RETURN |
+                          I_TEST   |
+                          I_HALT   |
+                          I_AND    |
+                          I_NAND   |
+                          I_OR     |
+                          I_NOR    |
+                          I_XOR    |
+                          I_LSL    |
+                          I_LSR    |
+                          I_NOT    |
+                          I_IADD   |
+                          I_ISUB   |
+                          I_IMUL   |
+                          I_IDIV   |
+                          I_IASR   |
+                          I_FADD   |
+                          I_FSUB   |
+                          I_FMUL   |
+                          I_FDIV   |
+                          I_FASR   |
+                          I_NOP    |
+                          I_DATA   
+
+I_LOAD                ::= TODO!
+
+
+I_STORE               ::= TODO!
+
+
+I_PUSH                ::= TODO!
+
+    
+I_POP                 ::= TODO!
+
+
+I_MOV                 ::= TODO!
+
+
+I_JUMP                ::= TODO!
+
+
+I_CALL                ::= TODO!
+
+
+I_RETURN              ::= TODO!
+
+
+I_TEST                ::= TODO!
+
+
+I_HALT                ::= TODO!
+
+
+I_AND                 ::= TODO!
+
+
+I_NAND                ::= TODO!
+
+
+I_OR                  ::= TODO!
+
+
+I_NOR                 ::= TODO!
+
+
+I_XOR                 ::= TODO!
+
+
+I_LSL                 ::= TODO!
+
+
+I_LSR                 ::= TODO!
+
+
+I_NOT                 ::= TODO!
+
+
+I_IADD                ::= TODO!
+
+
+I_ISUB                ::= TODO!
+
+
+I_IMUL                ::= TODO!
+
+
+I_IDIV                ::= TODO!
+
+
+I_IASR                ::= TODO!
+
+
+I_FADD                ::= TODO!
+
+
+I_FSUB                ::= TODO!
+
+
+I_FMUL                ::= TODO!
+
+
+I_FDIV                ::= TODO!
+
+
+I_FASR                ::= TODO!
+
+
+I_NOP                 ::= TODO!
+
+
+I_DATA                ::= TODO! 
+                          
+
 @endcode
+
+
+.
 
 */
