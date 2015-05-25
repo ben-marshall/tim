@@ -4,8 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 project(tim-sw-asm)
 MESSAGE( STATUS "PROJECT NAME:            " ${PROJECT_NAME} )
 
-SET(SRC_FILES    "asm.c"
-                 "asm_hash_table.c")
+SET(SRC_FILES   "asm.c"
+                "asm_hash_table.c"
+                "asm_parse.c")
 SET(HEADER_FILES "asm.h")
 
 include_directories("../common")

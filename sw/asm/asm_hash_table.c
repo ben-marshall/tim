@@ -10,6 +10,7 @@
 /*!
 @brief Creates and returns a new pointer to a hash table.
 @param initial_size - The initial size of the hash table's internal data structure.
+@param tr - The newly initialised and returned hashtable. Memory space should already be declared.
 */
 void asm_hash_table_new(int initial_size, asm_hash_table * tr)
 {
@@ -91,7 +92,7 @@ int asm_hash_table_insert(asm_hash_table * table, char * key, void * data)
 @brief Returns a pointer to the data stored in a hash table with the given key or NULL if no such
        element exists.
 @param table - The table to fetch the data from.
-@param key - The key to the data to fetch.
+@param strkey - The key to the data to fetch.
 @todo Make sure the key fits into the table.
 */
 void * asm_hash_table_get(asm_hash_table * table, char * strkey)

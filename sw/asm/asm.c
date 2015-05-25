@@ -7,26 +7,6 @@
 
 #include "asm.h"
 
-
-/*!
-@brief Top function to trigger the parsing of an input source file.
-@details Takes an opened for reading text file and parses it into a series of asm statements,
-filling out their arguments and parameters as it goes. It also populates the hash-table of
-labels used for calculating jump target addresses.
-@param [in] source - Opened source file pointer. Open in "r" mode.
-@param [out] statements - Returned list of statements parsed from the input file.
-@param [inout] labels - Hashtable which is populated with any encountered labels.
-@returns an interger represeting the number of errors encountered in parsing. zero means
-all went well. Otherwise the program contained syntax errors.
-*/
-int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * labels)
-{
-    int errors = 0;
-
-    return errors;
-}
-
-
 /*!
 @brief prints usage instructions for the program.
 */
@@ -139,13 +119,14 @@ int main(int argc, char ** argv)
     if(cxt -> binary == NULL)
         fatal("Could not open output file: %s\n", cxt -> output_file);
 
+    cxt -> statements = NULL;
     cxt -> symbol_table = calloc(1, sizeof(asm_hash_table));
     asm_hash_table_new(25, cxt -> symbol_table);
 
-
-    //
-    // Run everything about here...
-    //
+    
+    int parse_errors = asm_parse_input(cxt -> source, cxt -> statements, cxt -> symbol_table);
+    if(parse_errors > 0)
+        fatal("Encountered %d parser errors\n", parse_errors);
 
 
     fclose(cxt -> source);
