@@ -7,5 +7,7 @@ MESSAGE( STATUS "PROJECT NAME:            " ${PROJECT_NAME} )
 SET(SRC_FILES    "asm.c")
 SET(HEADER_FILES "asm.h")
 
+include_directories("../common")
+
 add_executable(tim-asm ${HEADER_FILES} ${SRC_FILES})
 target_link_libraries(tim-asm tim-common)

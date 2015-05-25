@@ -11,8 +11,10 @@
 #include "string.h"
 #include "assert.h"
 
-#ifndef COMMON_H
-#define COMMON_H
+#include "common.h"
+
+#ifndef ASM_H
+#define ASM_H
 
 //! Typedef masking an integer to be the asm hash table key type.
 typedef int asm_hash_key;

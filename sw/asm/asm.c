@@ -13,11 +13,11 @@
 */
 void usage(int argc, char ** argv)
 {
-    printf("TIM Assembler                                                      \n");
-    printf("-------------------------------------------------------------------\n");
-    printf("                                                                   \n");
-    printf("Usage: $> %s -i <input file> -o <output file> -f format\n", argv[0]);
-    printf("\n");
+    tprintf("TIM Assembler                                                      \n");
+    tprintf("-------------------------------------------------------------------\n");
+    tprintf("                                                                   \n");
+    tprintf("Usage: $> %s -i <input file> -o <output file> -f format\n", argv[0]);
+    tprintf("\n");
 }
 
 /*!
@@ -66,7 +66,7 @@ void parse_cmd_args(int argc, char ** argv, asm_context * cxt)
                     cxt -> format = BINARY;
                 else
                 {
-                    printf("asm: unknown output format: %s\n", argv[arg+1]);
+                    warning("Unknown output format: %s\n", argv[arg+1]);
                     usage(argc, argv);
                     exit(1);
                 }
@@ -80,7 +80,7 @@ void parse_cmd_args(int argc, char ** argv, asm_context * cxt)
         }
         else
         {
-            printf("asm: Unknown argument: '%s'\n", argv[arg]);
+            warning("Unknown argument: '%s'\n", argv[arg]);
             usage(argc, argv);
             exit(1);
         }
