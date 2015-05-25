@@ -106,27 +106,35 @@ int main(int argc, char ** argv)
         exit(1);
     }
 
+    log("Source File:\t %s\n", cxt -> input_file);
+    log("Output File:\t %s\n", cxt -> output_file);
     cxt -> source = fopen(cxt -> input_file, "r");
+    
+    if(ferror(cxt -> source))
+    {
+        error("Error code %d opening source file.\n", ferror(cxt -> source));
+        fatal("Could not open input file: %s\n", cxt -> input_file);
+    }
 
     if(cxt -> format == ASCII)
         cxt -> binary = fopen(cxt -> output_file, "w");
     else if(cxt -> format == BINARY)
         cxt -> binary = fopen(cxt -> output_file, "wb");
-    
-    if(cxt -> source == NULL)
-        fatal("Could not open input file: %s\n", cxt -> input_file);
 
-    if(cxt -> binary == NULL)
+    if(ferror(cxt -> binary))
+    {
+        error("Error code %d opening output file.\n", ferror(cxt -> binary));
         fatal("Could not open output file: %s\n", cxt -> output_file);
+    }
 
     cxt -> statements = NULL;
     cxt -> symbol_table = calloc(1, sizeof(asm_hash_table));
     asm_hash_table_new(25, cxt -> symbol_table);
 
     
-    int parse_errors = asm_parse_input(cxt -> source, cxt -> statements, cxt -> symbol_table);
-    if(parse_errors > 0)
-        fatal("Encountered %d parser errors\n", parse_errors);
+    int errors = asm_parse_input(cxt -> source, cxt -> statements, cxt -> symbol_table);
+    if(errors > 0)
+        fatal("Encountered %d parser errors\n", errors);
 
 
     fclose(cxt -> source);
