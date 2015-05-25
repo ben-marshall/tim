@@ -1263,36 +1263,6 @@ This is a X byte instruction
 
 ---
 
-@page  IALSI  IALSI  
-
-###Description
-
-
-
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
 
 @page  IASRI  IASRI  
 
@@ -1449,36 +1419,6 @@ This is a X byte instruction
 
 ---
 
-@page  IASLR  IASLR  
-
-###Description
-
-
-
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
 
 @page  IASRR  IASRR  
 
@@ -1635,36 +1575,6 @@ This is a X byte instruction
 
 ---
 
-@page  FASLI  FASLI  
-
-###Description
-
-
-
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
 
 @page  FASRI  FASRI  
 
@@ -1821,36 +1731,6 @@ This is a X byte instruction
 
 ---
 
-@page  FASLR  FASLR  
-
-###Description
-
-
-
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
 
 @page  FASRR  FASRR  
 
