@@ -20,47 +20,47 @@
 #define TIM_PROMPT  printf(TIM_PRINT_PROMPT)
 
 //! Masking print macro that places the prompt in front of the message.
-#define tprintf(...) TIM_PROMPT; printf(__VA_ARGS__)
+#define tprintf(...) {TIM_PROMPT; printf(__VA_ARGS__);}
 
 //! Alias for the tprintf macro.
-#define log(...) TIM_PROMPT; printf(__VA_ARGS__)
+#define log(...) {TIM_PROMPT; printf(__VA_ARGS__);}
 
 #ifdef DEBUG
 
     //! Debug macro that prints line number, function name and file.
-    #define tdebug(...) TIM_PROMPT; \
+    #define debug(...) {TIM_PROMPT; \
                         printf("line %d of %s in %s\n", __LINE__, __FUNCTION__, __FILE__); \
                         TIM_PROMPT; \
-                        printf(__VA_ARGS__)
+                        printf(__VA_ARGS__);}
 #endif
 #ifndef DEBUG
 
     //! Alternative debug macro that is evaluated to NOP when we are not in a debug build.
-    #define tdebug(...) ; 
+    #define debug(...) ; 
 
 #endif
 
 //! Warning macro that spits out line number and function.
-#define warning(...) TIM_PROMPT; \
+#define warning(...) {TIM_PROMPT; \
                    printf("\e[1;33m[Warning] \e[0m"); \
                    printf("line %d of %s in %s\n", __LINE__, __FUNCTION__, __FILE__); \
                    TIM_PROMPT; \
                    printf("\e[1;33m[Warning] \e[0m"); \
-                   printf(__VA_ARGS__)
+                   printf(__VA_ARGS__);}
 
 //! Error macro that spits out the line number and function.
-#define error(...) TIM_PROMPT; \
+#define error(...) {TIM_PROMPT; \
                    printf("\e[1;31m[Error] \e[0m"); \
                    printf("line %d of %s in %s\n", __LINE__, __FUNCTION__, __FILE__); \
                    TIM_PROMPT; \
                    printf("\e[1;31m[Error] \e[0m"); \
-                   printf(__VA_ARGS__)
+                   printf(__VA_ARGS__);}
 
 //! Fatal error macro that behaves the same as error() but also exits the program.
-#define fatal(...) error(__VA_ARGS__); \
+#define fatal(...) {error(__VA_ARGS__); \
                    TIM_PROMPT; \
                    printf("\e[1;31m[ FATAL ERROR ] \e[0m\n"); \
-                   exit(1)
+                   exit(1);}
 
 // --------------------------- TIM Instructions and opcodes ---------------------------
 
