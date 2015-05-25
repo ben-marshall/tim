@@ -22,7 +22,7 @@ the one specified, you will get an error.
 @subsection tokens-labels Labels
 
 All label declarations are preceded by a single full stop or dot. They may contain alpha-numeric 
-characters, dashes (` - `) and underscores (` _ `).
+characters, dashes (` - `) and underscores (` _ `). Labels must start with a letter however.
 
 Labels may be placed on their own line, or immedietly preceding an assembly instruction/opcode.
 They may not appear after an instruction on the same line. The exception to this is that some
@@ -106,5 +106,27 @@ discarded.
 ---
 
 @section grammar Grammar
+
+@code
+
+NEWLINE               ::= '\r' | '\n' | '\r\n'
+
+LABEL_NAME            ::= ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | '0'..'9' | '-' | '_')*
+LABEL_DECLARATION     ::= '.' LABEL_NAME
+
+COMMENT               ::= ';' (.*) NEWLINE
+
+SPECIAL_REG           ::= '$'  ('SP' | 'PC' | 'LR' | 'IR' | 'IS' | 'SR' | 'TR')
+GENERAL_REG           ::= '$R' ('0'..'9') ('0'..'5')?
+TEMP_REG              ::= '$T' ('0'..'7')
+REGISTER              ::= (SPECIAL_REG | GENERAL_REG | TEMP_REG)
+
+IMM_BINARY            ::= '0b' ('0' | '1')+
+IMM_DECIMAL           ::= ('0d')? ('0'..'9')+
+IMM_HEX               ::= '0h' ('0'..'9' | 'A'..'F')+
+IMM_FLOAT             ::= '0f' ('0'..'9')+ ('.' ('0'..'9')+)? ('e' ('-')? ('0'..'9')+)?
+IMMEDIATE             ::= (IMM_BINARY | IMM_HEX | IMM_DECIMAL | IMM_FLOAT)
+
+@endcode
 
 */
