@@ -3,4 +3,108 @@
 @page ISA Assembly
 @brief This page lists all information on the ISA assembly code structure, syntax and semantics.
 
+@tableofcontents
+
+@section comments Comments
+
+All comments are single line only. The start of a commone is signified by a semicolon `;` and
+implicitly ended by a newline.
+
+@section tokens Tokens
+
+@brief This section details how to refer to registers and create labels & immediate/literal values.
+
+These tokens are refered too later in the main assembly language grammar.
+
+@note The assembly language is *case sensitive*. If you refer to a token in any case other than
+the one specified, you will get an error.
+
+@subsection tokens-labels Labels
+
+All label declarations are preceded by a single full stop or dot. They may contain alpha-numeric 
+characters, dashes (` - `) and underscores (` _ `).
+
+Labels may be placed on their own line, or immedietly preceding an assembly instruction/opcode.
+They may not appear after an instruction on the same line. The exception to this is that some
+instructions (such as @ref JUMPI and @ref JUMPR) allow labels to be immediates/arguments. When
+used inside an instruction, the preceding dot should be omitted.
+
+@subsubsection tokens-labels-examples Examples
+
+@code
+.main
+.text
+.quick-stort
+.quick-sort-aux
+.printf_formatted
+.array_start_1
+.function2
+@endcode
+
+
+---
+
+@subsection tokens-registers Registers
+
+All Registers are preceded by a `$` sign. Special purpose registers are refered to by their
+memonics detailed in @ref registers-sp. Hence to refer to the link register, we would use the
+token `$LR`. Remember that register memonics are case sensitive.
+
+@ref registers-gp are refered to by the letter `R` followed by their number. There are 16 general
+purpose registers numbered 0 to 15.
+
+@ref registers-sp-tmp are refered to by the letter `T` followed by their number. There are 8
+temporary registers numbered 0 to 7.
+
+@subsubsection tokens-registers-examples Examples
+
+@code
+$PC     ; Program Counter
+$SP     ; Stack Pointer
+$LR     ; Link Register
+$R0     ; 
+$R9     ; General Purpose Registers
+$R14    ; 
+$T6     ; Temporary register six.
+@endcode
+
+
+---
+
+
+@subsection tokens-literals Imediates & Literals
+
+Immediates and literals simply refer to all constant values passed as arguments to instructions.
+Binary, Hexadecimal, Decimal and floating point literals are supported.
+
+- Binary literals are refered to by prefixing their value with `0b` followed by ones and zeros as
+appropriate.
+- Hex literals are prefixed with `0x` followed by a string of hex characters `0`..`F`.
+- Decimal literals are prefixed with `0d` followed by decimal digits as needed. This is the default
+literal type, so if a literal is encountered with no `0?` prefix it is assumed to be a decimal.
+- Floating point literals are prefixed with `0f` followed by decimal digits and a decimal point
+where needed.
+
+Not all literal types are valid as arguments to all instructions. Floating point literals for
+example make no sense as an argment to an integer arithmetic instruction.
+
+@subsubsection tokens-literals-examples Examples
+
+@code
+0b01010101  ; Binary literal.
+0d50013     ; Eplicitly Decimal literal
+0xAB50C     ; Hex literal.
+0f3.141     ; Floating literal for PI.
+40823       ; An unprefixed literal, implicitly assumed to be decimal.
+@endcode
+
+@note Different instructions will accept literals of different sizes. When the supplied literal
+cannot be represented in the desired number of bits, the upper bits that do not fit are simply
+discarded.
+
+
+---
+
+@section grammar Grammar
+
 */
