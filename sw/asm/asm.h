@@ -16,6 +16,34 @@
 #ifndef ASM_H
 #define ASM_H
 
+#ifdef TIM_PRINT_PROMPT
+    #undef TIM_PRINT_PROMPT
+#endif
+#define TIM_PRINT_PROMPT "\e[1;36masm>\e[0m "
+
+
+/*!
+@brief Stores all information on a single ASM instruction.
+@details Stores the opcode and arguments of an ASM instruction. This includes instructions that
+are not actually emitted such as DATA instructions. It also contains the memory address of the
+instruction for any label pointers too it.
+*/
+typedef struct asm_statement_t asm_statement;
+struct asm_statement_t
+{
+    //! The instruction the statment refers too.
+    tim_instruction instruction;
+
+    //! The address of the instruction in byte-aligned memory.
+    unsigned int address;
+
+    //! The next statement to be executed in the program.
+    asm_statement * next;
+    //! The previously executed statement in the program.
+    asm_statement * prev;
+};
+
+
 //! Typedef masking an integer to be the asm hash table key type.
 typedef int asm_hash_key;
 
@@ -24,6 +52,7 @@ typedef struct asm_hash_table_bin_t asm_hash_table_bin;
 
 //! Describes whether to output the parsed asm code as binary or ascii code.
 typedef enum asm_format_e {BINARY, ASCII} asm_format;
+
 
 /*!
 @brief Contains a single bin in the hashtable.
