@@ -129,6 +129,8 @@ NULL                  ::=
 
 NEWLINE               ::= '\r' | '\n' | '\r\n'
 
+BYTE_MASK             ::= ('0' | '1') ('0' | '1') ('0' | '1') ('0' | '1')
+
 LABEL_NAME            ::= ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | '0'..'9' | '-' | '_')*
 LABEL_DECLARATION     ::= '.' LABEL_NAME
 
@@ -184,16 +186,15 @@ INSTRUCTION           ::= I_LOAD   |
                           I_SLEEP  |
                           I_DATA   
 
-I_LOAD                ::= TODO!
+I_LOAD                ::= 'LOAD' GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |
+                          'LOAD' GENERAL_REG IMMEDIATE
 
+I_STORE               ::= 'STORE' GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |
+                          'STORE' GENERAL_REG IMMEDIATE
 
-I_STORE               ::= TODO!
-
-
-I_PUSH                ::= TODO!
-
+I_PUSH                ::= 'PUSH' REGISTER
     
-I_POP                 ::= TODO!
+I_POP                 ::= 'POP' REGISTER
 
 
 I_MOV                 ::= TODO!

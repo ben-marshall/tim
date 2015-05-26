@@ -123,6 +123,8 @@ The initial value of the stack pointer after reset is undefined.
 
 This register is 32 bits wide.
 
+The contents are treated as 4-byte aligned unsigned memeory addresses.
+
 ### Access
 
 Can be read by:

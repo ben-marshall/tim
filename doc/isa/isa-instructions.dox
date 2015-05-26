@@ -151,29 +151,37 @@ Memonic               | Description
 
 ###Description
 
-
+Loads a value from memory into the destination register. The address used is the summation of
+the second and third operand registers. The contents of the second and third registers are treated
+as unsigned 4-byte aligned numbers. The final nibble of the instruction is a byte mask used to
+set which bytes are actually loaded from memory and which are discarded.
 
 ###Register Access
 
-
+The LOADR instruction can use any of the general purpose registers `R0` to `R15` as either
+destination or source operands.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 3 byte instruction
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Destination | Source 1 | Source 2
+000001  |       00       |     DDDD     | RRRR     | rrrr
+@endcode
 
 ### Assembly Code Examples
 
-```
+Note that the final byte mask is optional. If it is omitted (as in example 3) then it is assumed
+to be 1111. It should be 4 characters long and only '1' or '0'.
 
+@code
+1. | LOAD $R0 $R1 $R3    1111 ; Load all bits into R0
+2. | LOAD $R7 $R14 $R13  1100 ; Load the upper 16 bits into R7
+3. | LOAD $R5 $R5 $R6         ; Replace R5 with the memory contents.
+@endcode
 
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref LOADI
 
 
 ---
@@ -182,29 +190,40 @@ This is a X byte instruction
 
 ###Description
 
-
+Loads a value into the destination register from memory. The address used is made up of the
+20 bit immediate. The immediate is interpreted as a 4-byte aligned unsigned value. The LOADI
+instruction does not allow byte masking like the @ref LOADR instruction does, hence it will
+always load an entire word into the destination register.
 
 ###Register Access
 
-
+The LOADI instruction can use any of the general purpose registers `R0` to `R15` as its
+destination. It has not source operands.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 4 byte instruction
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Destination | Immediate            
+000010  |       00       |     DDDD     | IIII IIII IIII IIII IIII
+@endcode
 
 ### Assembly Code Examples
 
-```
+When an immediate is supplied that does not fit into 20 bits, the lower 20 bits are used and any
+upper bits are discarded by the assembler.
 
+Immediates that specify fewer than 5 bytes are padded with high order zeros to make them 20 bits
+long explicitly.
 
-```
+@code
+1. | LOAD $R0 0xFF001
+2. | LOAD $R0 0xAB003
+3. | LOAD $R0 0dF056
+@endcode
 
-@see @ref instructions-list
+@see @ref instructions-list, @ref LOADR
 
 
 ---
@@ -213,29 +232,40 @@ This is a X byte instruction
 
 ###Description
 
-
+Stores a value from the source register into memory. The address used is made up of the
+20 bit immediate. The immediate is interpreted as a 4-byte aligned unsigned value. The STORI
+instruction does not allow byte masking like the @ref STORR instruction does, hence it will
+always store an entire word into memory.
 
 ###Register Access
 
-
+The STORI instruction can use any of the general purpose registers `R0` to `R15` as its
+destination. It has not source operands.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 4 byte instruction
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Source | Immediate            
+000011  |       00       |   DDDD  | IIII IIII IIII IIII IIII
+@endcode
 
 ### Assembly Code Examples
 
-```
+When an immediate is supplied that does not fit into 20 bits, the lower 20 bits are used and any
+upper bits are discarded by the assembler.
 
+Immediates that specify fewer than 5 bytes are padded with high order zeros to make them 20 bits
+long explicitly.
 
-```
+@code
+1. | STORE $R0 0xFF001
+2. | STORE $R0 0xAB003
+3. | STORE $R0 0dF056
+@endcode
 
-@see @ref instructions-list
+@see @ref instructions-list, @ref STORR
 
 
 ---
@@ -244,94 +274,110 @@ This is a X byte instruction
 
 ###Description
 
-
+Stores a value from the source register into memory. The address used is the summation of
+the second and third operand registers. The contents of the second and third registers are treated
+as unsigned 4-byte aligned numbers. The final nibble of the instruction is a byte mask used to
+set which bytes are actually stored to memory and which are discarded.
 
 ###Register Access
 
-
+The STORR instruction can use any of the general purpose registers `R0` to `R15` as either
+destination or source operands.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 3 byte instruction
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Destination | Source 1 | Source 2
+000100  |       00       |     DDDD     | RRRR     | rrrr
+@endcode
 
 ### Assembly Code Examples
 
-```
+Note that the final byte mask is optional. If it is omitted (as in example 3) then it is assumed
+to be 1111. It should be 4 characters long and only '1' or '0'.
 
+@code
+1. | STORE $R0 $R1 $R3    1111 ; Store all bits in R0
+2. | STORE $R7 $R14 $R13  1100 ; Store the upper 16 bits from R7
+3. | STORE $R5 $R5 $R6
+@endcode
 
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref STORI
 
 
 ---
 
-@page  PUSH   PUSH   
+@page POP POP
 
 ###Description
 
-
+Loads the top four bytes of the stack into the destination register.
 
 ###Register Access
 
+The POP instruction can write to any register so long as the supervisor mode bit is set in
+the @ref registers-sp-sr. Otherwise, it can write to any of the general purpose or temporary
+registers. If it tries to write to a register is should not, it is treated as a NOP.
 
+POP also causes the @ref registers-sp-sp register to be decremented.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 2 byte instruction. The GP/SR bit determines whether the destination register is
+addressing the general purpose register bank or the special purpose / temporary register bank.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Destination | GP/SR | Don't Care
+000100  |       00       |     DDDD     |  1/0  | ???
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | POP $R2    ; Pop to general purpose register 2.
+2. | POP $PC    ; Pop to the program counter to return from a function.
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref PUSH
 
 
 ---
 
-@page  POP    POP    
+@page  PUSH PUSH
 
 ###Description
 
-
+Push a register onto the top of the stack. 
 
 ###Register Access
 
-
+The PUSH instruction may read from any register, general, special or temporary. Each instance
+of the PUSH instruction will also cause the @ref registers-sp-sp register to be incremented.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 2 byte instruction. The GP/SR bit determines whether the source register is
+addressing the general purpose register bank or the special purpose / temporary register bank.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code |  Source   | GP/SR | Don't Care
+000100  |       00       |   DDDD    |  1/0  | ???
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | PUSH $R2    ; PUSH R2 to the top of the stack.
+2. | PUSH $PC    ; PUSH the program counter to the top of the stack.
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref POP
 
 
 ---
+
 
 @page  MOVR   MOVR   
 
