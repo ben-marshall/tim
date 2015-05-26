@@ -181,6 +181,7 @@ INSTRUCTION           ::= I_LOAD   |
                           I_FDIV   |
                           I_FASR   |
                           I_NOP    |
+                          I_SLEEP  |
                           I_DATA   
 
 I_LOAD                ::= TODO!
@@ -270,12 +271,14 @@ I_FASR                ::= TODO!
 I_NOP                 ::= TODO!
 
 
+I_SLEEP               ::= TODO! 
+
+
 I_DATA                ::= TODO! 
                           
 
 @endcode
 
 
-.
 
 */
