@@ -21,6 +21,8 @@
 #endif
 #define TIM_PRINT_PROMPT "\e[1;36masm>\e[0m "
 
+//! Stores what sort of statement a parsed instruction is.
+typedef enum asm_statement_type_e {NOP, DATA, OPCODE, LABEL} asm_statement_type;
 
 /*!
 @brief Stores all information on a single ASM instruction.
@@ -33,6 +35,9 @@ struct asm_statement_t
 {
     //! The instruction the statment refers too.
     tim_instruction instruction;
+
+    //! Is this an opcode, data/NOP or label?
+    asm_statement_type type;
 
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
