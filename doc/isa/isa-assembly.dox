@@ -196,9 +196,8 @@ I_PUSH                ::= 'PUSH' REGISTER
     
 I_POP                 ::= 'POP' REGISTER
 
-
-I_MOV                 ::= TODO!
-
+I_MOV                 ::= 'MOV' REGISTER REGISTER |
+                          'MOV' REGISTER IMMEDIATE
 
 I_JUMP                ::= TODO!
 

@@ -100,8 +100,6 @@ Memonic               | Description
 @subpage  POP         | Pop element at top of stack into register X and increment the stack pointer.
 @subpage  MOVR        | Move the content of register X into register Y
 @subpage  MOVI        | Move immediate I into register X
-@subpage  MOVSR       | Move content of special register X into general register Y
-@subpage  MOVRS       | Move content of general register X into special register Y
 @subpage  JUMPR       | Jump to address contained within register X
 @subpage  JUMPI       | Jump to address contained within instruction immediate.
 @subpage  CALLR       | Call to function who's address is contained within register X
@@ -330,7 +328,7 @@ addressing the general purpose register bank or the special purpose / temporary 
 
 @code
 Opcode  | Condition Code |  Destination | GP/SR | Don't Care
-000100  |       00       |     DDDD     |  1/0  | ???
+000101  |       00       |     DDDD     |  1/0  | ???
 @endcode
 
 ### Assembly Code Examples
@@ -363,7 +361,7 @@ addressing the general purpose register bank or the special purpose / temporary 
 
 @code
 Opcode  | Condition Code |  Source   | GP/SR | Don't Care
-000100  |       00       |   DDDD    |  1/0  | ???
+000110  |       00       |   DDDD    |  1/0  | ???
 @endcode
 
 ### Assembly Code Examples
@@ -383,29 +381,32 @@ Opcode  | Condition Code |  Source   | GP/SR | Don't Care
 
 ###Description
 
-
+Coppies the contents of one register to another.
 
 ###Register Access
 
-
+MOVI may write to any special, general or temporary register except the program counter.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 3 byte instruction. GP/SR bits determine if the destination and source registers
+index the general or special purpose register files.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Destination |  Source  | GP/SR 1 | GP/SR 2 | Don't Care
+000111  |       00       |    DDDD     |   ssss   |  1/0    |  1/0    | ???? ??
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | MOVR $PC $R1
+2. | MOVR $T1 $R5
+3. | MOVR $R6 $T5
+4. | MOVR $LR $T5
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref MOVI
 
 
 ---
@@ -414,91 +415,30 @@ This is a X byte instruction
 
 ###Description
 
-
-
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
-
-@page  MOVSR  MOVSR  
-
-###Description
-
-
+Moves the value of an immediate into a register.
 
 ###Register Access
 
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
-
-
----
-
-@page  MOVRS  MOVRS  
-
-###Description
-
-
-
-###Register Access
-
-
+MOVI may write to any special, general or temporary register except the program counter.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 4 byte instruction. GP/SR bits determine if the destination and source registers
+index the general or special purpose register files.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Destination | GP/SP | Immediate
+000111  |       00       |    DDDD     |   I   | III IIII IIII IIII IIII
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | MOVI $R0 0xABC6
+2. | MOVI $SP 0x7FFFF
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref MOVR
 
 
 ---
