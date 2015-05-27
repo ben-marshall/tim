@@ -129,6 +129,7 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
 */
 asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
 {
@@ -163,6 +164,48 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
     to_return;
 }
 
+/*!
+@brief Parses the arguments to a store instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    char * operand2 = strtok(NULL, " ");
+    char * operand3 = strtok(NULL, " ");
+    char * operand4 = strtok(NULL, " ");
+
+    to_return -> reg_1 = asm_parse_register(operand1);
+    tim_register reg2 = asm_parse_register(operand2);
+
+    if(reg2 != REG_ERROR)
+    {
+        // Assume it is the 3 register version of load.
+        to_return -> reg_2 = reg2;
+        to_return -> reg_3 = asm_parse_register(operand3);
+        to_return -> instruction.opcode = STORR;
+        to_return -> instruction.size = 3;
+    }
+    else
+    {
+        // Assume it is the register-immediate version of load.
+        to_return -> reg_2 = REG_NOT_USED;
+        to_return -> reg_3 = REG_NOT_USED;
+        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
+        to_return -> instruction.opcode = STORI;
+        to_return -> instruction.size = 4;
+    }
+
+    to_return;
+}
+
 
 /*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
@@ -181,6 +224,8 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
 
     if(strcmp(opcode, tim_LOAD) == 0)
         to_return = asm_parse_load(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_STORE) == 0)
+        to_return = asm_parse_store(arguments, errors, line_num);
     else
     {
         *errors ++;
