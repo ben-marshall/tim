@@ -64,6 +64,46 @@
 
 // --------------------------- TIM Instructions and opcodes ---------------------------
 
+//! typedef for tim immediate values as operands to instructions.
+typedef int tim_immediate;
+
+//! Encodes the address of the registers.
+typedef enum tim_register_e{
+    R0 = 0,
+    R1 = 1, 
+    R2 = 2, 
+    R3 = 3, 
+    R4 = 4, 
+    R5 = 5, 
+    R6 = 6, 
+    R7 = 7, 
+    R8 = 8, 
+    R9 = 9, 
+    R10= 10, 
+    R11= 11, 
+    R12= 12,
+    R13= 13, 
+    R14= 14, 
+    R15= 15, 
+    PC = 0,
+    SP = 1,
+    LR = 2,
+    TR = 3,
+    SR = 4,
+    IR = 5,
+    IS = 6,
+    RESERVED_1 = 7,
+    T0 = 8,
+    T1 = 9,
+    T2 = 10,
+    T3 = 11,
+    T4 = 12,
+    T5 = 13,
+    T6 = 14,
+    T7 = 15,
+    REG_ERROR=32,
+    REG_NOT_USED = 33
+} tim_register;
 
 //! Encodes the size in bytes of an instruction in memory.
 typedef unsigned char tim_instruction_size;

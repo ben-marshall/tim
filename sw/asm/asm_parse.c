@@ -49,6 +49,122 @@ char * asm_parse_readline(FILE * source)
 }
 
 /*!
+@brief Takes a three letter string and returns either an assembly register code or NO_REG if the
+character code is invalid.
+@param str - A two letter code representing a register.
+@returns an asm_register representing the passed two letter code. If the input code is invalid then
+REG__ERROR is returned.
+*/
+tim_register asm_parse_register(char str[3])
+{
+
+    if (str == NULL) return REG_ERROR;
+    else if(strcmp(str, "$R0")==0) return R0;
+    else if(strcmp(str, "$R1")==0) return R1;
+    else if(strcmp(str, "$R2")==0) return R2;
+    else if(strcmp(str, "$R3")==0) return R3;
+    else if(strcmp(str, "$R4")==0) return R4;
+    else if(strcmp(str, "$R5")==0) return R5;
+    else if(strcmp(str, "$R6")==0) return R6;
+    else if(strcmp(str, "$R7")==0) return R7;
+    else if(strcmp(str, "$R8")==0) return R8;
+    else if(strcmp(str, "$R9")==0) return R9;
+    else if(strcmp(str, "$R10")==0) return R10;
+    else if(strcmp(str, "$R11")==0) return R11;
+    else if(strcmp(str, "$R12")==0) return R12;
+    else if(strcmp(str, "$R13")==0) return R13;
+    else if(strcmp(str, "$R14")==0) return R14;
+    else if(strcmp(str, "$R15")==0) return R15;
+    else if(strcmp(str, "$PC")==0) return PC;
+    else if(strcmp(str, "$SP")==0) return SP;
+    else if(strcmp(str, "$LR")==0) return LR;
+    else if(strcmp(str, "$TR")==0) return TR;
+    else if(strcmp(str, "$SR")==0) return SR;
+    else if(strcmp(str, "$IR")==0) return IR;
+    else if(strcmp(str, "$IS")==0) return IS;
+    else if(strcmp(str, "$T0")==0) return T0;
+    else if(strcmp(str, "$T1")==0) return T1;
+    else if(strcmp(str, "$T2")==0) return T2;
+    else if(strcmp(str, "$T3")==0) return T3;
+    else if(strcmp(str, "$T4")==0) return T4;
+    else if(strcmp(str, "$T5")==0) return T5;
+    else if(strcmp(str, "$T6")==0) return T6;
+    else if(strcmp(str, "$T7")==0) return T7;
+    else return REG_ERROR;
+}
+
+/*!
+@brief Parses a character array into an asm_immediate and returns it as a 32 bit integer.
+@note The value returned is not nessecerily correct. It simply has the right
+bits set to represent the immediate in memory.
+@param [in] immediate - The character representation of the immediate value.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns A tim_immediate representing the passed char array.
+*/
+tim_immediate asm_parse_immediate(char * immediate, int * errors, int line_num)
+{
+    switch(immediate[1])
+    {
+        case 'b':
+            return (int)strtol(&immediate[1], NULL,  2);
+        case 'd':
+            return (int)strtol(&immediate[1], NULL, 10);
+        case 'x':
+            return (int)strtol(&immediate[1], NULL, 16);
+        default:
+            error("Could not parse immediate '%s' on line %d\n", immediate, line_num);
+            *errors += 1;
+            break;
+    }
+
+    return 0;
+}
+
+
+/*!
+@brief Parses the arguments to a load instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+*/
+asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    char * operand2 = strtok(NULL, " ");
+    char * operand3 = strtok(NULL, " ");
+    char * operand4 = strtok(NULL, " ");
+
+    to_return -> reg_1 = asm_parse_register(operand1);
+    tim_register reg2 = asm_parse_register(operand2);
+
+    if(reg2 != REG_ERROR)
+    {
+        // Assume it is the 3 register version of load.
+        to_return -> reg_2 = reg2;
+        to_return -> reg_3 = asm_parse_register(operand3);
+        to_return -> instruction.opcode = LOADR;
+        to_return -> instruction.size = 3;
+    }
+    else
+    {
+        // Assume it is the register-immediate version of load.
+        to_return -> reg_2 = REG_NOT_USED;
+        to_return -> reg_3 = REG_NOT_USED;
+        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
+        to_return -> instruction.opcode = LOADI;
+        to_return -> instruction.size = 4;
+    }
+
+    to_return;
+}
+
+
+/*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
 @param [in] arguments - The string containing the arguments to the opcode. This may be empty for
@@ -64,13 +180,11 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
     asm_statement * to_return = NULL;
 
     if(strcmp(opcode, tim_LOAD) == 0)
-    {
-        warning("Instruction '%s' not yet implemented on line %d\n", opcode, line_num);
-    }
+        to_return = asm_parse_load(arguments, errors, line_num);
     else
     {
         *errors ++;
-        error("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
+        warning("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
     }
 
     return to_return;

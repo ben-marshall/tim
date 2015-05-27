@@ -36,6 +36,16 @@ struct asm_statement_t
     //! The instruction the statment refers too.
     tim_instruction instruction;
 
+    //! Register Argument 1
+    tim_register reg_1;
+    //! Register Argument 2
+    tim_register reg_2;
+    //! Register Argument 3
+    tim_register reg_3;
+
+    //! Immediate operand to the instruction.
+    tim_immediate immediate;
+
     //! Is this an opcode, data/NOP or label?
     asm_statement_type type;
 
