@@ -124,11 +124,13 @@ tim_immediate asm_parse_immediate(char * immediate, int * errors, int line_num)
 
 /*!
 @brief Validates the arguments/operands to a load or store instruction.
+@param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
 @todo implement this!
 */
 BOOL asm_validate_load_store(asm_statement * instruction)
 {
+    warning("LOAD/STORE instruction validation not implemented.\n");
     return TRUE;
 }
 
@@ -187,6 +189,7 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
     }
 }
 
+
 /*!
 @brief Parses the arguments to a store instruction.
 @param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
@@ -243,6 +246,62 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 
 
 /*!
+@brief Validates the arguments/operands to a MOV instruction.
+@param instruction - The instruction to be validated.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_mov(asm_statement * instruction)
+{
+    warning("MOV instruction validation not implemented.\n");
+    return TRUE;
+}
+
+/*!
+@brief Parses the arguments of a move instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    char * operand2 = strtok(NULL, " \r\n");
+
+    to_return -> reg_1 = asm_parse_register(operand1);
+    tim_register reg2 = asm_parse_register(operand2);
+
+    if(reg2 != REG_ERROR)
+    {
+        // Assume it is the 2 register version of mov.
+        to_return -> reg_2 = reg2;
+        to_return -> instruction.opcode = MOVR;
+        to_return -> instruction.size   = 3;
+    }
+    else
+    {
+        // Assume it is the register-immediate version of mov
+        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
+        to_return -> instruction.opcode = MOVI;
+        to_return -> instruction.size   = 4;
+    }
+
+    BOOL valid = asm_validate_mov(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
+}
+
+/*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
 @param [in] arguments - The string containing the arguments to the opcode. This may be empty for
@@ -261,10 +320,12 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_load(arguments, errors, line_num);
     else if(strcmp(opcode, tim_STORE) == 0)
         to_return = asm_parse_store(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_MOV) == 0)
+        to_return = asm_parse_mov(arguments, errors, line_num);
     else
     {
         *errors ++;
-        warning("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
+        error("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
     }
 
     return to_return;
