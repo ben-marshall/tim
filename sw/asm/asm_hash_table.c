@@ -26,7 +26,8 @@ void asm_hash_table_new(int initial_size, asm_hash_table * tr)
 */
 int asm_hash_table_expand(asm_hash_table * table, int new_size)
 {
-    printf("%d %s NOT IMPLEMENTED\n", __LINE__, __FILE__);
+    warning("Hash table expansion not implemented yet\n");
+    return 0;
 }
 
 /*!
@@ -86,6 +87,7 @@ int asm_hash_table_insert(asm_hash_table * table, char * key, void * data)
     }
 
     table -> element_count ++;
+    return 0;
 }
 
 /*!

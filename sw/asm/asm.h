@@ -141,6 +141,24 @@ all went well. Otherwise the program contained syntax errors.
 */
 int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * labels);
 
+
+/*!
+@brief Inserts an element into the hash table associated with the provided key.
+@param table - Pointer to the hash table to insert into.
+@param key - The key to the data.
+@param data - Pointer to the data the table will contain.
+@returns a status code. Zero if it worked, otherwise some integer.
+@todo Check that the key will fit!!
+*/
+int asm_hash_table_insert(asm_hash_table * table, char * key, void * data);
+
+/*!
+@brief Creates and returns a new pointer to a hash table.
+@param initial_size - The initial size of the hash table's internal data structure.
+@param tr - The newly initialised and returned hashtable. Memory space should already be declared.
+*/
+void asm_hash_table_new(int initial_size, asm_hash_table * tr);
+
 #endif
 
 

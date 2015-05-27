@@ -150,6 +150,11 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
         to_return -> reg_3 = asm_parse_register(operand3);
         to_return -> instruction.opcode = LOADR;
         to_return -> instruction.size = 3;
+
+        if(operand4 != NULL)
+        {
+            warning("Bit masks for STORE instruction not yet implemented.");
+        }
     }
     else
     {
@@ -161,7 +166,7 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
         to_return -> instruction.size = 4;
     }
 
-    to_return;
+    return to_return;
 }
 
 /*!
@@ -192,6 +197,11 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
         to_return -> reg_3 = asm_parse_register(operand3);
         to_return -> instruction.opcode = STORR;
         to_return -> instruction.size = 3;
+
+        if(operand4 != NULL)
+        {
+            warning("Bit masks for STORE instruction not yet implemented.");
+        }
     }
     else
     {
@@ -203,7 +213,7 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
         to_return -> instruction.size = 4;
     }
 
-    to_return;
+    return to_return;
 }
 
 
