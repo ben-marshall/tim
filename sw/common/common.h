@@ -64,6 +64,12 @@
 
 // --------------------------- TIM Instructions and opcodes ---------------------------
 
+//! Boolean type.
+typedef unsigned char BOOL;
+
+#define TRUE 1
+#define FALSE 0
+
 //! typedef for tim immediate values as operands to instructions.
 typedef int tim_immediate;
 

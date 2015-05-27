@@ -123,6 +123,17 @@ tim_immediate asm_parse_immediate(char * immediate, int * errors, int line_num)
 
 
 /*!
+@brief Validates the arguments/operands to a load or store instruction.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_load_store(asm_statement * instruction)
+{
+    return TRUE;
+}
+
+
+/*!
 @brief Parses the arguments to a load instruction.
 @param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
 instruction removed.
@@ -166,7 +177,14 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
         to_return -> instruction.size = 4;
     }
 
-    return to_return;
+    BOOL valid = asm_validate_load_store(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
 }
 
 /*!
@@ -213,7 +231,14 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
         to_return -> instruction.size = 4;
     }
 
-    return to_return;
+    BOOL valid = asm_validate_load_store(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
 }
 
 
