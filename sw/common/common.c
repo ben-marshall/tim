@@ -39,4 +39,49 @@ tim_asm_instruction * tim_NOP   = "NOP";
 tim_asm_instruction * tim_SLEEP = "SLEEP"; 
 tim_asm_instruction * tim_DATA  = "DATA"; 
 
+
+/*!
+@brief Checks if the supplied register is a general purpose register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a gp reg, otherwise false.
+*/
+BOOL tim_is_general_register(tim_register reg)
+{
+    if(reg >= R0 && reg <= R15)
+        return TRUE;
+    else
+        return FALSE;
+}
+
+
+/*!
+@brief Checks if the supplied register is a temporary register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a temporary reg, otherwise false.
+*/
+BOOL tim_is_temp_register(tim_register reg)
+{
+    if(reg >= T0 && reg <= T7)
+        return TRUE;
+    else
+        return FALSE;
+}
+
+
+/*!
+@brief Checks if the supplied register is a special register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a special reg, otherwise false.
+*/
+BOOL tim_is_special_register(tim_register reg)
+{
+    if(reg >= PC && reg <= IS)
+        return TRUE;
+    else
+        return FALSE;
+}
+
 //! }@
+
+
+

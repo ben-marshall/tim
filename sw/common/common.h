@@ -98,7 +98,7 @@ typedef enum tim_register_e{
     SR = 4,
     IR = 5,
     IS = 6,
-    RESERVED_1 = 7,
+    REG_RESERVED_1 = 7,
     T0 = 8,
     T1 = 9,
     T2 = 10,
