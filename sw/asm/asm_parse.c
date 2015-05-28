@@ -153,6 +153,7 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
     char * operand3 = strtok(NULL, " ");
     char * operand4 = strtok(NULL, " ");
 
+    to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
     tim_register reg2 = asm_parse_register(operand2);
 
@@ -208,6 +209,7 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
     char * operand3 = strtok(NULL, " ");
     char * operand4 = strtok(NULL, " ");
 
+    to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
     tim_register reg2 = asm_parse_register(operand2);
 
@@ -273,6 +275,7 @@ asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " \r\n");
 
+    to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
     tim_register reg2 = asm_parse_register(operand2);
 
@@ -329,6 +332,7 @@ asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 
     char * operand1 = strtok(NULL, " ");
     
+    to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
     to_return -> reg_2 = REG_NOT_USED;
     to_return -> reg_3 = REG_NOT_USED;
@@ -374,6 +378,7 @@ asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 
     char * operand1 = strtok(NULL, " ");
     
+    to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
     to_return -> reg_2 = REG_NOT_USED;
     to_return -> reg_3 = REG_NOT_USED;
