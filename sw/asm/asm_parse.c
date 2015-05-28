@@ -521,6 +521,53 @@ asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
 }
 
 /*!
+@brief Parses the arguments of a RETURN instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = REG_NOT_USED;
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> instruction.opcode = RETURN;
+    to_return -> instruction.size   = 1;
+
+    return to_return;
+}
+
+/*!
+@brief Parses the arguments of a HALT instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_halt(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = REG_NOT_USED;
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> instruction.opcode = HALT;
+    to_return -> instruction.size   = 1;
+
+    return to_return;
+}
+
+
+/*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
 @param [in] arguments - The string containing the arguments to the opcode. This may be empty for
@@ -549,6 +596,10 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_jump(arguments, errors, line_num);
     else if(strcmp(opcode, tim_CALL) == 0)
         to_return = asm_parse_call(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_RETURN) == 0)
+        to_return = asm_parse_return(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_HALT) == 0)
+        to_return = asm_parse_halt(arguments, errors, line_num);
     else
     {
         *errors ++;
