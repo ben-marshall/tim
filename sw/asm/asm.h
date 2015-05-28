@@ -46,6 +46,9 @@ struct asm_statement_t
     //! Immediate operand to the instruction.
     tim_immediate immediate;
 
+    //! The target label used for JUMP and CALL instructions.
+    char * target_label;
+
     //! Is this an opcode, data/NOP or label?
     asm_statement_type type;
 

@@ -456,6 +456,71 @@ asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 
 
 /*!
+@brief Validates the arguments/operands to a CALL instruction.
+@param instruction - The instruction to be validated.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_call(asm_statement * instruction)
+{
+    warning("CALL instruction validation not implemented.\n");
+    return TRUE;
+}
+
+/*!
+@brief Parses the arguments of a CALL instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    
+    to_return -> type = OPCODE;
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> reg_1 = asm_parse_register(operand1);
+
+    if(to_return -> reg_1 != REG_ERROR)
+    {
+        // Assume we are jumping to the contents of a register.
+        to_return -> instruction.opcode = CALLR;
+        to_return -> instruction.size   = 2;
+    }
+    else
+    {
+        // Immediate version of the instruction.
+        to_return -> reg_1 = REG_NOT_USED;
+        if(operand1[0] == '0')
+        {
+            to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+        }
+        else
+        {
+            // The target address is a label! It will need calculating later.
+            to_return -> target_label = operand1;
+        }
+        to_return -> instruction.opcode = CALLI;
+        to_return -> instruction.size   = 4;
+    }
+
+    BOOL valid = asm_validate_call(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
+}
+
+/*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
 @param [in] arguments - The string containing the arguments to the opcode. This may be empty for
@@ -482,6 +547,8 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_pop(arguments, errors, line_num);
     else if(strcmp(opcode, tim_JUMP) == 0)
         to_return = asm_parse_jump(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_CALL) == 0)
+        to_return = asm_parse_call(arguments, errors, line_num);
     else
     {
         *errors ++;
