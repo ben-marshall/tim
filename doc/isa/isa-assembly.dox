@@ -199,11 +199,11 @@ I_POP                 ::= 'POP' REGISTER
 I_MOV                 ::= 'MOV' REGISTER REGISTER |
                           'MOV' REGISTER IMMEDIATE
 
-I_JUMP                ::= TODO!
+I_JUMP                ::= 'JUMP' REGISTER |
+                          'JUMP' IMMEDIATE
 
-
-I_CALL                ::= TODO!
-
+I_CALL                ::= 'CALL' REGISTER |
+                          'CALL' IMMEDIATE
 
 I_RETURN              ::= TODO!
 
