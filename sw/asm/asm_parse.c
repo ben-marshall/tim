@@ -301,6 +301,97 @@ asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
     }
 }
 
+
+/*!
+@brief Validates the arguments/operands to a PUSH instruction.
+@param instruction - The instruction to be validated.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_push(asm_statement * instruction)
+{
+    warning("PUSH instruction validation not implemented.\n");
+    return TRUE;
+}
+
+/*!
+@brief Parses the arguments of a push instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    
+    to_return -> reg_1 = asm_parse_register(operand1);
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+
+    to_return -> instruction.opcode = PUSH;
+    to_return -> instruction.size   = 2;
+
+    BOOL valid = asm_validate_push(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
+}
+
+
+/*!
+@brief Validates the arguments/operands to a POP instruction.
+@param instruction - The instruction to be validated.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_pop(asm_statement * instruction)
+{
+    warning("POP instruction validation not implemented.\n");
+    return TRUE;
+}
+
+/*!
+@brief Parses the arguments of a push instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    
+    to_return -> reg_1 = asm_parse_register(operand1);
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+
+    to_return -> instruction.opcode = POP;
+    to_return -> instruction.size   = 2;
+
+    BOOL valid = asm_validate_pop(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
+}
+
+
 /*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
@@ -322,6 +413,10 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_store(arguments, errors, line_num);
     else if(strcmp(opcode, tim_MOV) == 0)
         to_return = asm_parse_mov(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_PUSH) == 0)
+        to_return = asm_parse_push(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_POP) == 0)
+        to_return = asm_parse_pop(arguments, errors, line_num);
     else
     {
         *errors ++;
