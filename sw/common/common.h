@@ -46,7 +46,8 @@
                    printf("line %d of %s in %s\n", __LINE__, __FUNCTION__, __FILE__); \
                    TIM_PROMPT; \
                    printf("\e[1;33m[Warning] \e[0m"); \
-                   printf(__VA_ARGS__);}
+                   printf(__VA_ARGS__); \
+                   TIM_PROMPT; printf("\n"); }
 
 //! Error macro that spits out the line number and function.
 #define error(...) {TIM_PROMPT; \
@@ -54,7 +55,8 @@
                    printf("line %d of %s in %s\n", __LINE__, __FUNCTION__, __FILE__); \
                    TIM_PROMPT; \
                    printf("\e[1;31m[Error] \e[0m"); \
-                   printf(__VA_ARGS__);}
+                   printf(__VA_ARGS__); \
+                   TIM_PROMPT; printf("\n"); }
 
 //! Fatal error macro that behaves the same as error() but also exits the program.
 #define fatal(...) {error(__VA_ARGS__); \
@@ -91,22 +93,22 @@ typedef enum tim_register_e{
     R13= 13, 
     R14= 14, 
     R15= 15, 
-    PC = 0,
-    SP = 1,
-    LR = 2,
-    TR = 3,
-    SR = 4,
-    IR = 5,
-    IS = 6,
-    REG_RESERVED_1 = 7,
-    T0 = 8,
-    T1 = 9,
-    T2 = 10,
-    T3 = 11,
-    T4 = 12,
-    T5 = 13,
-    T6 = 14,
-    T7 = 15,
+    PC = 16,
+    SP = 17,
+    LR = 18,
+    TR = 19,
+    SR = 20,
+    IR = 21,
+    IS = 22,
+    REG_RESERVED_1 = 23,
+    T0 = 24,
+    T1 = 25,
+    T2 = 26,
+    T3 = 27,
+    T4 = 28,
+    T5 = 29,
+    T6 = 30,
+    T7 = 31,
     REG_ERROR=32,
     REG_NOT_USED = 33
 } tim_register;
@@ -221,6 +223,27 @@ extern tim_asm_instruction * tim_FASR  ;
 extern tim_asm_instruction * tim_NOP   ; 
 extern tim_asm_instruction * tim_SLEEP ; 
 extern tim_asm_instruction * tim_DATA  ; 
+
+/*!
+@brief Checks if the supplied register is a general purpose register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a gp reg, otherwise false.
+*/
+BOOL tim_is_general_register(tim_register reg);
+
+/*!
+@brief Checks if the supplied register is a temporary register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a temporary reg, otherwise false.
+*/
+BOOL tim_is_temp_register(tim_register reg);
+
+/*!
+@brief Checks if the supplied register is a special register or not.
+@param [in] reg - the register to test.
+@returns TRUE if the register is a special reg, otherwise false.
+*/
+BOOL tim_is_special_register(tim_register reg);
 
 #endif
 

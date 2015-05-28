@@ -55,7 +55,7 @@ character code is invalid.
 @returns an asm_register representing the passed two letter code. If the input code is invalid then
 REG__ERROR is returned.
 */
-tim_register asm_parse_register(char str[3])
+tim_register asm_parse_register(char str[4])
 {
 
     if (str == NULL) return REG_ERROR;
@@ -126,12 +126,35 @@ tim_immediate asm_parse_immediate(char * immediate, int * errors, int line_num)
 @brief Validates the arguments/operands to a load or store instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_load_store(asm_statement * instruction)
 {
-    warning("LOAD/STORE instruction validation not implemented.\n");
-    return TRUE;
+    BOOL tr = TRUE;
+
+    if(instruction -> instruction.opcode == LOADR || instruction -> instruction.opcode == STORR)
+    {
+        if( tim_is_general_register(instruction -> reg_1) == FALSE ||
+            tim_is_general_register(instruction -> reg_2) == FALSE ||
+            tim_is_general_register(instruction -> reg_3) == FALSE)
+        {
+            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line);
+            log  ("\t Arguments are: %d, %d, %d\n", instruction->reg_1, instruction->reg_2, instruction->reg_3);
+            tr = FALSE;
+        }
+    }
+    else if(instruction -> instruction.opcode == LOADI || instruction -> instruction.opcode == STORI)
+    {
+        if( tim_is_general_register(instruction -> reg_1) == FALSE)
+        {
+            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line);
+            log  ("\t Arguments are: %d\n", instruction->reg_1)
+            tr = FALSE;
+        }
+    }
+    else
+        error("Invalid instruction validated by %s on line %d\n", __FUNCTION__, instruction->line);
+
+    return tr;
 }
 
 
@@ -142,16 +165,16 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " ");
-    char * operand3 = strtok(NULL, " ");
-    char * operand4 = strtok(NULL, " ");
+    char * operand3 = strtok(NULL, " \r\n");
+    char * operand4 = strtok(NULL, " \r\n");
 
     to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
@@ -198,16 +221,16 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " ");
-    char * operand3 = strtok(NULL, " ");
-    char * operand4 = strtok(NULL, " ");
+    char * operand3 = strtok(NULL, " \r\n");
+    char * operand4 = strtok(NULL, " \r\n");
 
     to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
@@ -251,12 +274,19 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 @brief Validates the arguments/operands to a MOV instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_mov(asm_statement * instruction)
 {
-    warning("MOV instruction validation not implemented.\n");
-    return TRUE;
+    BOOL to_return = TRUE;
+
+    if(instruction -> reg_1 == PC)
+    {
+        error("Line %d : MOV instruction cannot modify the program counter\n", instruction -> line);
+        to_return = FALSE;
+    }
+
+    instruction -> reg_3 = REG_NOT_USED;
+    return to_return;
 }
 
 /*!
@@ -266,18 +296,18 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " \r\n");
 
     to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
-    tim_register reg2 = asm_parse_register(operand2);
+    tim_register reg2  = asm_parse_register(operand2);
 
     if(reg2 != REG_ERROR)
     {
@@ -309,11 +339,11 @@ asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
 @brief Validates the arguments/operands to a PUSH instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_push(asm_statement * instruction)
 {
-    warning("PUSH instruction validation not implemented.\n");
+    instruction -> reg_2 = REG_NOT_USED;
+    instruction -> reg_3 = REG_NOT_USED;
     return TRUE;
 }
 
@@ -324,11 +354,11 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -359,7 +389,8 @@ asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 */
 BOOL asm_validate_pop(asm_statement * instruction)
 {
-    warning("POP instruction validation not implemented.\n");
+    instruction -> reg_2 = REG_NOT_USED;
+    instruction -> reg_3 = REG_NOT_USED;
     return TRUE;
 }
 
@@ -375,6 +406,7 @@ instruction removed.
 asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -405,7 +437,10 @@ asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 */
 BOOL asm_validate_jump(asm_statement * instruction)
 {
-    warning("JUMP instruction validation not implemented.\n");
+    if(instruction -> reg_1 == PC)
+    {
+        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line);
+    }
     return TRUE;
 }
 
@@ -421,6 +456,7 @@ instruction removed.
 asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -463,7 +499,10 @@ asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 */
 BOOL asm_validate_call(asm_statement * instruction)
 {
-    warning("CALL instruction validation not implemented.\n");
+    if(instruction -> reg_1 == PC)
+    {
+        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line);
+    }
     return TRUE;
 }
 
@@ -479,6 +518,7 @@ instruction removed.
 asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -532,6 +572,7 @@ instruction removed.
 asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
     
     to_return -> type = OPCODE;
     to_return -> reg_1 = REG_NOT_USED;
@@ -675,7 +716,7 @@ all went well. Otherwise the program contained syntax errors.
 int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * labels)
 {
     int errors = 0;
-    int lines_read = 1;
+    int lines_read = 0;
     char * line = NULL;
 
     asm_statement * walker = statements;

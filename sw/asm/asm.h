@@ -54,6 +54,8 @@ struct asm_statement_t
 
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
+    //! The line number of the source file the instruction came from.
+    unsigned int line;
 
     //! The next statement to be executed in the program.
     asm_statement * next;
