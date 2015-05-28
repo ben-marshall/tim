@@ -447,29 +447,33 @@ Opcode  | Condition Code | Destination | GP/SP | Immediate
 
 ###Description
 
-
+Set the program counter to the contents of a register. Used for jumping over data sections
+and non-return based control flow.
 
 ###Register Access
 
-
+Can source from any register except the program counter. Implicitly writes to the program counter
+as part of its operation.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 2 byte instruction. GP/SR bits determine if the destination and source registers
+index the general or special purpose register files.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Source | GP/SP | Don't Care
+001000  |       00       |  SSSS  |   I   |   ???
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | JUMP $LR
+2. | JUMP $R0
+3. | JUMP $T6
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref JUMPI, @ref CALLI, @ref CALLR
 
 
 ---
@@ -478,29 +482,40 @@ This is a X byte instruction
 
 ###Description
 
+Set the program counter to the value of the immediate. Used for jumping over data sections and
+non-return based control flow. The instruction supports both absoloute and relative jumps.
 
+In absoloute mode, the immediate is treated as an unsigned byte aligned value and the PC is
+simply set to that value.
+
+In relative mode, the immediate is treated as a 2's complement value and added too the program
+counter.
 
 ###Register Access
 
-
+Has no explicit source or destination registers. It only implicitly sets the value of the program
+counter.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 4 byte instruction with 23 bits representing the immediate. If the relative bit is unset,
+then we assume this is an absoloute mode jump. Otherwise it is a relative jump and the immediate
+is treated as a 2's complete number.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Relative? | Immediate
+001000  |       00       |    0/1    | III IIII IIII IIII IIII IIII
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+JUMP 0xA0           ; Absoloute jump to 0xA0
+JUMP 0x3 forward    ; Jump forward three bytes in memory.
+JUMP 0x5 backward   ; Jump backward five bytes in memory.
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref JUMPR, @ref CALLI, @ref CALLR
 
 
 ---
@@ -509,29 +524,32 @@ This is a X byte instruction
 
 ###Description
 
-
+Stores the program counter into the link register before setting the program counter to the 
+value of the specified register.
 
 ###Register Access
 
-
+Can read from any register except the link register and the program counter. Implicitly writes
+to the link register and the program counter.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 2 byte instruction GP/SR bits determine if the destination and source registers
+index the general or special purpose register files.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Source  | GP/SP | Don't Care
+001000  |       00       |  SSSS   |   I   |   ???
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+1. | CALL $R0
+2. | CALL $T0
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref CALLI, @ref JUMPI, @ref JUMPR
 
 
 ---
@@ -540,29 +558,31 @@ This is a X byte instruction
 
 ###Description
 
-
+Set the program counter to the value of the immediate after copying the PC into the link register.
 
 ###Register Access
 
-
+Has no explicit source or destination registers. It only implicitly sets the value of the program
+counter and the link register.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 4 byte instruction with 23 bits representing the immediate.
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code | Relative? | Immediate
+001000  |       00       |    0/1    | III IIII IIII IIII IIII IIII
+@endcode
 
 ### Assembly Code Examples
 
-```
+@code
+CALL 0xA0           ; Absoloute jump to 0xA0
+CALL 0x3
+CALL 0x5
+@endcode
 
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref JUMPR, @ref CALLI, @ref CALLR
 
 
 ---
@@ -571,29 +591,11 @@ This is a X byte instruction
 
 ###Description
 
+This is an alias instruction for 'MOVR $PC $LR'.
 
+It moves the top of the stack into the program counter.
 
-###Register Access
-
-
-
-###Memory Layout
-
-This is a X byte instruction
-
- ```
-
-
-```
-
-### Assembly Code Examples
-
-```
-
-
-```
-
-@see @ref instructions-list
+@see @ref instructions-list, @ref MOVR
 
 
 ---
