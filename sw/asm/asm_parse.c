@@ -364,7 +364,7 @@ BOOL asm_validate_pop(asm_statement * instruction)
 }
 
 /*!
-@brief Parses the arguments of a push instruction.
+@brief Parses the arguments of a pop instruction.
 @param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
 instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
@@ -387,6 +387,64 @@ asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
     to_return -> instruction.size   = 2;
 
     BOOL valid = asm_validate_pop(to_return);
+    if(valid)
+        return to_return;
+    else
+    {
+        free(to_return);
+        return NULL;
+    }
+}
+
+
+/*!
+@brief Validates the arguments/operands to a JUMP instruction.
+@param instruction - The instruction to be validated.
+@returns true or false depending on whether the instructions operands are valid or not.
+@todo implement this!
+*/
+BOOL asm_validate_jump(asm_statement * instruction)
+{
+    warning("JUMP instruction validation not implemented.\n");
+    return TRUE;
+}
+
+/*!
+@brief Parses the arguments of a JUMP instruction.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+
+    char * operand1 = strtok(NULL, " ");
+    
+    to_return -> type = OPCODE;
+    to_return -> reg_2 = REG_NOT_USED;
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> reg_1 = asm_parse_register(operand1);
+
+    if(to_return -> reg_1 != REG_ERROR)
+    {
+        // Assume we are jumping to the contents of a register.
+        to_return -> instruction.opcode = JUMPR;
+        to_return -> instruction.size   = 2;
+    }
+    else
+    {
+        // Immediate version of the instruction.
+        to_return -> reg_1 = REG_NOT_USED;
+        to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+        to_return -> instruction.opcode = JUMPI;
+        to_return -> instruction.size   = 4;
+    }
+
+    BOOL valid = asm_validate_jump(to_return);
     if(valid)
         return to_return;
     else
@@ -422,6 +480,8 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_push(arguments, errors, line_num);
     else if(strcmp(opcode, tim_POP) == 0)
         to_return = asm_parse_pop(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_JUMP) == 0)
+        to_return = asm_parse_jump(arguments, errors, line_num);
     else
     {
         *errors ++;
