@@ -715,6 +715,33 @@ asm_statement * asm_parse_sleep(char * arguments, int * errors, int line_num)
     return to_return;
 }
 
+/*!
+@brief Parses the arguments of a TEST instruction
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+*/
+asm_statement * asm_parse_test(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
+
+    char * operand1 = strtok(NULL, " \r\n");
+    char * operand2 = strtok(NULL, " \r\n");
+
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = asm_parse_register(operand1);
+    to_return -> reg_2 = asm_parse_register(operand2);
+    to_return -> reg_3 = REG_NOT_USED;
+
+    to_return -> instruction.size   = 3;
+    to_return -> instruction.opcode = TEST;
+
+    return to_return;
+}
+
 
 /*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
@@ -755,6 +782,8 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_data(arguments, errors, line_num);
     else if(strcmp(opcode, tim_SLEEP) == 0)
         to_return = asm_parse_sleep(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_TEST) == 0)
+        to_return = asm_parse_test(arguments, errors, line_num);
     else if(strcmp(opcode, tim_NOP) == 0){
         to_return = calloc(1, sizeof(asm_statement));
         to_return -> instruction.opcode = ANDR;

@@ -43,7 +43,6 @@ DATA  0x0DEAD0
     LOAD   $R1 $R2 0xAB4
     STORE  $R1 $R2 0xAB4 
     MOV    $R1 0xAB4 
-    TEST   $R2 0xAB4 
     AND    $R1 $R2 0xAB4 
     NAND   $R1 $R2 0xAB4 
     OR     $R1 $R2 0xAB4 
