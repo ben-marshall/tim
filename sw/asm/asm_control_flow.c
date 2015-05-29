@@ -18,15 +18,32 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
     int errors = 0;
     unsigned int current_address = base_address;
 
+    // First walk over the program assigning addresses to the statements.
     asm_statement * walker = statements;
-
     while(walker != NULL)
     {
         walker -> address = current_address;
-        current_address += walker -> instruction.size;
+        if(walker -> type == DATA ||
+           walker -> type == NOP  ||
+           walker -> type == OPCODE)
+        {
+            current_address += walker -> instruction.size;
+        }
         walker = walker -> next;
     }
     
-    log("Program Size: %d Bytes\n", current_address);
+    // Now walk over the program replacing jump label targets with the proper immediate
+    // values.
+    walker = statements;
+    while(walker != NULL)
+    {
+        if(walker -> target_label != NULL)
+        {
+            log("Calculating jump to '%s' for instruction on line %d\n", walker -> target_label, walker -> line_number);
+        }
+        walker = walker -> next;
+    }
+    
+    log("Program Size: %d Bytes\n", current_address - base_address);
     return errors;
 }

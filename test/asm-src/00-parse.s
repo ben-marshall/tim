@@ -3,13 +3,13 @@
 ; instruction and make sure that the parser works on them as expected.
 ;
 
-JUMP main       ; Common setup to jump over the data section.
+JUMP .main       ; Common setup to jump over the data section.
 
 DATA  0xABCDEF
 DATA  0x0DEAD0
 
 .main 
-    CALL body
+    CALL .body
     HALT
 
 .body

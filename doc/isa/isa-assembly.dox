@@ -131,8 +131,8 @@ NEWLINE               ::= '\r' | '\n' | '\r\n'
 
 BYTE_MASK             ::= ('0' | '1') ('0' | '1') ('0' | '1') ('0' | '1')
 
-LABEL_NAME            ::= ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | '0'..'9' | '-' | '_')*
-LABEL_DECLARATION     ::= '.' LABEL_NAME
+LABEL_NAME            ::= '.' ('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | '0'..'9' | '-' | '_')*
+LABEL_DECLARATION     ::= LABEL_NAME
 
 COMMENT               ::= ';' (.*) NEWLINE
 

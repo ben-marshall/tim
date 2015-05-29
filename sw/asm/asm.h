@@ -48,7 +48,6 @@ struct asm_statement_t
 
     //! The target label used for JUMP and CALL instructions.
     char * target_label;
-    char * line_source;
 
     //! Is this an opcode, data/NOP or label?
     asm_statement_type type;

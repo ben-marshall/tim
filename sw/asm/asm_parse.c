@@ -171,6 +171,7 @@ instruction removed.
 asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return ->line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -226,6 +227,7 @@ instruction removed.
 asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return ->line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -300,6 +302,7 @@ instruction removed.
 asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -358,6 +361,7 @@ instruction removed.
 asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -404,6 +408,7 @@ instruction removed.
 asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -452,9 +457,10 @@ instruction removed.
 asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
-    char * operand1 = strtok(NULL, " ");
+    char * operand1 = strtok(NULL, " \r\n");
     
     to_return -> type = OPCODE;
     to_return -> reg_2 = REG_NOT_USED;
@@ -520,9 +526,10 @@ instruction removed.
 asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
-    char * operand1 = strtok(NULL, " ");
+    char * operand1 = strtok(NULL, " \r\n");
     
     to_return -> type = OPCODE;
     to_return -> reg_2 = REG_NOT_USED;
@@ -573,6 +580,7 @@ instruction removed.
 asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
     
     to_return -> type = OPCODE;
@@ -596,6 +604,7 @@ instruction removed.
 asm_statement * asm_parse_halt(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     
     to_return -> type = OPCODE;
     to_return -> reg_1 = REG_NOT_USED;
@@ -619,6 +628,7 @@ instruction removed.
 asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -653,6 +663,7 @@ instruction removed.
 asm_statement * asm_parse_not(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
@@ -680,6 +691,7 @@ instruction removed.
 asm_statement * asm_parse_data(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
@@ -707,6 +719,7 @@ instruction removed.
 asm_statement * asm_parse_sleep(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
@@ -734,6 +747,7 @@ instruction removed.
 asm_statement * asm_parse_test(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> target_label = NULL;
     to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
@@ -794,6 +808,7 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_test(arguments, errors, line_num);
     else if(strcmp(opcode, tim_NOP) == 0){
         to_return = calloc(1, sizeof(asm_statement));
+        to_return -> target_label = NULL;
         to_return -> instruction.opcode = ANDR;
         to_return -> instruction.size   = 3;
         to_return -> reg_1 = R0;
@@ -912,6 +927,7 @@ asm_statement * asm_parse_line(char * line, asm_hash_table * labels, int * error
                 // We found a label declaration. Add it to the symbol table.
                 log("Found Label: '%s' on line %d\n", token1, line_num);
                 to_return = calloc(1, sizeof(asm_statement));
+                to_return -> target_label = NULL;
                 to_return -> type = LABEL;
                 asm_hash_table_insert(labels, token1, to_return);
                 // Recurse once to check for a remaining instruction.
