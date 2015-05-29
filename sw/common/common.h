@@ -173,7 +173,9 @@ typedef enum tim_instruction_opcode_e {
     FMULR , //!< Floating point Multiply register X by register Y.
     FDIVR , //!< Floating point Divide register X by register Y.
     FASLR , //!< Floating point Arithmetic shift register X left by value in register Y.
-    FASRR   //!< Floating point Arithmetic shift register X right value in register Y.
+    FASRR , //!< Floating point Arithmetic shift register X right value in register Y.
+    SLEEP , //!< Sleeps the core for a certain number of cycles.
+    NOT_EMITTED //!< Used in the parse tree for instruction like DATA that are not emitted.
 } tim_instruction_opcode;
 
 /*!

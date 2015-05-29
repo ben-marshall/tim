@@ -661,6 +661,60 @@ asm_statement * asm_parse_not(char * arguments, int * errors, int line_num)
     return to_return;
 }
 
+/*!
+@brief Parses the arguments of a DATA instruction
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+*/
+asm_statement * asm_parse_data(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
+
+    char * operand1 = strtok(NULL, " \r\n");
+
+    to_return -> type = DATA;
+    to_return -> reg_1 = REG_NOT_USED; 
+    to_return -> reg_2 = REG_NOT_USED; 
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+
+    to_return -> instruction.size   = 4;
+    to_return -> instruction.opcode = NOT_EMITTED;
+
+    return to_return;
+}
+
+/*!
+@brief Parses the arguments of a SLEEP instruction
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+*/
+asm_statement * asm_parse_sleep(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
+
+    char * operand1 = strtok(NULL, " \r\n");
+
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = REG_NOT_USED; 
+    to_return -> reg_2 = REG_NOT_USED; 
+    to_return -> reg_3 = REG_NOT_USED;
+    to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+
+    to_return -> instruction.size   = 2;
+    to_return -> instruction.opcode = SLEEP;
+
+    return to_return;
+}
+
 
 /*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
@@ -697,6 +751,10 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_halt(arguments, errors, line_num);
     else if(strcmp(opcode, tim_NOT) == 0)
         to_return = asm_parse_not(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_DATA) == 0)
+        to_return = asm_parse_data(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_SLEEP) == 0)
+        to_return = asm_parse_sleep(arguments, errors, line_num);
     else if(strcmp(opcode, tim_NOP) == 0){
         to_return = calloc(1, sizeof(asm_statement));
         to_return -> instruction.opcode = ANDR;
@@ -775,7 +833,7 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
     }
     else
     {
-        *errors ++;
+        *errors += 1;
         error("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
     }
 

@@ -39,7 +39,6 @@ DATA  0x0DEAD0
     FDIV  $R0 $R2 $R2 
     FASR  $R0 $R2 $R2 
     NOP   
-    SLEEP $R6
                     ; Immediate versions of instructions.    
     LOAD   $R1 $R2 0xAB4
     STORE  $R1 $R2 0xAB4 
