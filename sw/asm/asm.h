@@ -48,6 +48,7 @@ struct asm_statement_t
 
     //! The target label used for JUMP and CALL instructions.
     char * target_label;
+    char * line_source;
 
     //! Is this an opcode, data/NOP or label?
     asm_statement_type type;
@@ -55,7 +56,7 @@ struct asm_statement_t
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
     //! The line number of the source file the instruction came from.
-    unsigned int line;
+    unsigned int line_number;
 
     //! The next statement to be executed in the program.
     asm_statement * next;
@@ -152,7 +153,7 @@ labels used for calculating jump target addresses.
 @returns an interger represeting the number of errors encountered in parsing. zero means
 all went well. Otherwise the program contained syntax errors.
 */
-int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * labels);
+asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors);
 
 
 /*!

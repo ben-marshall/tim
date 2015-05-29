@@ -19,33 +19,14 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
     unsigned int current_address = base_address;
 
     asm_statement * walker = statements;
-    if(walker == NULL)
-    {
-        error("Empty statment field!\n");
-    }
-    log("Calculating addresses...\n");
 
-    // First assign all of the statements an address.
-    for(; walker != NULL; walker = walker -> next);
+    while(walker != NULL)
     {
-        log("%d\n", current_address);
-        fflush(stdout);
         walker -> address = current_address;
-        current_address   += walker -> instruction.size;
+        current_address += walker -> instruction.size;
+        walker = walker -> next;
     }
     
-    log("Assigning jump values......\n");
-
-    // Now walk through them again calculating all of the immediate values that are arguments to
-    // statements.
-    for(walker = statements; walker != NULL; walker = walker -> next);
-    {
-        if(walker -> instruction.opcode == CALLI ||
-           walker -> instruction.opcode == JUMPI)
-        {
-            
-        }
-    }
-    
+    log("Program Size: %d Bytes\n", current_address);
     return errors;
 }

@@ -132,7 +132,8 @@ int main(int argc, char ** argv)
     asm_hash_table_new(25, cxt -> symbol_table);
     
     // Parse everything into a linked list of statments.
-    int errors = asm_parse_input(cxt -> source, cxt -> statements, cxt -> symbol_table);
+    int errors = 0;
+    cxt -> statements = asm_parse_input(cxt -> source, cxt -> symbol_table, &errors);
     if(errors > 0) fatal("Encountered %d parser errors.\n", errors);
 
     // Calculate memory addresses for each statment for jumps. Hard code a base address of zero

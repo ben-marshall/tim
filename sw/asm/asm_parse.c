@@ -138,7 +138,7 @@ BOOL asm_validate_load_store(asm_statement * instruction)
             tim_is_general_register(instruction -> reg_2) == FALSE ||
             tim_is_general_register(instruction -> reg_3) == FALSE)
         {
-            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line);
+            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line_number);
             log  ("\t Arguments are: %d, %d, %d\n", instruction->reg_1, instruction->reg_2, instruction->reg_3);
             tr = FALSE;
         }
@@ -148,13 +148,13 @@ BOOL asm_validate_load_store(asm_statement * instruction)
         if( tim_is_general_register(instruction -> reg_1) == FALSE ||
             tim_is_general_register(instruction -> reg_2) == FALSE )
         {
-            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line);
+            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line_number);
             log  ("\t Arguments are: %d\n", instruction->reg_1)
             tr = FALSE;
         }
     }
     else
-        error("Invalid instruction validated by %s on line %d\n", __FUNCTION__, instruction->line);
+        error("Invalid instruction validated by %s on line %d\n", __FUNCTION__, instruction->line_number);
 
     return tr;
 }
@@ -171,7 +171,7 @@ instruction removed.
 asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return ->line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " ");
@@ -226,7 +226,7 @@ instruction removed.
 asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return ->line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " ");
@@ -281,7 +281,7 @@ BOOL asm_validate_mov(asm_statement * instruction)
 
     if(instruction -> reg_1 == PC)
     {
-        error("Line %d : MOV instruction cannot modify the program counter\n", instruction -> line);
+        error("Line %d : MOV instruction cannot modify the program counter\n", instruction -> line_number);
         to_return = FALSE;
     }
 
@@ -300,7 +300,7 @@ instruction removed.
 asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " \r\n");
@@ -358,7 +358,7 @@ instruction removed.
 asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -404,7 +404,7 @@ instruction removed.
 asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -436,7 +436,7 @@ BOOL asm_validate_jump(asm_statement * instruction)
 {
     if(instruction -> reg_1 == PC)
     {
-        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line);
+        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line_number);
     }
     return TRUE;
 }
@@ -452,7 +452,7 @@ instruction removed.
 asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -504,7 +504,7 @@ BOOL asm_validate_call(asm_statement * instruction)
 {
     if(instruction -> reg_1 == PC)
     {
-        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line);
+        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line_number);
     }
     return TRUE;
 }
@@ -520,7 +520,7 @@ instruction removed.
 asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     
@@ -573,7 +573,7 @@ instruction removed.
 asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
     
     to_return -> type = OPCODE;
     to_return -> reg_1 = REG_NOT_USED;
@@ -619,7 +619,7 @@ instruction removed.
 asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " ");
@@ -653,7 +653,7 @@ instruction removed.
 asm_statement * asm_parse_not(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " ");
     char * operand2 = strtok(NULL, " \r\n");
@@ -680,7 +680,7 @@ instruction removed.
 asm_statement * asm_parse_data(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
 
@@ -707,7 +707,7 @@ instruction removed.
 asm_statement * asm_parse_sleep(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
 
@@ -734,7 +734,7 @@ instruction removed.
 asm_statement * asm_parse_test(char * arguments, int * errors, int line_num)
 {
     asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> line = line_num;
+    to_return -> line_number = line_num;
 
     char * operand1 = strtok(NULL, " \r\n");
     char * operand2 = strtok(NULL, " \r\n");
@@ -940,13 +940,13 @@ labels used for calculating jump target addresses.
 @returns an interger represeting the number of errors encountered in parsing. zero means
 all went well. Otherwise the program contained syntax errors.
 */
-int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * labels)
+asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors)
 {
-    int errors = 0;
     int lines_read = 0;
     char * line = NULL;
 
-    asm_statement * walker = statements;
+    asm_statement * walker = NULL;
+    asm_statement * head   = NULL;
 
     while(feof(source) == 0)
     {
@@ -958,12 +958,12 @@ int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * 
 
         if(walker == NULL)
         {
-            walker = asm_parse_line(line, labels, &errors, lines_read);
-            statements = walker;
+            walker = asm_parse_line(line, labels, errors, lines_read);
+            head = walker;
         }
         else
         {
-            walker -> next = asm_parse_line(line, labels, &errors, lines_read);
+            walker -> next = asm_parse_line(line, labels, errors, lines_read);
             if(walker -> next != NULL)
             {
                 walker -> next -> prev = walker;
@@ -974,14 +974,8 @@ int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * 
         free(line);
     }
 
-    if(statements == NULL)
+    if(head == NULL)
         error("Returning NULL walker in parser.\n");
-    
-    for(walker = statements; walker != NULL; walker = walker -> next);
-    {
-        log("statment %d\n", statements -> line);
-        fflush(stdout);
-    }
 
-    return errors;
+    return head;
 }
