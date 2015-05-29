@@ -616,7 +616,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int line_num)
 {
@@ -640,6 +639,33 @@ asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int li
         to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
     }
 
+
+    return to_return;
+}
+
+/*!
+@brief Parses the arguments of a NOT instruction
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+*/
+asm_statement * asm_parse_not(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
+
+    char * operand1 = strtok(NULL, " ");
+    char * operand2 = strtok(NULL, " \r\n");
+
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = asm_parse_register(operand1);
+    to_return -> reg_2 = asm_parse_register(operand2);
+    to_return -> reg_3 = REG_NOT_USED;
+
+    to_return -> instruction.size   = 2;
+    to_return -> instruction.opcode = NOTR;
 
     return to_return;
 }
@@ -678,6 +704,8 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_return(arguments, errors, line_num);
     else if(strcmp(opcode, tim_HALT) == 0)
         to_return = asm_parse_halt(arguments, errors, line_num);
+    else if(strcmp(opcode, tim_NOT) == 0)
+        to_return = asm_parse_not(arguments, errors, line_num);
 
     else if(strcmp(opcode, tim_AND)  == 0){
         to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
