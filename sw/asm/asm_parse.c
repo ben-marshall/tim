@@ -955,21 +955,32 @@ int asm_parse_input(FILE * source, asm_statement * statements, asm_hash_table * 
 
         lines_read ++;
         fflush(stdout);
-        asm_statement * s = asm_parse_line(line, labels, &errors, lines_read);
 
-        if(s != NULL)
+        if(walker == NULL)
         {
-            if(walker == NULL)
-                walker = s;
-            else
+            walker = asm_parse_line(line, labels, &errors, lines_read);
+            statements = walker;
+        }
+        else
+        {
+            walker -> next = asm_parse_line(line, labels, &errors, lines_read);
+            if(walker -> next != NULL)
             {
-                walker -> next = s;
-                s      -> prev = walker;
-                walker  = s;
+                walker -> next -> prev = walker;
+                walker  = walker -> next;
             }
         }
 
         free(line);
+    }
+
+    if(statements == NULL)
+        error("Returning NULL walker in parser.\n");
+    
+    for(walker = statements; walker != NULL; walker = walker -> next);
+    {
+        log("statment %d\n", statements -> line);
+        fflush(stdout);
     }
 
     return errors;

@@ -10,7 +10,7 @@ set (LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH} )
 execute_process(COMMAND git branch -q OUTPUT_VARIABLE GIT_BRANCH)
 execute_process(COMMAND git log --pretty=format:%H -n 1 OUTPUT_VARIABLE GIT_COMMIT)
 
-set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -Wall")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG -Wall")
 
 add_custom_target(gitclean
     git clean -dfx

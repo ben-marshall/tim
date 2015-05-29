@@ -130,11 +130,15 @@ int main(int argc, char ** argv)
     cxt -> statements = NULL;
     cxt -> symbol_table = calloc(1, sizeof(asm_hash_table));
     asm_hash_table_new(25, cxt -> symbol_table);
-
     
+    // Parse everything into a linked list of statments.
     int errors = asm_parse_input(cxt -> source, cxt -> statements, cxt -> symbol_table);
-    if(errors > 0)
-        fatal("Encountered %d parser errors\n", errors);
+    if(errors > 0) fatal("Encountered %d parser errors.\n", errors);
+
+    // Calculate memory addresses for each statment for jumps. Hard code a base address of zero
+    // for now.
+    errors = asm_calculate_addresses(cxt -> statements, 0);
+    if(errors > 0) fatal("Encountered %d errors in address calculation.\n", errors);
 
 
     fclose(cxt -> source);

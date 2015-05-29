@@ -132,6 +132,14 @@ typedef struct asm_context_t
 } asm_context;
 
 
+/*!
+@brief Assigns addresses to each statement so that jumps and calls can be calculated.
+@param statements - head of a linked list of asm statements.
+@param base_address - Where the addresses of the program should start.
+@returns The number of errors encountered such as missing labels. 0 means everything was okay.
+*/
+int asm_calculate_addresses(asm_statement * statements, unsigned int base_address);
+
 
 /*!
 @brief Top function to trigger the parsing of an input source file.
