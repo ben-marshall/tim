@@ -147,11 +147,12 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
 @details Takes an opened for reading text file and parses it into a series of asm statements,
 filling out their arguments and parameters as it goes. It also populates the hash-table of
 labels used for calculating jump target addresses.
+@see The ISA Specification contains more information on the grammar of the assembly language.
 @param [in] source - Opened source file pointer. Open in "r" mode.
-@param [out] statements - Returned list of statements parsed from the input file.
-@param [inout] labels - Hashtable which is populated with any encountered labels.
-@returns an interger represeting the number of errors encountered in parsing. zero means
-all went well. Otherwise the program contained syntax errors.
+@param [inout] labels - Hashtable which is apopulated with any encountered labels.
+@param [inout] errors - Pointer to a error counter. If the counter has the same value before
+and after being called, all of the parsing was a success.
+@returns The parsed statements as a doublely linked list.
 */
 asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors);
 
