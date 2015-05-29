@@ -189,36 +189,36 @@ to be 1111. It should be 4 characters long and only '1' or '0'.
 ###Description
 
 Loads a value into the destination register from memory. The address used is made up of the
-20 bit immediate. The immediate is interpreted as a 4-byte aligned unsigned value. The LOADI
-instruction does not allow byte masking like the @ref LOADR instruction does, hence it will
-always load an entire word into the destination register.
+16 bit immediate plus the value of a register. The immediate is interpreted as a 4-byte aligned 
+unsigned value. The LOADI instruction does not allow byte masking like the @ref LOADR instruction 
+does, hence it will always load an entire word into the destination register.
 
 ###Register Access
 
 The LOADI instruction can use any of the general purpose registers `R0` to `R15` as its
-destination. It has not source operands.
+destination or source operand.
 
 ###Memory Layout
 
 This is a 4 byte instruction
 
 @code
-Opcode  | Condition Code |  Destination | Immediate            
-000010  |       00       |     DDDD     | IIII IIII IIII IIII IIII
+Opcode  | Condition Code |  Destination | Source |Immediate            
+000010  |       00       |     DDDD     |  ssss  | IIII IIII IIII IIII
 @endcode
 
 ### Assembly Code Examples
 
-When an immediate is supplied that does not fit into 20 bits, the lower 20 bits are used and any
+When an immediate is supplied that does not fit into 16 bits, the lower 16 bits are used and any
 upper bits are discarded by the assembler.
 
-Immediates that specify fewer than 5 bytes are padded with high order zeros to make them 20 bits
+Immediates that specify fewer than 4 bytes are padded with high order zeros to make them 16 bits
 long explicitly.
 
 @code
-1. | LOAD $R0 0xFF001
-2. | LOAD $R0 0xAB003
-3. | LOAD $R0 0dF056
+1. | LOAD $R0 $R1 0xFF001
+2. | LOAD $R0 $R1 0xAB003
+3. | LOAD $R0 $R1 0dF056
 @endcode
 
 @see @ref instructions-list, @ref LOADR
@@ -231,36 +231,36 @@ long explicitly.
 ###Description
 
 Stores a value from the source register into memory. The address used is made up of the
-20 bit immediate. The immediate is interpreted as a 4-byte aligned unsigned value. The STORI
-instruction does not allow byte masking like the @ref STORR instruction does, hence it will
-always store an entire word into memory.
+16 bit immediate and the contents of the second source register. The immediate is interpreted 
+as a 4-byte aligned unsigned value. The STORI instruction does not allow byte masking like the 
+@ref STORR instruction does, hence it will always store an entire word into memory.
 
 ###Register Access
 
 The STORI instruction can use any of the general purpose registers `R0` to `R15` as its
-destination. It has not source operands.
+two source operands.
 
 ###Memory Layout
 
 This is a 4 byte instruction
 
 @code
-Opcode  | Condition Code |  Source | Immediate            
-000011  |       00       |   DDDD  | IIII IIII IIII IIII IIII
+Opcode  | Condition Code | Source  | Source |Immediate            
+000010  |       00       |  SSSS   |  ssss  | IIII IIII IIII IIII
 @endcode
 
 ### Assembly Code Examples
 
-When an immediate is supplied that does not fit into 20 bits, the lower 20 bits are used and any
+When an immediate is supplied that does not fit into 16 bits, the lower 16 bits are used and any
 upper bits are discarded by the assembler.
 
-Immediates that specify fewer than 5 bytes are padded with high order zeros to make them 20 bits
+Immediates that specify fewer than 4 bytes are padded with high order zeros to make them 16 bits
 long explicitly.
 
 @code
-1. | STORE $R0 0xFF001
-2. | STORE $R0 0xAB003
-3. | STORE $R0 0dF056
+1. | STORE $R0 $R2 0xFF001
+2. | STORE $R0 $R2 0xAB003
+3. | STORE $R0 $R2 0dF056
 @endcode
 
 @see @ref instructions-list, @ref STORR

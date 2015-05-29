@@ -145,7 +145,8 @@ BOOL asm_validate_load_store(asm_statement * instruction)
     }
     else if(instruction -> instruction.opcode == LOADI || instruction -> instruction.opcode == STORI)
     {
-        if( tim_is_general_register(instruction -> reg_1) == FALSE)
+        if( tim_is_general_register(instruction -> reg_1) == FALSE ||
+            tim_is_general_register(instruction -> reg_2) == FALSE )
         {
             error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line);
             log  ("\t Arguments are: %d\n", instruction->reg_1)
@@ -179,27 +180,26 @@ asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
 
     to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
-    tim_register reg2 = asm_parse_register(operand2);
+    to_return -> reg_2 = asm_parse_register(operand2);
+    tim_register reg3 = asm_parse_register(operand3);
 
-    if(reg2 != REG_ERROR)
+    if(reg3 != REG_ERROR)
     {
         // Assume it is the 3 register version of load.
-        to_return -> reg_2 = reg2;
-        to_return -> reg_3 = asm_parse_register(operand3);
+        to_return -> reg_3 = reg3;
         to_return -> instruction.opcode = LOADR;
         to_return -> instruction.size = 3;
 
         if(operand4 != NULL)
         {
-            warning("Bit masks for STORE instruction not yet implemented.");
+            warning("Bit masks for LOAD instruction not yet implemented.");
         }
     }
     else
     {
         // Assume it is the register-immediate version of load.
-        to_return -> reg_2 = REG_NOT_USED;
         to_return -> reg_3 = REG_NOT_USED;
-        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
+        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
         to_return -> instruction.opcode = LOADI;
         to_return -> instruction.size = 4;
     }
@@ -235,13 +235,13 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
 
     to_return -> type = OPCODE;
     to_return -> reg_1 = asm_parse_register(operand1);
-    tim_register reg2 = asm_parse_register(operand2);
+    to_return -> reg_2 = asm_parse_register(operand2);
+    tim_register reg3 = asm_parse_register(operand3);
 
-    if(reg2 != REG_ERROR)
+    if(reg3 != REG_ERROR)
     {
-        // Assume it is the 3 register version of load.
-        to_return -> reg_2 = reg2;
-        to_return -> reg_3 = asm_parse_register(operand3);
+        // Assume it is the 3 register version of store.
+        to_return -> reg_3 = reg3;
         to_return -> instruction.opcode = STORR;
         to_return -> instruction.size = 3;
 
@@ -253,9 +253,8 @@ asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
     else
     {
         // Assume it is the register-immediate version of load.
-        to_return -> reg_2 = REG_NOT_USED;
         to_return -> reg_3 = REG_NOT_USED;
-        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
+        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
         to_return -> instruction.opcode = STORI;
         to_return -> instruction.size = 4;
     }
@@ -386,7 +385,6 @@ asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
 @brief Validates the arguments/operands to a POP instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_pop(asm_statement * instruction)
 {
@@ -402,7 +400,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 {
@@ -434,7 +431,6 @@ asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
 @brief Validates the arguments/operands to a JUMP instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_jump(asm_statement * instruction)
 {
@@ -452,7 +448,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 {
@@ -496,7 +491,6 @@ asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
 @brief Validates the arguments/operands to a CALL instruction.
 @param instruction - The instruction to be validated.
 @returns true or false depending on whether the instructions operands are valid or not.
-@todo implement this!
 */
 BOOL asm_validate_call(asm_statement * instruction)
 {
@@ -514,7 +508,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
 {
@@ -568,7 +561,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
 {
@@ -592,7 +584,6 @@ instruction removed.
 @param [inout] errors - pointer to an error counter for syntax errors.
 @param [in] line_num - The line number of the instruction, used for error reporting.
 @returns An asm_statement structure which has its fields fully populated.
-@todo Add operand validation.
 */
 asm_statement * asm_parse_halt(char * arguments, int * errors, int line_num)
 {
@@ -706,7 +697,14 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_halt(arguments, errors, line_num);
     else if(strcmp(opcode, tim_NOT) == 0)
         to_return = asm_parse_not(arguments, errors, line_num);
-
+    else if(strcmp(opcode, tim_NOP) == 0){
+        to_return = calloc(1, sizeof(asm_statement));
+        to_return -> instruction.opcode = ANDR;
+        to_return -> instruction.size   = 3;
+        to_return -> reg_1 = R0;
+        to_return -> reg_2 = R0;
+        to_return -> reg_3 = R0;
+    }
     else if(strcmp(opcode, tim_AND)  == 0){
         to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
         to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ANDR : ANDI;
