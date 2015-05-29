@@ -93,6 +93,7 @@ tim_register asm_parse_register(char str[4])
     else return REG_ERROR;
 }
 
+
 /*!
 @brief Parses a character array into an asm_immediate and returns it as a 32 bit integer.
 @note The value returned is not nessecerily correct. It simply has the right
@@ -609,6 +610,42 @@ asm_statement * asm_parse_halt(char * arguments, int * errors, int line_num)
 
 
 /*!
+@brief Parses the arguments of all instructions that take three register operands.
+@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
+instruction removed.
+@param [inout] errors - pointer to an error counter for syntax errors.
+@param [in] line_num - The line number of the instruction, used for error reporting.
+@returns An asm_statement structure which has its fields fully populated.
+@todo Add operand validation.
+*/
+asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int line_num)
+{
+    asm_statement * to_return = calloc(1, sizeof(asm_statement));
+    to_return -> line = line_num;
+
+    char * operand1 = strtok(NULL, " ");
+    char * operand2 = strtok(NULL, " ");
+    char * operand3 = strtok(NULL, " \r\n");
+
+    to_return -> type = OPCODE;
+    to_return -> reg_1 = asm_parse_register(operand1);
+    to_return -> reg_2 = asm_parse_register(operand2);
+    to_return -> reg_3 = asm_parse_register(operand3);
+    to_return -> instruction.size = 3;
+
+    if(to_return -> reg_3 == REG_ERROR)
+    {
+        to_return -> reg_3 = REG_NOT_USED;
+        to_return -> instruction.size = 4;
+        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
+    }
+
+
+    return to_return;
+}
+
+
+/*!
 @brief Decodes the opcode string and calls the appropriate function to decode the arguments.
 @param [in] opcode - The opcode as a character string.
 @param [in] arguments - The string containing the arguments to the opcode. This may be empty for
@@ -641,6 +678,75 @@ asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * err
         to_return = asm_parse_return(arguments, errors, line_num);
     else if(strcmp(opcode, tim_HALT) == 0)
         to_return = asm_parse_halt(arguments, errors, line_num);
+
+    else if(strcmp(opcode, tim_AND)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ANDR : ANDI;
+    }
+    else if(strcmp(opcode, tim_NAND)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? NANDR : NANDI;
+    }
+    else if(strcmp(opcode, tim_OR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ORR : ORI;
+    }
+    else if(strcmp(opcode, tim_NOR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? NORR : NORI;
+    }
+    else if(strcmp(opcode, tim_XOR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? XORR : XORI;
+    }
+    else if(strcmp(opcode, tim_LSL)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? LSLR : LSLI;
+    }
+    else if(strcmp(opcode, tim_LSR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? LSRR : LSRI;
+    }
+    else if(strcmp(opcode, tim_IADD)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IADDR : IADDI;
+    }
+    else if(strcmp(opcode, tim_ISUB)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ISUBR : ISUBI;
+    }
+    else if(strcmp(opcode, tim_IMUL)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IMULR : IMULI;
+    }
+    else if(strcmp(opcode, tim_IDIV)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IDIVR : IDIVI;
+    }
+    else if(strcmp(opcode, tim_IASR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IASRR : IASRI;
+    }
+    else if(strcmp(opcode, tim_FADD)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FADDR : FADDI;
+    }
+    else if(strcmp(opcode, tim_FSUB)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FSUBR : FSUBI;
+    }
+    else if(strcmp(opcode, tim_FMUL)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FMULR : FMULI;
+    }
+    else if(strcmp(opcode, tim_FDIV)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FDIVR : FDIVI;
+    }
+    else if(strcmp(opcode, tim_FASR)  == 0){
+        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
+        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FASRR : FASRI;
+    }
     else
     {
         *errors ++;
