@@ -471,7 +471,15 @@ asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
     {
         // Immediate version of the instruction.
         to_return -> reg_1 = REG_NOT_USED;
-        to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+        if(operand1[0] == '0')
+        {
+            to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+        }
+        else
+        {
+            // The target address is a label! It will need calculating later.
+            to_return -> target_label = operand1;
+        }
         to_return -> instruction.opcode = JUMPI;
         to_return -> instruction.size   = 4;
     }
