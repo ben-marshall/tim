@@ -4,6 +4,9 @@
 @ingroup sw
 @brief API and usage information on the assembler.
 
+### Todo list:
+- Implement target address calculation for jumping.
+- Implement translation from IR form into binary code.
 
 
 */
