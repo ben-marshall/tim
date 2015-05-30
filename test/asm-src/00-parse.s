@@ -60,5 +60,4 @@ DATA  0x0DEAD0
     FMUL   $R1 $R2 0xAB4 
     FDIV   $R1 $R2 0xAB4 
     FASR   $R1 $R2 0xAB4 
-    SLEEP  0xAB4 
     RETURN

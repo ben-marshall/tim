@@ -21,8 +21,6 @@ asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * t
     asm_lex_token * opcode  = token;
     asm_lex_token * operand = opcode -> next;
 
-    log("Parsing opcode immediate\n");
-
     if(opcode -> value.opcode == LEX_JUMP)
     {
         if(operand -> type == REGISTER)
@@ -242,6 +240,125 @@ asm_lex_token * asm_parse_three_operand(asm_statement * statement, asm_lex_token
 
 }
 
+
+/*!
+@brief Parses instructions that take two operands. NOT, TEST, MOV
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_two_operand(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+    asm_lex_token * operand_2 = operand_1 -> next;
+
+    if(opcode -> value.opcode == LEX_NOT)
+    {
+        statement -> opcode = NOTR;
+        statement -> size   = 2;
+        statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+        statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
+    }
+    else if(opcode -> value.opcode == LEX_TEST)
+    {
+        statement -> opcode = TEST;
+        statement -> size   = 3;
+        statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+        statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
+    }
+    else if(opcode -> value.opcode == LEX_MOV)
+    {
+        statement -> opcode = MOVR;
+        statement -> size   = 3;
+        if(operand_2 -> type == IMMEDIATE)
+        {
+            statement -> args.reg_immediate.reg_1 = operand_1 -> value.reg;
+            statement -> args.reg_immediate.immidiate= operand_2 -> value.immediate;
+        }
+        else
+        {
+            statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+            statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
+        }
+    }
+    else
+    {
+        error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
+        *errors += 1;
+    }
+
+    return operand_2 -> next;
+}
+
+/*!
+@brief Responsible for parsing DATA elements
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_data(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+
+    statement -> opcode = NOT_EMITTED;
+    statement -> size = 4;
+    statement -> args.immediate.immidiate = operand_1 -> value.immediate;
+
+    return operand_1 -> next;
+}
+
+/*!
+@brief Responsible for parsing SLEEP instructions.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_sleep(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+
+    statement -> opcode = SLEEP;
+    statement -> size = 2;
+    statement -> args.reg.reg_1= operand_1 -> value.reg;
+
+    return operand_1 -> next;
+}
+
+/*!
+@brief Responsible for parsing NOP instructions.
+@details NOP is actually a pseudo instruction which assembles into `ANDR $R0 $R0 $R0`
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_nop(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+
+    statement -> opcode = ANDR;
+    statement -> size = 3;
+    statement -> args.reg_reg_reg.reg_1= R0;
+    statement -> args.reg_reg_reg.reg_2= R0;
+    statement -> args.reg_reg_reg.reg_3= R0;
+
+    return opcode -> next;
+}
+
 /*!
 @brief Responsible for parsing PUSH and POP instructions.
 @param [inout] statement - Resulting statment to set members of.
@@ -292,6 +409,11 @@ asm_lex_token * asm_parse_opcode(asm_statement * statement, asm_lex_token * toke
         case(LEX_JUMP):
         case(LEX_CALL):
             return asm_parse_call_jump(statement, token, errors);
+
+        case(LEX_MOV):
+        case(LEX_NOT):
+        case(LEX_TEST):
+            return asm_parse_two_operand(statement, token, errors);
         
         case(LEX_LOAD):
         case(LEX_STORE):
@@ -320,9 +442,20 @@ asm_lex_token * asm_parse_opcode(asm_statement * statement, asm_lex_token * toke
 
         case(LEX_HALT):
             statement -> opcode = HALT;
+            statement -> size = 1;
             return token -> next;
 
+        case(LEX_DATA):
+            return asm_parse_data(statement, token, errors);
+
+        case(LEX_SLEEP):
+            return asm_parse_sleep(statement, token, errors);
+
+        case(LEX_NOP):
+            return asm_parse_nop(statement, token, errors);
+
         case(LEX_RETURN):
+            warning("RETURN opcode not yet implemented correctly.\n");
             statement -> opcode = RETURN;
             return token -> next;
 
