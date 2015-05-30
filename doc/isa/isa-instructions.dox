@@ -608,16 +608,18 @@ LSB of the test result register according to its outcome.
 
 ###Register Access
 
-
+The TEST instruction can read from all registers. It will implicitly write to the LSB of the
+test result register.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 3 byte instruction
 
- ```
+@code
+Opcode  | Condition Code | Reg 1   | Reg 2  | Test  | Don't care
+001000  |       00       | RRRRR   | rrrrr  | ttt   | ???
 
-
-```
+@endcode
 
 ### Assembly Code Examples
 

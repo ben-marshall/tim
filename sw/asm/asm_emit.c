@@ -136,7 +136,12 @@ int asm_emit_opcode_RETURN(asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_TEST  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
+    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_1) << (23-6-2-5);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_2) << (23-6-2-5-5);
+
+    fwrite(&to_write, 3 , 1, file);
     return 0;
 }
 
@@ -233,7 +238,12 @@ int asm_emit_opcode_LSRR  (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_NOTR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
+    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_1) << (23-6-2-5);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_2) << (23-6-2-5-5);
+
+    fwrite(&to_write, 3 , 1, file);
     return 0;
 }
 
