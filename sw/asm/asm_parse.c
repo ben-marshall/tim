@@ -242,6 +242,39 @@ asm_lex_token * asm_parse_three_operand(asm_statement * statement, asm_lex_token
 
 }
 
+/*!
+@brief Responsible for parsing PUSH and POP instructions.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_push_pop(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+
+    statement -> size = 2;
+    statement -> args.reg.reg_1 = operand_1 -> value.reg;
+
+    if(opcode -> value.opcode == LEX_POP)
+    {
+        statement -> opcode = POP;
+    }
+    else if(opcode -> value.opcode == LEX_PUSH)
+    {
+        statement -> opcode = PUSH;
+    }
+    else
+    {
+        error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
+    }
+
+    return operand_1 -> next;
+}
+
 
 /*!
 @brief Responsible for selecting which function should parse the next few tokens.:w
@@ -280,6 +313,18 @@ asm_lex_token * asm_parse_opcode(asm_statement * statement, asm_lex_token * toke
         case(LEX_FDIV): 
         case(LEX_FASR): 
             return asm_parse_three_operand(statement, token,errors);
+
+        case(LEX_PUSH):
+        case(LEX_POP):
+            return asm_parse_push_pop(statement, token, errors);
+
+        case(LEX_HALT):
+            statement -> opcode = HALT;
+            return token -> next;
+
+        case(LEX_RETURN):
+            statement -> opcode = RETURN;
+            return token -> next;
 
         case(LEX_ERROR):
             error("Bad Token!\n");
