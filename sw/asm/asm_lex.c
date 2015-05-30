@@ -142,37 +142,37 @@ tim_immediate asm_lex_immediate(char * immediate, int * errors, int line_num)
 */
 asm_lex_opcode asm_lex_instruction(char * instruction, int * errors, int line_num)
 {
-         if(strcmp(lex_tok_LOAD  , "LOAD"  ) == 0) return LEX_LOAD ;   
-    else if(strcmp(lex_tok_STORE , "STORE" ) == 0) return LEX_STORE; 
-    else if(strcmp(lex_tok_PUSH  , "PUSH"  ) == 0) return LEX_PUSH ; 
-    else if(strcmp(lex_tok_POP   , "POP"   ) == 0) return LEX_POP  ; 
-    else if(strcmp(lex_tok_MOV   , "MOV"   ) == 0) return LEX_MOV  ; 
-    else if(strcmp(lex_tok_JUMP  , "JUMP"  ) == 0) return LEX_JUMP ; 
-    else if(strcmp(lex_tok_CALL  , "CALL"  ) == 0) return LEX_CALL ; 
-    else if(strcmp(lex_tok_RETURN, "RETURN") == 0) return LEX_RETURN; 
-    else if(strcmp(lex_tok_TEST  , "TEST"  ) == 0) return LEX_TEST ;  
-    else if(strcmp(lex_tok_HALT  , "HALT"  ) == 0) return LEX_HALT ; 
-    else if(strcmp(lex_tok_AND   , "AND"   ) == 0) return LEX_AND  ; 
-    else if(strcmp(lex_tok_NAND  , "NAND"  ) == 0) return LEX_NAND ; 
-    else if(strcmp(lex_tok_OR    , "OR"    ) == 0) return LEX_OR   ; 
-    else if(strcmp(lex_tok_NOR   , "NOR"   ) == 0) return LEX_NOR  ;  
-    else if(strcmp(lex_tok_XOR   , "XOR"   ) == 0) return LEX_XOR  ;  
-    else if(strcmp(lex_tok_LSL   , "LSL"   ) == 0) return LEX_LSL  ; 
-    else if(strcmp(lex_tok_LSR   , "LSR"   ) == 0) return LEX_LSR  ;  
-    else if(strcmp(lex_tok_NOT   , "NOT"   ) == 0) return LEX_NOT  ;  
-    else if(strcmp(lex_tok_IADD  , "IADD"  ) == 0) return LEX_IADD ;  
-    else if(strcmp(lex_tok_ISUB  , "ISUB"  ) == 0) return LEX_ISUB ; 
-    else if(strcmp(lex_tok_IMUL  , "IMUL"  ) == 0) return LEX_IMUL ; 
-    else if(strcmp(lex_tok_IDIV  , "IDIV"  ) == 0) return LEX_IDIV ;
-    else if(strcmp(lex_tok_IASR  , "IASR"  ) == 0) return LEX_IASR ; 
-    else if(strcmp(lex_tok_FADD  , "FADD"  ) == 0) return LEX_FADD ;  
-    else if(strcmp(lex_tok_FSUB  , "FSUB"  ) == 0) return LEX_FSUB ; 
-    else if(strcmp(lex_tok_FMUL  , "FMUL"  ) == 0) return LEX_FMUL ; 
-    else if(strcmp(lex_tok_FDIV  , "FDIV"  ) == 0) return LEX_FDIV ;
-    else if(strcmp(lex_tok_FASR  , "FASR"  ) == 0) return LEX_FASR ;  
-    else if(strcmp(lex_tok_NOP   , "NOP"   ) == 0) return LEX_NOP  ; 
-    else if(strcmp(lex_tok_SLEEP , "SLEEP" ) == 0) return LEX_SLEEP; 
-    else if(strcmp(lex_tok_DATA  , "DATA"  ) == 0) return LEX_DATA ; 
+         if(strcmp(lex_tok_LOAD  , instruction) == 0) return LEX_LOAD ;   
+    else if(strcmp(lex_tok_STORE , instruction) == 0) return LEX_STORE; 
+    else if(strcmp(lex_tok_PUSH  , instruction) == 0) return LEX_PUSH ; 
+    else if(strcmp(lex_tok_POP   , instruction) == 0) return LEX_POP  ; 
+    else if(strcmp(lex_tok_MOV   , instruction) == 0) return LEX_MOV  ; 
+    else if(strcmp(lex_tok_JUMP  , instruction) == 0) return LEX_JUMP ; 
+    else if(strcmp(lex_tok_CALL  , instruction) == 0) return LEX_CALL ; 
+    else if(strcmp(lex_tok_RETURN, instruction) == 0) return LEX_RETURN; 
+    else if(strcmp(lex_tok_TEST  , instruction) == 0) return LEX_TEST ;  
+    else if(strcmp(lex_tok_HALT  , instruction) == 0) return LEX_HALT ; 
+    else if(strcmp(lex_tok_AND   , instruction) == 0) return LEX_AND  ; 
+    else if(strcmp(lex_tok_NAND  , instruction) == 0) return LEX_NAND ; 
+    else if(strcmp(lex_tok_OR    , instruction) == 0) return LEX_OR   ; 
+    else if(strcmp(lex_tok_NOR   , instruction) == 0) return LEX_NOR  ;  
+    else if(strcmp(lex_tok_XOR   , instruction) == 0) return LEX_XOR  ;  
+    else if(strcmp(lex_tok_LSL   , instruction) == 0) return LEX_LSL  ; 
+    else if(strcmp(lex_tok_LSR   , instruction) == 0) return LEX_LSR  ;  
+    else if(strcmp(lex_tok_NOT   , instruction) == 0) return LEX_NOT  ;  
+    else if(strcmp(lex_tok_IADD  , instruction) == 0) return LEX_IADD ;  
+    else if(strcmp(lex_tok_ISUB  , instruction) == 0) return LEX_ISUB ; 
+    else if(strcmp(lex_tok_IMUL  , instruction) == 0) return LEX_IMUL ; 
+    else if(strcmp(lex_tok_IDIV  , instruction) == 0) return LEX_IDIV ;
+    else if(strcmp(lex_tok_IASR  , instruction) == 0) return LEX_IASR ; 
+    else if(strcmp(lex_tok_FADD  , instruction) == 0) return LEX_FADD ;  
+    else if(strcmp(lex_tok_FSUB  , instruction) == 0) return LEX_FSUB ; 
+    else if(strcmp(lex_tok_FMUL  , instruction) == 0) return LEX_FMUL ; 
+    else if(strcmp(lex_tok_FDIV  , instruction) == 0) return LEX_FDIV ;
+    else if(strcmp(lex_tok_FASR  , instruction) == 0) return LEX_FASR ;  
+    else if(strcmp(lex_tok_NOP   , instruction) == 0) return LEX_NOP  ; 
+    else if(strcmp(lex_tok_SLEEP , instruction) == 0) return LEX_SLEEP; 
+    else if(strcmp(lex_tok_DATA  , instruction) == 0) return LEX_DATA ; 
     else return LEX_ERROR;
 }
 

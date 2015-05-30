@@ -23,6 +23,58 @@
 #endif
 #define TIM_PRINT_PROMPT "\e[1;36masm>\e[0m "
 
+//! Register arguments structure for opcodes with only a single register argument.
+typedef struct asm_args_reg_single_t{
+    tim_register reg_1;
+} asm_args_reg_single;
+
+//! Register arguments structure for opcodes with two register arguments
+typedef struct asm_args_reg_double_t{
+    tim_register reg_1;
+    tim_register reg_2;
+} asm_args_reg_double;
+
+//! Register arguments structure for opcodes with three register arguments.
+typedef struct asm_args_reg_tripple_t{
+    tim_register reg_1;
+    tim_register reg_2;
+    tim_register reg_3;
+} asm_args_reg_tripple;
+
+//! Register arguments structure for opcodes with two register arguments and an immediate.
+typedef struct asm_args_reg_double_imm_t{
+    tim_register reg_1;
+    tim_register reg_2;
+    tim_immediate immidiate;
+} asm_args_reg_double_imm;
+
+//! Register arguments structure for opcodes with one register argument and an immediate.
+typedef struct asm_args_reg_single_imm{
+    tim_register reg_1;
+    tim_immediate immidiate;
+} asm_args_reg_single_imm;
+
+//! Register arguments structure for opcodes with one immediate.
+typedef struct asm_args_single_imm{
+    tim_immediate immidiate;
+} asm_args_single_imm;
+
+//! Register arguments structure for opcodes with one immediate who's value is a label.
+typedef struct asm_args_single_imm_label{
+    char * label;
+} asm_args_single_imm_label;
+
+//! Union types for all different types of argument/operand combinations used.
+typedef union asm_opcode_args_u{
+    asm_args_reg_single reg;
+    asm_args_reg_double reg_reg;
+    asm_args_reg_tripple reg_reg_reg;
+    asm_args_reg_double_imm reg_reg_immediate;
+    asm_args_reg_single_imm reg_immediate;
+    asm_args_single_imm immediate;
+    asm_args_single_imm_label immediate_label;
+} asm_opcode_args;
+
 /*!
 @brief Stores all information on a single ASM instruction.
 @details Stores the opcode and arguments of an ASM instruction. This includes instructions that
@@ -32,6 +84,14 @@ instruction for any label pointers too it.
 typedef struct asm_statement_t asm_statement;
 struct asm_statement_t
 {
+    //! The opcode of the instruction.
+    tim_instruction_opcode opcode;
+
+    //! The size in bytes of this instruction.
+    tim_instruction_size   size;
+
+    //! Arguments to the instruction.
+    asm_opcode_args args;
 
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
