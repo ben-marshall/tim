@@ -192,10 +192,25 @@ asm_lex_token *  asm_lex_input_file(FILE * input, int * errors)
 
     while(current_line != NULL && feof(input) == 0)
     {
-        char * token = strtok(current_line, "\r\n ");
+        char * raw_token = strtok(current_line, "\r\n ");
 
-        while (token != NULL)
+        while (raw_token != NULL)
         {
+            char * token = NULL;
+            int token_size = 0;
+
+            if(raw_token != NULL)
+            {
+                while(raw_token[token_size] != '\0' &&
+                      raw_token[token_size] != '\r' &&
+                      raw_token[token_size] != '\n' &&
+                      raw_token[token_size] != ' ')
+                    token_size ++;
+                token = calloc(token_size+1, sizeof(char));
+                strncpy(token, raw_token, token_size);
+                token[token_size] = '\0';
+            }
+
             char skip = 0;
             asm_lex_token * to_add = calloc(1, sizeof(asm_lex_token));
             to_add -> line_number = line_number;
@@ -271,7 +286,7 @@ asm_lex_token *  asm_lex_input_file(FILE * input, int * errors)
             }
 
 
-            token = strtok(NULL, "\r\n ");
+            raw_token = strtok(NULL, "\r\n ");
         }
 
         line_number ++;

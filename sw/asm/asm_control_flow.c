@@ -42,6 +42,11 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
                 case(JUMPI):
                 case(NOT_EMITTED):
                     target = asm_hash_table_get(labels, walker -> args.immediate_label.label);
+                    if(target == NULL)
+                    {
+                        error("Could not find label declaration for %s\n", walker -> args.immediate_label.label);
+                        return errors + 1;
+                    }
                     target = target -> next;
                     break;
                 default:

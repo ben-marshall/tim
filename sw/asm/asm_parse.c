@@ -313,11 +313,19 @@ asm_lex_token * asm_parse_data(asm_statement * statement, asm_lex_token * token,
     statement -> opcode = NOT_EMITTED;
     statement -> size = 4;
     if(operand_1 -> type == IMMEDIATE)
+    {
         statement -> args.immediate.immidiate = operand_1 -> value.immediate;
-    else
+        statement -> label_to_resolve = FALSE;
+    }
+    else if(operand_1 -> type == LABEL)
     {
         statement -> args.immediate_label.label = operand_1 -> value.label;
         statement -> label_to_resolve = TRUE;
+    }
+    else
+    {
+        error("Invalid operand type for DATA instruction: %d\n", operand_1 -> type);
+        *errors += 1;
     }
 
     return operand_1 -> next;
@@ -490,7 +498,6 @@ asm_lex_token * asm_parse_label_declaration(asm_lex_token * token, asm_hash_tabl
     assert(token -> type == LABEL);
 
     asm_hash_table_insert(labels, token -> value.label, statement);
-    log("Added Label to symbol table: %s\n", token -> value.label);
 
     return token -> next;
 }
