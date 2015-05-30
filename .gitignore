@@ -1,4 +1,5 @@
 build/
+xilinx/
 
 *__pycache__*
 
