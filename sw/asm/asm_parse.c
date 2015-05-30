@@ -8,939 +8,479 @@
 #include "asm.h"
 
 /*!
-@brief reads and returns the rest of the current line in the file from the current cursor
-position.
-@param [in] source - The opened source code file.
-@returns The read line or NULL if the end of the file is reached.
+@brief Responsible for parsing Jump and call instructions.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
 */
-char * asm_parse_readline(FILE * source)
+asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * token, int * errors)
 {
-    long int line_start = ftell(source);
-    int character = fgetc(source);
-    char breakout = 0;
-    char * line = NULL;
+    asm_lex_token * opcode  = token;
+    asm_lex_token * operand = opcode -> next;
 
-    while(character != '\n' && feof(source) == 0 && character != '\r')
-        character = fgetc(source);
-
-    long int line_end = ftell(source);
-    fgetc(source);
-
-    if(feof(source))
-        breakout = 1;
-
-    int line_length = line_end-line_start;
-    fseek(source, line_start, SEEK_SET);
-    line = calloc(line_length + 1, sizeof(char));
-
-    int i = 0;
-    for(i =0; i < line_length; i++)
-        line[i] = (char)fgetc(source);
-
-    line[line_length] = '\0';
-    
-    while(character == '\n' && feof(source) != 0 && character == '\r')
-        fgetc(source);
-
-    if(breakout)
-        return NULL;
-    else
-        return line;
-}
-
-/*!
-@brief Takes a three letter string and returns either an assembly register code or NO_REG if the
-character code is invalid.
-@param str - A two letter code representing a register.
-@returns an asm_register representing the passed two letter code. If the input code is invalid then
-REG__ERROR is returned.
-*/
-tim_register asm_parse_register(char str[4])
-{
-
-    if (str == NULL) return REG_ERROR;
-    else if(strcmp(str, "$R0")==0) return R0;
-    else if(strcmp(str, "$R1")==0) return R1;
-    else if(strcmp(str, "$R2")==0) return R2;
-    else if(strcmp(str, "$R3")==0) return R3;
-    else if(strcmp(str, "$R4")==0) return R4;
-    else if(strcmp(str, "$R5")==0) return R5;
-    else if(strcmp(str, "$R6")==0) return R6;
-    else if(strcmp(str, "$R7")==0) return R7;
-    else if(strcmp(str, "$R8")==0) return R8;
-    else if(strcmp(str, "$R9")==0) return R9;
-    else if(strcmp(str, "$R10")==0) return R10;
-    else if(strcmp(str, "$R11")==0) return R11;
-    else if(strcmp(str, "$R12")==0) return R12;
-    else if(strcmp(str, "$R13")==0) return R13;
-    else if(strcmp(str, "$R14")==0) return R14;
-    else if(strcmp(str, "$R15")==0) return R15;
-    else if(strcmp(str, "$PC")==0) return PC;
-    else if(strcmp(str, "$SP")==0) return SP;
-    else if(strcmp(str, "$LR")==0) return LR;
-    else if(strcmp(str, "$TR")==0) return TR;
-    else if(strcmp(str, "$SR")==0) return SR;
-    else if(strcmp(str, "$IR")==0) return IR;
-    else if(strcmp(str, "$IS")==0) return IS;
-    else if(strcmp(str, "$T0")==0) return T0;
-    else if(strcmp(str, "$T1")==0) return T1;
-    else if(strcmp(str, "$T2")==0) return T2;
-    else if(strcmp(str, "$T3")==0) return T3;
-    else if(strcmp(str, "$T4")==0) return T4;
-    else if(strcmp(str, "$T5")==0) return T5;
-    else if(strcmp(str, "$T6")==0) return T6;
-    else if(strcmp(str, "$T7")==0) return T7;
-    else return REG_ERROR;
-}
-
-
-/*!
-@brief Parses a character array into an asm_immediate and returns it as a 32 bit integer.
-@note The value returned is not nessecerily correct. It simply has the right
-bits set to represent the immediate in memory.
-@param [in] immediate - The character representation of the immediate value.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns A tim_immediate representing the passed char array.
-*/
-tim_immediate asm_parse_immediate(char * immediate, int * errors, int line_num)
-{
-    switch(immediate[1])
+    if(opcode -> value.opcode == LEX_JUMP)
     {
-        case 'b':
-            return (int)strtol(&immediate[1], NULL,  2);
-        case 'd':
-            return (int)strtol(&immediate[1], NULL, 10);
-        case 'x':
-            return (int)strtol(&immediate[1], NULL, 16);
+        if(operand -> type == REGISTER)
+        {
+            statement -> opcode = JUMPR;
+            statement -> args.reg.reg_1 = operand -> value.reg;
+            statement -> size = 2;
+        }
+        else if(operand -> type == IMMEDIATE)
+        {
+            statement -> opcode = JUMPI;
+            statement -> args.immediate.immidiate = operand -> value.immediate;
+            statement -> size = 4;
+        }
+        else if(operand -> type == LABEL)
+        {
+            statement -> opcode = JUMPI;
+            statement -> args.immediate_label.label = operand -> value.label;
+            statement -> size = 4;
+        }
+        else
+        {
+            error("Invalid operand to JUMP instruction of type %d\n", operand -> type);
+            *errors+=1;
+        }
+    }
+    else if(opcode -> value.opcode == LEX_CALL)
+    {
+        if(operand -> type == REGISTER)
+        {
+            statement -> opcode = CALLR;
+            statement -> args.reg.reg_1 = operand -> value.reg;
+            statement -> size = 2;
+        }
+        else if(operand -> type == IMMEDIATE)
+        {
+            statement -> opcode = CALLI;
+            statement -> args.immediate.immidiate = operand -> value.immediate;
+            statement -> size = 4;
+        }
+        else if(operand -> type == LABEL)
+        {
+            statement -> opcode = CALLI;
+            statement -> args.immediate_label.label = operand -> value.label;
+            statement -> size = 4;
+        }
+        else
+        {
+            error("Invalid operand to CALL instruction of type %d\n", operand -> type);
+            *errors+=1;
+        }
+    }
+    else
+    {
+        error("This function can only parse CALL and JUMP instructions!\n");
+        *errors+=1;
+    }
+
+    return operand -> next;
+}
+
+
+/*!
+@brief Responsible for parsing instructions with three register operands.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_three_register_operands(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+    asm_lex_token * operand_2 = operand_1 -> next;
+    asm_lex_token * operand_3 = operand_2 -> next;
+    
+    assert(opcode -> type == OPCODE);
+    assert(operand_1 -> type == REGISTER);
+    assert(operand_2 -> type == REGISTER);
+    assert(operand_3 -> type == REGISTER);
+
+    statement -> args.reg_reg_reg.reg_1 = operand_1 -> value.reg;
+    statement -> args.reg_reg_reg.reg_2 = operand_2 -> value.reg;
+    statement -> args.reg_reg_reg.reg_3 = operand_3 -> value.reg;
+
+    statement -> size = 3;
+    
+    switch(opcode -> value.opcode)
+    {
+        case(LEX_LOAD):  statement -> opcode = LOADR; break;
+        case(LEX_STORE): statement -> opcode = STORR; break;
+        case(LEX_AND ):  statement -> opcode = ANDR ; break;
+        case(LEX_NAND):  statement -> opcode = NANDR; break;
+        case(LEX_OR  ):  statement -> opcode = ORR  ; break;
+        case(LEX_NOR ):  statement -> opcode = NORR ; break;
+        case(LEX_XOR ):  statement -> opcode = XORR ; break;
+        case(LEX_LSL ):  statement -> opcode = LSLR ; break;
+        case(LEX_LSR ):  statement -> opcode = LSRR ; break;
+        case(LEX_IADD):  statement -> opcode = IADDR; break;
+        case(LEX_ISUB):  statement -> opcode = ISUBR; break;
+        case(LEX_IMUL):  statement -> opcode = IMULR; break;
+        case(LEX_IDIV):  statement -> opcode = IDIVR; break;
+        case(LEX_IASR):  statement -> opcode = IASRR; break;
+        case(LEX_FADD):  statement -> opcode = FADDR; break;
+        case(LEX_FSUB):  statement -> opcode = FSUBR; break;
+        case(LEX_FMUL):  statement -> opcode = FMULR; break;
+        case(LEX_FDIV):  statement -> opcode = FDIVR; break;
+        case(LEX_FASR):  statement -> opcode = FASRR; break;
+
+        case(LEX_ERROR):
+            error("Bad Token!\n");
+            return operand_3 -> next;
+
         default:
-            error("Could not parse immediate '%s' on line %d\n", immediate, line_num);
-            *errors += 1;
-            break;
+            error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
+            return operand_3 -> next;
+
     }
 
-    return 0;
-}
-
-
-/*!
-@brief Validates the arguments/operands to a load or store instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
-*/
-BOOL asm_validate_load_store(asm_statement * instruction)
-{
-    BOOL tr = TRUE;
-
-    if(instruction -> instruction.opcode == LOADR || instruction -> instruction.opcode == STORR)
-    {
-        if( tim_is_general_register(instruction -> reg_1) == FALSE ||
-            tim_is_general_register(instruction -> reg_2) == FALSE ||
-            tim_is_general_register(instruction -> reg_3) == FALSE)
-        {
-            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line_number);
-            log  ("\t Arguments are: %d, %d, %d\n", instruction->reg_1, instruction->reg_2, instruction->reg_3);
-            tr = FALSE;
-        }
-    }
-    else if(instruction -> instruction.opcode == LOADI || instruction -> instruction.opcode == STORI)
-    {
-        if( tim_is_general_register(instruction -> reg_1) == FALSE ||
-            tim_is_general_register(instruction -> reg_2) == FALSE )
-        {
-            error("Line %d: All Register Operands of LOAD/STORE should be general purpose register.\n", instruction->line_number);
-            log  ("\t Arguments are: %d\n", instruction->reg_1)
-            tr = FALSE;
-        }
-    }
-    else
-        error("Invalid instruction validated by %s on line %d\n", __FUNCTION__, instruction->line_number);
-
-    return tr;
-}
-
-
-/*!
-@brief Parses the arguments to a load instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_load(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return ->line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
-    char * operand2 = strtok(NULL, " ");
-    char * operand3 = strtok(NULL, " \r\n");
-    char * operand4 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = asm_parse_register(operand2);
-    tim_register reg3 = asm_parse_register(operand3);
-
-    if(reg3 != REG_ERROR)
-    {
-        // Assume it is the 3 register version of load.
-        to_return -> reg_3 = reg3;
-        to_return -> instruction.opcode = LOADR;
-        to_return -> instruction.size = 3;
-
-        if(operand4 != NULL)
-        {
-            warning("Bit masks for LOAD instruction not yet implemented.");
-        }
-    }
-    else
-    {
-        // Assume it is the register-immediate version of load.
-        to_return -> reg_3 = REG_NOT_USED;
-        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
-        to_return -> instruction.opcode = LOADI;
-        to_return -> instruction.size = 4;
-    }
-
-    BOOL valid = asm_validate_load_store(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-
-/*!
-@brief Parses the arguments to a store instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_store(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return ->line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
-    char * operand2 = strtok(NULL, " ");
-    char * operand3 = strtok(NULL, " \r\n");
-    char * operand4 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = asm_parse_register(operand2);
-    tim_register reg3 = asm_parse_register(operand3);
-
-    if(reg3 != REG_ERROR)
-    {
-        // Assume it is the 3 register version of store.
-        to_return -> reg_3 = reg3;
-        to_return -> instruction.opcode = STORR;
-        to_return -> instruction.size = 3;
-
-        if(operand4 != NULL)
-        {
-            warning("Bit masks for STORE instruction not yet implemented.");
-        }
-    }
-    else
-    {
-        // Assume it is the register-immediate version of load.
-        to_return -> reg_3 = REG_NOT_USED;
-        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
-        to_return -> instruction.opcode = STORI;
-        to_return -> instruction.size = 4;
-    }
-
-    BOOL valid = asm_validate_load_store(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-
-/*!
-@brief Validates the arguments/operands to a MOV instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
-*/
-BOOL asm_validate_mov(asm_statement * instruction)
-{
-    BOOL to_return = TRUE;
-
-    if(instruction -> reg_1 == PC)
-    {
-        error("Line %d : MOV instruction cannot modify the program counter\n", instruction -> line_number);
-        to_return = FALSE;
-    }
-
-    instruction -> reg_3 = REG_NOT_USED;
-    return to_return;
+    return operand_3 -> next;
 }
 
 /*!
-@brief Parses the arguments of a move instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
+@brief Responsible for parsing instructions with two register operands and one immediate operand.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
 */
-asm_statement * asm_parse_mov(char * arguments, int * errors, int line_num)
+asm_lex_token * asm_parse_two_register_one_immediate(asm_statement * statement, asm_lex_token * token, int * errors)
 {
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
-    char * operand2 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    tim_register reg2  = asm_parse_register(operand2);
-
-    if(reg2 != REG_ERROR)
-    {
-        // Assume it is the 2 register version of mov.
-        to_return -> reg_2 = reg2;
-        to_return -> instruction.opcode = MOVR;
-        to_return -> instruction.size   = 3;
-    }
-    else
-    {
-        // Assume it is the register-immediate version of mov
-        to_return -> immediate = asm_parse_immediate(operand2, errors, line_num);
-        to_return -> instruction.opcode = MOVI;
-        to_return -> instruction.size   = 4;
-    }
-
-    BOOL valid = asm_validate_mov(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-
-/*!
-@brief Validates the arguments/operands to a PUSH instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
-*/
-BOOL asm_validate_push(asm_statement * instruction)
-{
-    instruction -> reg_2 = REG_NOT_USED;
-    instruction -> reg_3 = REG_NOT_USED;
-    return TRUE;
-}
-
-/*!
-@brief Parses the arguments of a push instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_push(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+    asm_lex_token * operand_2 = operand_1 -> next;
+    asm_lex_token * operand_3 = operand_2 -> next;
     
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
+    assert(opcode -> type == OPCODE);
+    assert(operand_1 -> type == REGISTER);
+    assert(operand_2 -> type == REGISTER);
+    assert(operand_3 -> type == IMMEDIATE);
 
-    to_return -> instruction.opcode = PUSH;
-    to_return -> instruction.size   = 2;
+    statement -> args.reg_reg_immediate.reg_1 = operand_1 -> value.reg;
+    statement -> args.reg_reg_immediate.reg_2 = operand_2 -> value.reg;
+    statement -> args.reg_reg_immediate.immidiate = operand_3 -> value.immediate;
 
-    BOOL valid = asm_validate_push(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-
-/*!
-@brief Validates the arguments/operands to a POP instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
-*/
-BOOL asm_validate_pop(asm_statement * instruction)
-{
-    instruction -> reg_2 = REG_NOT_USED;
-    instruction -> reg_3 = REG_NOT_USED;
-    return TRUE;
-}
-
-/*!
-@brief Parses the arguments of a pop instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_pop(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
+    statement -> size = 3;
     
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
-
-    to_return -> instruction.opcode = POP;
-    to_return -> instruction.size   = 2;
-
-    BOOL valid = asm_validate_pop(to_return);
-    if(valid)
-        return to_return;
-    else
+    switch(opcode -> value.opcode)
     {
-        free(to_return);
-        return NULL;
+        case(LEX_LOAD):  statement -> opcode = LOADI; break;
+        case(LEX_STORE): statement -> opcode = STORI; break;
+        case(LEX_AND ):  statement -> opcode = ANDI ; break;
+        case(LEX_NAND):  statement -> opcode = NANDI; break;
+        case(LEX_OR  ):  statement -> opcode = ORI  ; break;
+        case(LEX_NOR ):  statement -> opcode = NORI ; break;
+        case(LEX_XOR ):  statement -> opcode = XORI ; break;
+        case(LEX_LSL ):  statement -> opcode = LSLI ; break;
+        case(LEX_LSR ):  statement -> opcode = LSRI ; break;
+        case(LEX_IADD):  statement -> opcode = IADDI; break;
+        case(LEX_ISUB):  statement -> opcode = ISUBI; break;
+        case(LEX_IMUL):  statement -> opcode = IMULI; break;
+        case(LEX_IDIV):  statement -> opcode = IDIVI; break;
+        case(LEX_IASR):  statement -> opcode = IASRI; break;
+        case(LEX_FADD):  statement -> opcode = FADDI; break;
+        case(LEX_FSUB):  statement -> opcode = FSUBI; break;
+        case(LEX_FMUL):  statement -> opcode = FMULI; break;
+        case(LEX_FDIV):  statement -> opcode = FDIVI; break;
+        case(LEX_FASR):  statement -> opcode = FASRI; break;
+
+        case(LEX_ERROR):
+            error("Bad Token!\n");
+            return operand_3 -> next;
+
+        default:
+            error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
+            return operand_3 -> next;
+
     }
+
+    return operand_3 -> next;
 }
 
 
 /*!
-@brief Validates the arguments/operands to a JUMP instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
+@brief Responsible for parsing instructions with three operands..
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
 */
-BOOL asm_validate_jump(asm_statement * instruction)
+asm_lex_token * asm_parse_three_operand(asm_statement * statement, asm_lex_token * token, int * errors)
 {
-    if(instruction -> reg_1 == PC)
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+    asm_lex_token * operand_2 = operand_1 -> next;
+    asm_lex_token * operand_3 = operand_2 -> next;
+
+    if(operand_3->type == IMMEDIATE)
     {
-        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line_number);
+        return asm_parse_two_register_one_immediate(statement, opcode, errors);
     }
-    return TRUE;
-}
-
-/*!
-@brief Parses the arguments of a JUMP instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_jump(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " \r\n");
-    
-    to_return -> type = OPCODE;
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> reg_1 = asm_parse_register(operand1);
-
-    if(to_return -> reg_1 != REG_ERROR)
+    else if(operand_3->type == REGISTER)
     {
-        // Assume we are jumping to the contents of a register.
-        to_return -> instruction.opcode = JUMPR;
-        to_return -> instruction.size   = 2;
+        return asm_parse_three_register_operands(statement, opcode, errors);
     }
     else
     {
-        // Immediate version of the instruction.
-        to_return -> reg_1 = REG_NOT_USED;
-        if(operand1[0] == '0')
+        error("Line %d: Expected immediate or register, but got token type %d\n", operand_3->line_number, operand_3->type);
+        return operand_3 -> next;
+    }
+
+}
+
+
+/*!
+@brief Parses instructions that take two operands. NOT, TEST, MOV
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_two_operand(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+    asm_lex_token * operand_2 = operand_1 -> next;
+
+    if(opcode -> value.opcode == LEX_NOT)
+    {
+        statement -> opcode = NOTR;
+        statement -> size   = 2;
+        statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+        statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
+    }
+    else if(opcode -> value.opcode == LEX_TEST)
+    {
+        statement -> opcode = TEST;
+        statement -> size   = 3;
+        statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+        statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
+    }
+    else if(opcode -> value.opcode == LEX_MOV)
+    {
+        statement -> opcode = MOVR;
+        statement -> size   = 3;
+        if(operand_2 -> type == IMMEDIATE)
         {
-            to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
+            statement -> args.reg_immediate.reg_1 = operand_1 -> value.reg;
+            statement -> args.reg_immediate.immidiate= operand_2 -> value.immediate;
         }
         else
         {
-            // The target address is a label! It will need calculating later.
-            to_return -> target_label = operand1;
+            statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
+            statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
         }
-        to_return -> instruction.opcode = JUMPI;
-        to_return -> instruction.size   = 4;
-    }
-
-    BOOL valid = asm_validate_jump(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-
-/*!
-@brief Validates the arguments/operands to a CALL instruction.
-@param instruction - The instruction to be validated.
-@returns true or false depending on whether the instructions operands are valid or not.
-*/
-BOOL asm_validate_call(asm_statement * instruction)
-{
-    if(instruction -> reg_1 == PC)
-    {
-        warning("Line %d : Jumping to the program counter can cause an infinite loop!\n", instruction -> line_number);
-    }
-    return TRUE;
-}
-
-/*!
-@brief Parses the arguments of a CALL instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_call(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " \r\n");
-    
-    to_return -> type = OPCODE;
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> reg_1 = asm_parse_register(operand1);
-
-    if(to_return -> reg_1 != REG_ERROR)
-    {
-        // Assume we are jumping to the contents of a register.
-        to_return -> instruction.opcode = CALLR;
-        to_return -> instruction.size   = 2;
     }
     else
     {
-        // Immediate version of the instruction.
-        to_return -> reg_1 = REG_NOT_USED;
-        if(operand1[0] == '0')
-        {
-            to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
-        }
-        else
-        {
-            // The target address is a label! It will need calculating later.
-            to_return -> target_label = operand1;
-        }
-        to_return -> instruction.opcode = CALLI;
-        to_return -> instruction.size   = 4;
-    }
-
-    BOOL valid = asm_validate_call(to_return);
-    if(valid)
-        return to_return;
-    else
-    {
-        free(to_return);
-        return NULL;
-    }
-}
-
-/*!
-@brief Parses the arguments of a RETURN instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_return(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-    
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = REG_NOT_USED;
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> instruction.opcode = RETURN;
-    to_return -> instruction.size   = 1;
-
-    return to_return;
-}
-
-/*!
-@brief Parses the arguments of a HALT instruction.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_halt(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = REG_NOT_USED;
-    to_return -> reg_2 = REG_NOT_USED;
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> instruction.opcode = HALT;
-    to_return -> instruction.size   = 1;
-
-    return to_return;
-}
-
-
-/*!
-@brief Parses the arguments of all instructions that take three register operands.
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_bool_alu_opcode(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
-    char * operand2 = strtok(NULL, " ");
-    char * operand3 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = asm_parse_register(operand2);
-    to_return -> reg_3 = asm_parse_register(operand3);
-    to_return -> instruction.size = 3;
-
-    if(to_return -> reg_3 == REG_ERROR)
-    {
-        to_return -> reg_3 = REG_NOT_USED;
-        to_return -> instruction.size = 4;
-        to_return -> immediate = asm_parse_immediate(operand3, errors, line_num);
-    }
-
-
-    return to_return;
-}
-
-/*!
-@brief Parses the arguments of a NOT instruction
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_not(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " ");
-    char * operand2 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = asm_parse_register(operand2);
-    to_return -> reg_3 = REG_NOT_USED;
-
-    to_return -> instruction.size   = 2;
-    to_return -> instruction.opcode = NOTR;
-
-    return to_return;
-}
-
-/*!
-@brief Parses the arguments of a DATA instruction
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_data(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " \r\n");
-
-    to_return -> type = DATA;
-    to_return -> reg_1 = REG_NOT_USED; 
-    to_return -> reg_2 = REG_NOT_USED; 
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
-
-    to_return -> instruction.size   = 4;
-    to_return -> instruction.opcode = NOT_EMITTED;
-
-    return to_return;
-}
-
-/*!
-@brief Parses the arguments of a SLEEP instruction
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_sleep(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = REG_NOT_USED; 
-    to_return -> reg_2 = REG_NOT_USED; 
-    to_return -> reg_3 = REG_NOT_USED;
-    to_return -> immediate = asm_parse_immediate(operand1, errors, line_num);
-
-    to_return -> instruction.size   = 2;
-    to_return -> instruction.opcode = SLEEP;
-
-    return to_return;
-}
-
-/*!
-@brief Parses the arguments of a TEST instruction
-@param [in] arguments - the remainder of the string containing the arguments to the opcode, with the
-instruction removed.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns An asm_statement structure which has its fields fully populated.
-*/
-asm_statement * asm_parse_test(char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = calloc(1, sizeof(asm_statement));
-    to_return -> target_label = NULL;
-    to_return -> line_number = line_num;
-
-    char * operand1 = strtok(NULL, " \r\n");
-    char * operand2 = strtok(NULL, " \r\n");
-
-    to_return -> type = OPCODE;
-    to_return -> reg_1 = asm_parse_register(operand1);
-    to_return -> reg_2 = asm_parse_register(operand2);
-    to_return -> reg_3 = REG_NOT_USED;
-
-    to_return -> instruction.size   = 3;
-    to_return -> instruction.opcode = TEST;
-
-    return to_return;
-}
-
-
-/*!
-@brief Decodes the opcode string and calls the appropriate function to decode the arguments.
-@param [in] opcode - The opcode as a character string.
-@param [in] arguments - The string containing the arguments to the opcode. This may be empty for
-some instructions.
-@param [inout] errors - pointer to an error counter for syntax errors.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns The parsed asm statement with all arguments and fields filled out correctly.
-@note An asm_statement will be returned even if errors are encountered. If by the time parsing
-is complete the errors counter is greater than zero then the program should be considered invalid.
-*/
-asm_statement * asm_parse_instruction(char * opcode, char * arguments, int * errors, int line_num)
-{
-    asm_statement * to_return = NULL;
-
-    if(strcmp(opcode, tim_LOAD) == 0)
-        to_return = asm_parse_load(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_STORE) == 0)
-        to_return = asm_parse_store(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_MOV) == 0)
-        to_return = asm_parse_mov(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_PUSH) == 0)
-        to_return = asm_parse_push(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_POP) == 0)
-        to_return = asm_parse_pop(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_JUMP) == 0)
-        to_return = asm_parse_jump(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_CALL) == 0)
-        to_return = asm_parse_call(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_RETURN) == 0)
-        to_return = asm_parse_return(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_HALT) == 0)
-        to_return = asm_parse_halt(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_NOT) == 0)
-        to_return = asm_parse_not(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_DATA) == 0)
-        to_return = asm_parse_data(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_SLEEP) == 0)
-        to_return = asm_parse_sleep(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_TEST) == 0)
-        to_return = asm_parse_test(arguments, errors, line_num);
-    else if(strcmp(opcode, tim_NOP) == 0){
-        to_return = calloc(1, sizeof(asm_statement));
-        to_return -> target_label = NULL;
-        to_return -> instruction.opcode = ANDR;
-        to_return -> instruction.size   = 3;
-        to_return -> reg_1 = R0;
-        to_return -> reg_2 = R0;
-        to_return -> reg_3 = R0;
-    }
-    else if(strcmp(opcode, tim_AND)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ANDR : ANDI;
-    }
-    else if(strcmp(opcode, tim_NAND)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? NANDR : NANDI;
-    }
-    else if(strcmp(opcode, tim_OR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ORR : ORI;
-    }
-    else if(strcmp(opcode, tim_NOR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? NORR : NORI;
-    }
-    else if(strcmp(opcode, tim_XOR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? XORR : XORI;
-    }
-    else if(strcmp(opcode, tim_LSL)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? LSLR : LSLI;
-    }
-    else if(strcmp(opcode, tim_LSR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? LSRR : LSRI;
-    }
-    else if(strcmp(opcode, tim_IADD)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IADDR : IADDI;
-    }
-    else if(strcmp(opcode, tim_ISUB)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? ISUBR : ISUBI;
-    }
-    else if(strcmp(opcode, tim_IMUL)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IMULR : IMULI;
-    }
-    else if(strcmp(opcode, tim_IDIV)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IDIVR : IDIVI;
-    }
-    else if(strcmp(opcode, tim_IASR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? IASRR : IASRI;
-    }
-    else if(strcmp(opcode, tim_FADD)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FADDR : FADDI;
-    }
-    else if(strcmp(opcode, tim_FSUB)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FSUBR : FSUBI;
-    }
-    else if(strcmp(opcode, tim_FMUL)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FMULR : FMULI;
-    }
-    else if(strcmp(opcode, tim_FDIV)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FDIVR : FDIVI;
-    }
-    else if(strcmp(opcode, tim_FASR)  == 0){
-        to_return = asm_parse_bool_alu_opcode(arguments, errors, line_num);
-        to_return -> instruction.opcode = (to_return -> reg_3 != REG_NOT_USED) ? FASRR : FASRI;
-    }
-    else
-    {
+        error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
         *errors += 1;
-        error("Encountered invalid instruction '%s' on line %d.\n", opcode, line_num);
     }
 
-    return to_return;
+    return operand_2 -> next;
 }
 
 /*!
-@brief Responsible for parsing a single line from the asm source code file.
-@param [in] line - pointer to the start of the line to parse.
-@param [inout] labels - The symbol table of labels so label declarations can be added.
-@param [inout] errors - Pointer to an error counter that is incremented when incorrect syntax
-is observed.
-@param [in] line_num - The line number of the instruction, used for error reporting.
-@returns a pointer to a new asm_statement if the line contains an instruction, or
-NULL if it is a comment or just a label declaration.
-@note A single line can contain a label declaration followed by an instruction, hence
-this function may recurse *once*.
-@bug Cannot place label declaration and instruction on same line because of strtok wierdness.
+@brief Responsible for parsing DATA elements
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
 */
-asm_statement * asm_parse_line(char * line, asm_hash_table * labels, int * errors, int line_num)
+asm_lex_token * asm_parse_data(asm_statement * statement, asm_lex_token * token, int * errors)
 {
-        // Parse the line content here.
-        char * token1 = strtok(line, " \r\n");
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
 
-        asm_statement * to_return = NULL;
+    statement -> opcode = NOT_EMITTED;
+    statement -> size = 4;
+    statement -> args.immediate.immidiate = operand_1 -> value.immediate;
 
-        if(token1 == NULL)
-            return to_return;
+    return operand_1 -> next;
+}
 
-        switch(token1[0])
-        {
-            case '\r':
-            case '\n':
-            case ';':
-                // We found a comment line! Skip it.
-                break;
-            
-            case '.':
-                // We found a label declaration. Add it to the symbol table.
-                log("Found Label: '%s' on line %d\n", token1, line_num);
-                to_return = calloc(1, sizeof(asm_statement));
-                to_return -> target_label = NULL;
-                to_return -> type = LABEL;
-                asm_hash_table_insert(labels, token1, to_return);
-                // Recurse once to check for a remaining instruction.
-                //to_return -> next = asm_parse_line(line, labels, errors, line_num);
-                break;
+/*!
+@brief Responsible for parsing SLEEP instructions.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_sleep(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
 
-            default:
-                // Asssume it is an instruction and parse it.
-                to_return = asm_parse_instruction(token1, line, errors, line_num);
-                break;
-        }
+    statement -> opcode = SLEEP;
+    statement -> size = 2;
+    statement -> args.reg.reg_1= operand_1 -> value.reg;
 
-        return to_return;
+    return operand_1 -> next;
+}
+
+/*!
+@brief Responsible for parsing NOP instructions.
+@details NOP is actually a pseudo instruction which assembles into `ANDR $R0 $R0 $R0`
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_nop(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+
+    statement -> opcode = ANDR;
+    statement -> size = 3;
+    statement -> args.reg_reg_reg.reg_1= R0;
+    statement -> args.reg_reg_reg.reg_2= R0;
+    statement -> args.reg_reg_reg.reg_3= R0;
+
+    return opcode -> next;
+}
+
+/*!
+@brief Responsible for parsing PUSH and POP instructions.
+@param [inout] statement - Resulting statment to set members of.
+@param [in] token - The token which to parse into a statement. Several subsequent tokens may also
+be eaten.
+@param errors - Error counter pointer.
+@returns The next token that should be parsed, i.e. the one following the last token eaten by this
+function.
+*/
+asm_lex_token * asm_parse_push_pop(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    asm_lex_token * opcode    = token;
+    asm_lex_token * operand_1 = opcode    -> next;
+
+    statement -> size = 2;
+    statement -> args.reg.reg_1 = operand_1 -> value.reg;
+
+    if(opcode -> value.opcode == LEX_POP)
+    {
+        statement -> opcode = POP;
+    }
+    else if(opcode -> value.opcode == LEX_PUSH)
+    {
+        statement -> opcode = PUSH;
+    }
+    else
+    {
+        error("This function doesnt support parsing of asm opcode %d \n", opcode -> value.opcode);
+    }
+
+    return operand_1 -> next;
+}
+
+
+/*!
+@brief Responsible for selecting which function should parse the next few tokens.:w
+@param token - The token containing the  label value
+@param statement - The statement to parse the tokens into.
+@param errors - Pointer to an error counter.
+@returns the next token to be parsed.
+*/
+asm_lex_token * asm_parse_opcode(asm_statement * statement, asm_lex_token * token, int * errors)
+{
+    assert(token -> type == OPCODE);
+
+    switch(token -> value.opcode)
+    {
+        case(LEX_JUMP):
+        case(LEX_CALL):
+            return asm_parse_call_jump(statement, token, errors);
+
+        case(LEX_MOV):
+        case(LEX_NOT):
+        case(LEX_TEST):
+            return asm_parse_two_operand(statement, token, errors);
+        
+        case(LEX_LOAD):
+        case(LEX_STORE):
+        case(LEX_AND ): 
+        case(LEX_NAND): 
+        case(LEX_OR  ): 
+        case(LEX_NOR ): 
+        case(LEX_XOR ): 
+        case(LEX_LSL ): 
+        case(LEX_LSR ): 
+        case(LEX_IADD): 
+        case(LEX_ISUB): 
+        case(LEX_IMUL): 
+        case(LEX_IDIV): 
+        case(LEX_IASR): 
+        case(LEX_FADD): 
+        case(LEX_FSUB): 
+        case(LEX_FMUL): 
+        case(LEX_FDIV): 
+        case(LEX_FASR): 
+            return asm_parse_three_operand(statement, token,errors);
+
+        case(LEX_PUSH):
+        case(LEX_POP):
+            return asm_parse_push_pop(statement, token, errors);
+
+        case(LEX_HALT):
+            statement -> opcode = HALT;
+            statement -> size = 1;
+            return token -> next;
+
+        case(LEX_DATA):
+            return asm_parse_data(statement, token, errors);
+
+        case(LEX_SLEEP):
+            return asm_parse_sleep(statement, token, errors);
+
+        case(LEX_NOP):
+            return asm_parse_nop(statement, token, errors);
+
+        case(LEX_RETURN):
+            warning("RETURN opcode not yet implemented correctly.\n");
+            statement -> opcode = RETURN;
+            return token -> next;
+
+        case(LEX_ERROR):
+            error("Bad Token!\n");
+            return token -> next;
+
+        default:
+            error("Unknown asm opcode: %d\n", token -> value.opcode);
+            return token -> next;
+    }
+}
+
+
+/*!
+@brief Responsible for adding a label declaration and associated statement to the symbol table.
+@param token - The token containing the  label value
+@param labels - The symbol table.
+@param errors - Pointer to an error counter.
+@returns the next token to be parsed.
+*/
+asm_lex_token * asm_parse_label_declaration(asm_lex_token * token, asm_hash_table * labels, int * errors)
+{
+    assert(token -> type == LABEL);
+    return token -> next;
 }
 
 
@@ -950,48 +490,45 @@ asm_statement * asm_parse_line(char * line, asm_hash_table * labels, int * error
 filling out their arguments and parameters as it goes. It also populates the hash-table of
 labels used for calculating jump target addresses.
 @see The ISA Specification contains more information on the grammar of the assembly language.
-@param [in] source - Opened source file pointer. Open in "r" mode.
 @param [inout] labels - Hashtable which is apopulated with any encountered labels.
 @param [inout] errors - Pointer to a error counter. If the counter has the same value before
+@param tokens - Linked list of tokens to parse into a program IR.
 and after being called, all of the parsing was a success.
 @returns The parsed statements as a doublely linked list.
 */
-asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors)
+asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * labels, int * errors)
 {
-    int lines_read = 0;
-    char * line = NULL;
+    asm_statement * to_return = NULL;
+    asm_lex_token * current_token = tokens;
 
-    asm_statement * walker = NULL;
-    asm_statement * head   = NULL;
-
-    while(feof(source) == 0)
+    // Iterate over all of the tokens in the stream.
+    while(current_token != NULL)
     {
-        line = asm_parse_readline(source);
-        if(line == NULL) break;
+        asm_statement * to_add = calloc(1, sizeof(asm_statement));
 
-        lines_read ++;
-        fflush(stdout);
-
-        if(walker == NULL)
+        switch(current_token -> type)
         {
-            walker = asm_parse_line(line, labels, errors, lines_read);
-            head = walker;
-        }
-        else
-        {
-            walker -> next = asm_parse_line(line, labels, errors, lines_read);
-            if(walker -> next != NULL)
-            {
-                walker -> next -> prev = walker;
-                walker  = walker -> next;
-            }
-        }
+            case (CONDITION):
+                to_add -> condition = current_token -> value.condition;
+                current_token = asm_parse_opcode(to_add, current_token -> next, errors);
+                break;
 
-        free(line);
+            case (OPCODE):
+                current_token = asm_parse_opcode(to_add, current_token, errors);
+                to_add -> condition = ALWAYS;
+                break;
+
+            case (LABEL):
+                current_token = asm_parse_label_declaration(current_token, labels, errors);
+                break;
+
+            default:
+                error("Unexpected token type: %d\n", current_token -> type);
+                *errors += 1;
+                current_token = current_token -> next;
+                break;
+        }
     }
 
-    if(head == NULL)
-        error("Returning NULL walker in parser.\n");
-
-    return head;
+    return to_return;
 }

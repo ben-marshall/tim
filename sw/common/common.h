@@ -177,54 +177,21 @@ typedef enum tim_instruction_opcode_e {
     SLEEP , //!< Sleeps the core for a certain number of cycles.
     NOT_EMITTED //!< Used in the parse tree for instruction like DATA that are not emitted.
 } tim_instruction_opcode;
-
-/*!
-@brief Encodes all information on a single tim instruction.
-*/
-typedef struct tim_instruction_t {
     
-    //! The opcode of the instruction.
-    tim_instruction_opcode opcode;
 
-    //! The number of bytes the instruction occupies in memory.
-    tim_instruction_size   size;
+//! The opcode of the instruction.
+tim_instruction_opcode opcode;
 
-} tim_instruction;
+//! The number of bytes the instruction occupies in memory.
+tim_instruction_size   size;
 
-//! Typdef for storing the string forms of instructions encountered in assembly programs.
-typedef char tim_asm_instruction;
-
-extern tim_asm_instruction * tim_LOAD  ;
-extern tim_asm_instruction * tim_STORE ; 
-extern tim_asm_instruction * tim_PUSH  ; 
-extern tim_asm_instruction * tim_POP   ; 
-extern tim_asm_instruction * tim_MOV   ; 
-extern tim_asm_instruction * tim_JUMP  ; 
-extern tim_asm_instruction * tim_CALL  ; 
-extern tim_asm_instruction * tim_RETURN; 
-extern tim_asm_instruction * tim_TEST  ; 
-extern tim_asm_instruction * tim_HALT  ; 
-extern tim_asm_instruction * tim_AND   ; 
-extern tim_asm_instruction * tim_NAND  ; 
-extern tim_asm_instruction * tim_OR    ; 
-extern tim_asm_instruction * tim_NOR   ; 
-extern tim_asm_instruction * tim_XOR   ; 
-extern tim_asm_instruction * tim_LSL   ; 
-extern tim_asm_instruction * tim_LSR   ; 
-extern tim_asm_instruction * tim_NOT   ; 
-extern tim_asm_instruction * tim_IADD  ; 
-extern tim_asm_instruction * tim_ISUB  ; 
-extern tim_asm_instruction * tim_IMUL  ; 
-extern tim_asm_instruction * tim_IDIV  ; 
-extern tim_asm_instruction * tim_IASR  ; 
-extern tim_asm_instruction * tim_FADD  ; 
-extern tim_asm_instruction * tim_FSUB  ; 
-extern tim_asm_instruction * tim_FMUL  ; 
-extern tim_asm_instruction * tim_FDIV  ; 
-extern tim_asm_instruction * tim_FASR  ; 
-extern tim_asm_instruction * tim_NOP   ; 
-extern tim_asm_instruction * tim_SLEEP ; 
-extern tim_asm_instruction * tim_DATA  ; 
+//! A condition code for conditional execution.
+typedef enum tim_condition_e{
+    ALWAYS = 0,
+    IFTRUE   = 1,
+    IFFALSE  = 2,
+    IFZERO   = 3
+} tim_condition;
 
 /*!
 @brief Checks if the supplied register is a general purpose register or not.

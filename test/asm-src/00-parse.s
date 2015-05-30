@@ -60,5 +60,14 @@ DATA  0x0DEAD0
     FMUL   $R1 $R2 0xAB4 
     FDIV   $R1 $R2 0xAB4 
     FASR   $R1 $R2 0xAB4 
-    SLEEP  0xAB4 
+
+                    ; Some conditionally execution instructions.
+    ?T IASR  $R0 $R2 $R2 
+    ?T FADD  $R0 $R2 $R2 
+    ?F FSUB  $R0 $R2 $R2 
+    ?A FMUL  $R0 $R2 $R2 
+    ?Z FDIV  $R0 $R2 $R2 
+    ?Z FASR  $R0 $R2 $R2 
+
+
     RETURN

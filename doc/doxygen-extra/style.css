@@ -1038,12 +1038,13 @@ dl.section dd {
 #projectlogo img
 { 
 	border: 0px none;
+	margin-left: 10px;
 }
  
 #projectname
 {
 	font: 300% Tahoma, Arial,sans-serif;
-	margin: 0px;
+	margin: 10px;
 	padding: 2px 0px;
 }
     
@@ -1063,7 +1064,8 @@ dl.section dd {
 
 #titlearea
 {
-	padding: 0px;
+    padding-right:0px;
+    margin-right:0px;
 	margin: 0px;
 	width: 100%;
 	border-bottom: none;

@@ -13,6 +13,8 @@
 
 #include "common.h"
 
+#include "asm_lex.h"
+
 #ifndef ASM_H
 #define ASM_H
 
@@ -21,8 +23,57 @@
 #endif
 #define TIM_PRINT_PROMPT "\e[1;36masm>\e[0m "
 
-//! Stores what sort of statement a parsed instruction is.
-typedef enum asm_statement_type_e {NOP, DATA, OPCODE, LABEL} asm_statement_type;
+//! Register arguments structure for opcodes with only a single register argument.
+typedef struct asm_args_reg_single_t{
+    tim_register reg_1;
+} asm_args_reg_single;
+
+//! Register arguments structure for opcodes with two register arguments
+typedef struct asm_args_reg_double_t{
+    tim_register reg_1;
+    tim_register reg_2;
+} asm_args_reg_double;
+
+//! Register arguments structure for opcodes with three register arguments.
+typedef struct asm_args_reg_tripple_t{
+    tim_register reg_1;
+    tim_register reg_2;
+    tim_register reg_3;
+} asm_args_reg_tripple;
+
+//! Register arguments structure for opcodes with two register arguments and an immediate.
+typedef struct asm_args_reg_double_imm_t{
+    tim_register reg_1;
+    tim_register reg_2;
+    tim_immediate immidiate;
+} asm_args_reg_double_imm;
+
+//! Register arguments structure for opcodes with one register argument and an immediate.
+typedef struct asm_args_reg_single_imm{
+    tim_register reg_1;
+    tim_immediate immidiate;
+} asm_args_reg_single_imm;
+
+//! Register arguments structure for opcodes with one immediate.
+typedef struct asm_args_single_imm{
+    tim_immediate immidiate;
+} asm_args_single_imm;
+
+//! Register arguments structure for opcodes with one immediate who's value is a label.
+typedef struct asm_args_single_imm_label{
+    char * label;
+} asm_args_single_imm_label;
+
+//! Union types for all different types of argument/operand combinations used.
+typedef union asm_opcode_args_u{
+    asm_args_reg_single reg;
+    asm_args_reg_double reg_reg;
+    asm_args_reg_tripple reg_reg_reg;
+    asm_args_reg_double_imm reg_reg_immediate;
+    asm_args_reg_single_imm reg_immediate;
+    asm_args_single_imm immediate;
+    asm_args_single_imm_label immediate_label;
+} asm_opcode_args;
 
 /*!
 @brief Stores all information on a single ASM instruction.
@@ -33,27 +84,21 @@ instruction for any label pointers too it.
 typedef struct asm_statement_t asm_statement;
 struct asm_statement_t
 {
-    //! The instruction the statment refers too.
-    tim_instruction instruction;
+    //! The opcode of the instruction.
+    tim_instruction_opcode opcode;
 
-    //! Register Argument 1
-    tim_register reg_1;
-    //! Register Argument 2
-    tim_register reg_2;
-    //! Register Argument 3
-    tim_register reg_3;
+    //! The size in bytes of this instruction.
+    tim_instruction_size   size;
 
-    //! Immediate operand to the instruction.
-    tim_immediate immediate;
+    //! The conditional execution code for this statement.
+    tim_condition           condition;
 
-    //! The target label used for JUMP and CALL instructions.
-    char * target_label;
-
-    //! Is this an opcode, data/NOP or label?
-    asm_statement_type type;
+    //! Arguments to the instruction.
+    asm_opcode_args args;
 
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
+
     //! The line number of the source file the instruction came from.
     unsigned int line_number;
 
@@ -124,6 +169,8 @@ typedef struct asm_context_t
 
     //! The asm program in linked list form.
     asm_statement * statements;
+    //! The tokens stream parsed from the raw file.
+    asm_lex_token * token_stream;
 
     //! Stores all of the (label, asm_statement) pairs for the program where the labels are
     //! all of the jump target labels.
@@ -147,13 +194,12 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
 filling out their arguments and parameters as it goes. It also populates the hash-table of
 labels used for calculating jump target addresses.
 @see The ISA Specification contains more information on the grammar of the assembly language.
-@param [in] source - Opened source file pointer. Open in "r" mode.
 @param [inout] labels - Hashtable which is apopulated with any encountered labels.
 @param [inout] errors - Pointer to a error counter. If the counter has the same value before
 and after being called, all of the parsing was a success.
 @returns The parsed statements as a doublely linked list.
 */
-asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors);
+asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * labels, int * errors);
 
 
 /*!
