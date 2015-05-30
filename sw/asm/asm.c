@@ -141,6 +141,10 @@ int main(int argc, char ** argv)
     log("Parsing Token Stream...\n");
     cxt -> statements   = asm_parse_token_stream(token_stream, cxt -> symbol_table, &error_count);
     if(error_count > 0) fatal("%d Parser Errors\n", error_count);
+    
+    log("Parsing Token Stream...\n");
+    error_count = asm_calculate_addresses(cxt -> statements, 0, cxt -> symbol_table);
+    if(error_count > 0) fatal("%d Address Calculation Errors\n", error_count);
 
     fclose(cxt -> source);
     fclose(cxt -> binary);

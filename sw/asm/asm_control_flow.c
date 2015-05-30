@@ -13,7 +13,7 @@
 @param base_address - Where the addresses of the program should start.
 @returns The number of errors encountered such as missing labels. 0 means everything was okay.
 */
-int asm_calculate_addresses(asm_statement * statements, unsigned int base_address)
+int asm_calculate_addresses(asm_statement * statements, unsigned int base_address, asm_hash_table * labels)
 {
     int errors = 0;
     unsigned int current_address = base_address;
@@ -22,6 +22,8 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
     asm_statement * walker = statements;
     while(walker != NULL)
     {
+        walker -> address = current_address;
+        current_address += walker -> size;
         walker = walker -> next;
     }
     
@@ -30,6 +32,27 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
     walker = statements;
     while(walker != NULL)
     {
+        if(walker -> label_to_resolve)
+        {
+            asm_statement * target = NULL;
+
+            switch(walker -> opcode)
+            {
+                case(CALLI):
+                case(JUMPI):
+                case(NOT_EMITTED):
+                    target = asm_hash_table_get(labels, walker -> args.immediate_label.label);
+                    target = target -> next;
+                    break;
+                default:
+                    error("Cannot resolve label for instruction opcode %d\n", walker -> opcode);
+                    break;
+            }
+
+            unsigned int address_difference = target -> address;
+            log("Calculated jump to %d\n", address_difference);
+            walker -> args.immediate.immidiate = address_difference;
+        }
         walker = walker -> next;
     }
     

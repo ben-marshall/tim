@@ -96,6 +96,9 @@ struct asm_statement_t
     //! Arguments to the instruction.
     asm_opcode_args args;
 
+    //! set to true IFF the statement needs an immediate resolving.
+    BOOL label_to_resolve;
+
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
 
@@ -185,7 +188,7 @@ typedef struct asm_context_t
 @param base_address - Where the addresses of the program should start.
 @returns The number of errors encountered such as missing labels. 0 means everything was okay.
 */
-int asm_calculate_addresses(asm_statement * statements, unsigned int base_address);
+int asm_calculate_addresses(asm_statement * statements, unsigned int base_address, asm_hash_table * labels);
 
 
 /*!
@@ -218,6 +221,15 @@ int asm_hash_table_insert(asm_hash_table * table, char * key, void * data);
 @param tr - The newly initialised and returned hashtable. Memory space should already be declared.
 */
 void asm_hash_table_new(int initial_size, asm_hash_table * tr);
+
+/*!
+@brief Returns a pointer to the data stored in a hash table with the given key or NULL if no such
+       element exists.
+@param table - The table to fetch the data from.
+@param strkey - The key to the data to fetch.
+@todo Make sure the key fits into the table.
+*/
+void * asm_hash_table_get(asm_hash_table * table, char * strkey);
 
 #endif
 

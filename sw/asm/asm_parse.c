@@ -39,6 +39,7 @@ asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * t
         {
             statement -> opcode = JUMPI;
             statement -> args.immediate_label.label = operand -> value.label;
+            statement -> label_to_resolve = TRUE;
             statement -> size = 4;
         }
         else
@@ -65,6 +66,7 @@ asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * t
         {
             statement -> opcode = CALLI;
             statement -> args.immediate_label.label = operand -> value.label;
+            statement -> label_to_resolve = TRUE;
             statement -> size = 4;
         }
         else
@@ -310,7 +312,13 @@ asm_lex_token * asm_parse_data(asm_statement * statement, asm_lex_token * token,
 
     statement -> opcode = NOT_EMITTED;
     statement -> size = 4;
-    statement -> args.immediate.immidiate = operand_1 -> value.immediate;
+    if(operand_1 -> type == IMMEDIATE)
+        statement -> args.immediate.immidiate = operand_1 -> value.immediate;
+    else
+    {
+        statement -> args.immediate_label.label = operand_1 -> value.label;
+        statement -> label_to_resolve = TRUE;
+    }
 
     return operand_1 -> next;
 }
@@ -477,9 +485,13 @@ asm_lex_token * asm_parse_opcode(asm_statement * statement, asm_lex_token * toke
 @param errors - Pointer to an error counter.
 @returns the next token to be parsed.
 */
-asm_lex_token * asm_parse_label_declaration(asm_lex_token * token, asm_hash_table * labels, int * errors)
+asm_lex_token * asm_parse_label_declaration(asm_lex_token * token, asm_hash_table * labels, int * errors, asm_statement * statement)
 {
     assert(token -> type == LABEL);
+
+    asm_hash_table_insert(labels, token -> value.label, statement);
+    log("Added Label to symbol table: %s\n", token -> value.label);
+
     return token -> next;
 }
 
@@ -499,12 +511,14 @@ and after being called, all of the parsing was a success.
 asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * labels, int * errors)
 {
     asm_statement * to_return = NULL;
+    asm_statement * walker    = NULL;
     asm_lex_token * current_token = tokens;
 
     // Iterate over all of the tokens in the stream.
     while(current_token != NULL)
     {
         asm_statement * to_add = calloc(1, sizeof(asm_statement));
+        to_add -> prev = walker;
 
         switch(current_token -> type)
         {
@@ -519,14 +533,27 @@ asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * 
                 break;
 
             case (LABEL):
-                current_token = asm_parse_label_declaration(current_token, labels, errors);
-                break;
+                current_token = asm_parse_label_declaration(current_token, labels, errors, to_add -> prev);
+                free(to_add);
+                continue;
 
             default:
                 error("Unexpected token type: %d\n", current_token -> type);
                 *errors += 1;
                 current_token = current_token -> next;
-                break;
+                free(to_add);
+                continue;
+        }
+
+        if(walker == NULL)
+        {
+            walker = to_add;
+            to_return = walker;
+        }
+        else
+        {
+            walker -> next = to_add;
+            walker = walker -> next;
         }
     }
 

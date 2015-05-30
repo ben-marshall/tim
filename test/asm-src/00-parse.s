@@ -7,6 +7,7 @@ JUMP .main       ; Common setup to jump over the data section.
 
 DATA  0xABCDEF
 DATA  0x0DEAD0
+DATA  .main
 
 .main 
     CALL .body
