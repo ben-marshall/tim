@@ -9,7 +9,8 @@ SET(SRC_FILES   "asm.c"
                 "asm_lex.c"
                 "asm_hash_table.c"
                 "asm_parse.c"
-                "asm_control_flow.c")
+                "asm_control_flow.c"
+                "asm_emit.c")
 SET(HEADER_FILES "asm.h")
 
 include_directories("../common")

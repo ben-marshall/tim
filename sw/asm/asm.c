@@ -145,6 +145,12 @@ int main(int argc, char ** argv)
     log("Parsing Token Stream...\n");
     error_count = asm_calculate_addresses(cxt -> statements, 0, cxt -> symbol_table);
     if(error_count > 0) fatal("%d Address Calculation Errors\n", error_count);
+    
+    log("Emitting Binary...\n");
+    error_count = asm_emit_instructions(cxt -> statements, cxt -> binary, cxt -> format);
+    if(error_count > 0) fatal("%d Code Emission Errors\n", error_count);
+
+    log("[DONE]\n");
 
     fclose(cxt -> source);
     fclose(cxt -> binary);

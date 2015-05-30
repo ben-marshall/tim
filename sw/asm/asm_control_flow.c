@@ -50,7 +50,7 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
             }
 
             unsigned int address_difference = target -> address;
-            log("Calculated jump to %d\n", address_difference);
+            //log("Calculated jump to %d\n", address_difference);
             walker -> args.immediate.immidiate = address_difference;
         }
         walker = walker -> next;
