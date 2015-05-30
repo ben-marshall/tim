@@ -21,9 +21,6 @@
 #endif
 #define TIM_PRINT_PROMPT "\e[1;36masm>\e[0m "
 
-//! Stores what sort of statement a parsed instruction is.
-typedef enum asm_statement_type_e {NOP, DATA, OPCODE, LABEL} asm_statement_type;
-
 /*!
 @brief Stores all information on a single ASM instruction.
 @details Stores the opcode and arguments of an ASM instruction. This includes instructions that
@@ -33,27 +30,10 @@ instruction for any label pointers too it.
 typedef struct asm_statement_t asm_statement;
 struct asm_statement_t
 {
-    //! The instruction the statment refers too.
-    tim_instruction instruction;
-
-    //! Register Argument 1
-    tim_register reg_1;
-    //! Register Argument 2
-    tim_register reg_2;
-    //! Register Argument 3
-    tim_register reg_3;
-
-    //! Immediate operand to the instruction.
-    tim_immediate immediate;
-
-    //! The target label used for JUMP and CALL instructions.
-    char * target_label;
-
-    //! Is this an opcode, data/NOP or label?
-    asm_statement_type type;
 
     //! The address of the instruction in byte-aligned memory.
     unsigned int address;
+
     //! The line number of the source file the instruction came from.
     unsigned int line_number;
 
@@ -104,6 +84,9 @@ typedef struct asm_hash_table_t
 
 } asm_hash_table;
 
+//! Dirty forward declaration to avoid complaint about the token_stream member of asm_context.
+typedef struct asm_lex_token_t asm_lex_token;
+
 /*!
 @brief Contains all information for the program in a format that can be easily passed around.
 */
@@ -124,6 +107,8 @@ typedef struct asm_context_t
 
     //! The asm program in linked list form.
     asm_statement * statements;
+    //! The tokens stream parsed from the raw file.
+    asm_lex_token * token_stream;
 
     //! Stores all of the (label, asm_statement) pairs for the program where the labels are
     //! all of the jump target labels.

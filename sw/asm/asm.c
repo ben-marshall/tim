@@ -6,6 +6,7 @@
 */
 
 #include "asm.h"
+#include "asm_lex.h"
 
 /*!
 @brief prints usage instructions for the program.
@@ -130,16 +131,11 @@ int main(int argc, char ** argv)
     cxt -> statements = NULL;
     cxt -> symbol_table = calloc(1, sizeof(asm_hash_table));
     asm_hash_table_new(25, cxt -> symbol_table);
-    
-    // Parse everything into a linked list of statments.
-    int errors = 0;
-    cxt -> statements = asm_parse_input(cxt -> source, cxt -> symbol_table, &errors);
-    if(errors > 0) fatal("Encountered %d parser errors.\n", errors);
 
-    // Calculate memory addresses for each statment for jumps. Hard code a base address of zero
-    // for now.
-    errors = asm_calculate_addresses(cxt -> statements, 0);
-    if(errors > 0) fatal("Encountered %d errors in address calculation.\n", errors);
+    int error_count = 0;
+    
+    log("Lexing input file...\n");
+    cxt -> token_stream = asm_lex_input_file(cxt -> source, &error_count);
 
 
     fclose(cxt -> source);

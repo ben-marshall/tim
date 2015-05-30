@@ -5,6 +5,8 @@ project(tim-sw-asm)
 MESSAGE( STATUS "PROJECT NAME:            " ${PROJECT_NAME} )
 
 SET(SRC_FILES   "asm.c"
+                "asm_lex.h"
+                "asm_lex.c"
                 "asm_hash_table.c"
                 "asm_parse.c"
                 "asm_control_flow.c")
