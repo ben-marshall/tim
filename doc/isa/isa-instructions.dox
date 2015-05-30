@@ -287,8 +287,8 @@ destination or source operands.
 This is a 3 byte instruction
 
 @code
-Opcode  | Condition Code |  Destination | Source 1 | Source 2
-000100  |       00       |     DDDD     | RRRR     | rrrr
+Opcode  | Condition Code |  Destination | Source 1 | Source 2 | Bitmask
+000100  |       00       |     DDDD     | RRRR     | rrrr     | bbbb
 @endcode
 
 ### Assembly Code Examples
@@ -327,8 +327,8 @@ This is a 2 byte instruction. The GP/SR bit determines whether the destination r
 addressing the general purpose register bank or the special purpose / temporary register bank.
 
 @code
-Opcode  | Condition Code |  Destination | GP/SR | Don't Care
-000101  |       00       |     DDDD     |  1/0  | ???
+Opcode  | Condition Code | GP/SR | Destination | Don't Care
+000101  |       00       |  1/0  |    DDDD     | ???
 @endcode
 
 ### Assembly Code Examples
@@ -360,8 +360,8 @@ This is a 2 byte instruction. The GP/SR bit determines whether the source regist
 addressing the general purpose register bank or the special purpose / temporary register bank.
 
 @code
-Opcode  | Condition Code |  Source   | GP/SR | Don't Care
-000110  |       00       |   DDDD    |  1/0  | ???
+Opcode  | Condition Code | GP/SR |  Source   | Don't Care
+000110  |       00       |  1/0  |   DDDD    | ???
 @endcode
 
 ### Assembly Code Examples
@@ -393,8 +393,8 @@ This is a 3 byte instruction. GP/SR bits determine if the destination and source
 index the general or special purpose register files.
 
 @code
-Opcode  | Condition Code | Destination |  Source  | GP/SR 1 | GP/SR 2 | Don't Care
-000111  |       00       |    DDDD     |   ssss   |  1/0    |  1/0    | ???? ??
+Opcode  | Condition Code | GP/SR 1 | Destination | GP/SR 2 |  Source  | Don't Care
+000111  |       00       |  1/0    |    DDDD     |  1/0    |   ssss   | ???? ??
 @endcode
 
 ### Assembly Code Examples
@@ -427,8 +427,8 @@ This is a 4 byte instruction. GP/SR bits determine if the destination and source
 index the general or special purpose register files.
 
 @code
-Opcode  | Condition Code | Destination | GP/SP | Immediate
-000111  |       00       |    DDDD     |   I   | III IIII IIII IIII IIII
+Opcode  | Condition Code | GP/SP | Destination | Immediate
+000111  |       00       |   I   |    DDDD     | III IIII IIII IIII IIII
 @endcode
 
 ### Assembly Code Examples
@@ -461,8 +461,8 @@ This is a 2 byte instruction. GP/SR bits determine if the destination and source
 index the general or special purpose register files.
 
 @code
-Opcode  | Condition Code | Source | GP/SP | Don't Care
-001000  |       00       |  SSSS  |   I   |   ???
+Opcode  | Condition Code | GP/SP | Source | Don't Care
+001000  |       00       |   I   |  SSSS  |   ???
 @endcode
 
 ### Assembly Code Examples
@@ -483,13 +483,8 @@ Opcode  | Condition Code | Source | GP/SP | Don't Care
 ###Description
 
 Set the program counter to the value of the immediate. Used for jumping over data sections and
-non-return based control flow. The instruction supports both absoloute and relative jumps.
-
-In absoloute mode, the immediate is treated as an unsigned byte aligned value and the PC is
-simply set to that value.
-
-In relative mode, the immediate is treated as a 2's complement value and added too the program
-counter.
+non-return based control flow. The immediate is treated as an unsigned byte aligned value and the 
+PC is simply set to that value.
 
 ###Register Access
 
@@ -498,13 +493,10 @@ counter.
 
 ###Memory Layout
 
-This is a 4 byte instruction with 23 bits representing the immediate. If the relative bit is unset,
-then we assume this is an absoloute mode jump. Otherwise it is a relative jump and the immediate
-is treated as a 2's complete number.
-
+This is a 4 byte instruction with 24 bits representing the immediate.
 @code
-Opcode  | Condition Code | Relative? | Immediate
-001000  |       00       |    0/1    | III IIII IIII IIII IIII IIII
+Opcode  | Condition Code |  Immediate
+001000  |       00       |  IIII IIII IIII IIII IIII IIII
 @endcode
 
 ### Assembly Code Examples
@@ -538,8 +530,8 @@ This is a 2 byte instruction GP/SR bits determine if the destination and source 
 index the general or special purpose register files.
 
 @code
-Opcode  | Condition Code | Source  | GP/SP | Don't Care
-001000  |       00       |  SSSS   |   I   |   ???
+Opcode  | Condition Code | GP/SP | Source  | Don't Care
+001000  |       00       |   I   |  SSSS   |   ???
 @endcode
 
 ### Assembly Code Examples
@@ -591,9 +583,16 @@ CALL 0x5
 
 ###Description
 
-This is an alias instruction for 'MOVR $PC $LR'.
-
 It moves the top of the stack into the program counter.
+
+###Memory Layout
+
+This is a 1 byte instruction.
+
+@code
+Opcode  | Condition Code 
+001000  |       00       
+@endcode
 
 @see @ref instructions-list, @ref MOVR
 
@@ -604,7 +603,8 @@ It moves the top of the stack into the program counter.
 
 ###Description
 
-
+Compares the two supplied register values using the supplied comparison operation and sets the
+LSB of the test result register according to its outcome.
 
 ###Register Access
 
@@ -635,20 +635,20 @@ This is a X byte instruction
 
 ###Description
 
-
+Halts all processing until the core is reset.
 
 ###Register Access
 
-
+This instruction does not access any registers.
 
 ###Memory Layout
 
-This is a X byte instruction
+This is a 1 byte instruction
 
- ```
-
-
-```
+@code
+Opcode  | Condition Code 
+001000  |       00       
+@endcode
 
 ### Assembly Code Examples
 

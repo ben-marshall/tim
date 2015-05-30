@@ -126,8 +126,6 @@ typedef enum tim_instruction_opcode_e {
     POP   , //!< Pop element at top of stack into register X and increment the stack pointer.
     MOVR  , //!< Move the content of register X into register Y
     MOVI  , //!< Move immediate I into register X
-    MOVSR , //!< Move content of special register X into general register Y
-    MOVRS , //!< Move content of general register X into special register Y
     JUMPR , //!< Jump to address contained within register X
     JUMPI , //!< Jump to address contained within instruction immediate.
     CALLR , //!< Call to function who's address is contained within register X

@@ -8,6 +8,147 @@
 #include "asm.h"
 
 int asm_emit_opcode_LOADR (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
+    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (23-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (23-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (23-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, 3, 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_LOADI (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_STORI (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_STORR (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
+    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (23-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (23-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (23-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, 3, 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_PUSH  (asm_statement * statement, FILE * file, asm_format format){
+    unsigned short to_write  = ((unsigned int)statement -> opcode)    << (15-6);
+    to_write |= ((unsigned int)statement -> condition) << (15-6-2);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (15-6-2-5);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_POP   (asm_statement * statement, FILE * file, asm_format format){
+    unsigned short to_write  = ((unsigned int)statement -> opcode)    << (15-6);
+    to_write |= ((unsigned int)statement -> condition) << (15-6-2);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (15-6-2-5);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_MOVR  (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
+    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_1) << (23-6-2-5);
+    to_write |= ((unsigned int)statement -> args.reg_reg.reg_2) << (23-6-2-5-5);
+
+    fwrite(&to_write, 3 , 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_MOVI  (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_immediate.reg_1) << (31-6-2-5);
+    to_write |= ((unsigned int)statement -> args.reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_JUMPR (asm_statement * statement, FILE * file, asm_format format){
+    unsigned short to_write  = ((unsigned int)statement -> opcode)    << (15-6);
+    to_write |= ((unsigned int)statement -> condition) << (15-6-2);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (15-6-2-5);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_JUMPI (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_CALLR (asm_statement * statement, FILE * file, asm_format format){
+    unsigned short to_write  = ((unsigned int)statement -> opcode)    << (15-6);
+    to_write |= ((unsigned int)statement -> condition) << (15-6-2);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (15-6-2-5);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_CALLI (asm_statement * statement, FILE * file, asm_format format){
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_RETURN(asm_statement * statement, FILE * file, asm_format format){
+    unsigned char to_write  = ((unsigned char)statement -> opcode)    << (7-6);
+    to_write |= ((unsigned char)statement -> condition);
+     
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_TEST  (asm_statement * statement, FILE * file, asm_format format){
+    error("Instruction Emission not yet implemented\n");
+    return 0;
+}
+
+int asm_emit_opcode_HALT  (asm_statement * statement, FILE * file, asm_format format){
+    unsigned char to_write  = ((unsigned char)statement -> opcode)    << (7-6);
+    to_write |= ((unsigned char)statement -> condition);
+     
+    fwrite(&to_write, sizeof(to_write), 1, file);
+    return 0;
+}
+
+int asm_emit_opcode_ANDR  (asm_statement * statement, FILE * file, asm_format format){
     unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
     to_write |= ((unsigned int)statement -> condition) << (31-6-2);
     to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
@@ -19,118 +160,75 @@ int asm_emit_opcode_LOADR (asm_statement * statement, FILE * file, asm_format fo
     return 0;
 }
 
-int asm_emit_opcode_LOADI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_STORI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_STORR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_PUSH  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_POP   (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_MOVR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_MOVI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_MOVSR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_MOVRS (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_JUMPR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_JUMPI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_CALLR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_CALLI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_RETURN(asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_TEST  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_HALT  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
-int asm_emit_opcode_ANDR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
-    return 0;
-}
-
 int asm_emit_opcode_NANDR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_ORR   (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_NORR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_XORR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_LSLR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_LSRR  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
@@ -140,167 +238,371 @@ int asm_emit_opcode_NOTR  (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_ANDI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_NANDI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_ORI   (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_NORI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_XORI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_LSLI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_LSRI  (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IADDI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_ISUBI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IMULI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IDIVI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IALSI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IASRI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IADDR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_ISUBR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IMULR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IDIVR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IASLR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_IASRR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FADDI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FSUBI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FMULI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FDIVI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FASLI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FASRI (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FADDR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FSUBR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FMULR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FDIVR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FASLR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_FASRR (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    to_write |= 0xF;
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_SLEEP (asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned short to_write  = ((unsigned int)statement -> opcode)    << (15-6);
+    to_write |= ((unsigned int)statement -> condition) << (15-6-2);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (15-6-2-5);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
 int asm_emit_opcode_NOT_EMITTED(asm_statement * statement, FILE * file, asm_format format){
-    error("Instruction Emission not yet implemented\n");
+    unsigned int to_write  = ((unsigned int)statement -> args.immediate.immediate);
+
+    fwrite(&to_write, sizeof(to_write), 1, file);
     return 0;
 }
 
@@ -330,8 +632,6 @@ int asm_emit_instructions(asm_statement * statements, FILE * file, asm_format fo
             case (POP   ):   asm_emit_opcode_POP  (walker, file, format); break;  
             case (MOVR  ):   asm_emit_opcode_MOVR (walker, file, format); break;  
             case (MOVI  ):   asm_emit_opcode_MOVI (walker, file, format); break;  
-            case (MOVSR ):   asm_emit_opcode_MOVSR(walker, file, format); break;  
-            case (MOVRS ):   asm_emit_opcode_MOVRS(walker, file, format); break;  
             case (JUMPR ):   asm_emit_opcode_JUMPR(walker, file, format); break;  
             case (JUMPI ):   asm_emit_opcode_JUMPI(walker, file, format); break;  
             case (CALLR ):   asm_emit_opcode_CALLR(walker, file, format); break;  

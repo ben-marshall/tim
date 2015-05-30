@@ -45,18 +45,18 @@ typedef struct asm_args_reg_tripple_t{
 typedef struct asm_args_reg_double_imm_t{
     tim_register reg_1;
     tim_register reg_2;
-    tim_immediate immidiate;
+    tim_immediate immediate;
 } asm_args_reg_double_imm;
 
 //! Register arguments structure for opcodes with one register argument and an immediate.
 typedef struct asm_args_reg_single_imm{
     tim_register reg_1;
-    tim_immediate immidiate;
+    tim_immediate immediate;
 } asm_args_reg_single_imm;
 
 //! Register arguments structure for opcodes with one immediate.
 typedef struct asm_args_single_imm{
-    tim_immediate immidiate;
+    tim_immediate immediate;
 } asm_args_single_imm;
 
 //! Register arguments structure for opcodes with one immediate who's value is a label.

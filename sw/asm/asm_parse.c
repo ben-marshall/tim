@@ -32,7 +32,7 @@ asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * t
         else if(operand -> type == IMMEDIATE)
         {
             statement -> opcode = JUMPI;
-            statement -> args.immediate.immidiate = operand -> value.immediate;
+            statement -> args.immediate.immediate = operand -> value.immediate;
             statement -> size = 4;
         }
         else if(operand -> type == LABEL)
@@ -59,7 +59,7 @@ asm_lex_token * asm_parse_call_jump(asm_statement * statement, asm_lex_token * t
         else if(operand -> type == IMMEDIATE)
         {
             statement -> opcode = CALLI;
-            statement -> args.immediate.immidiate = operand -> value.immediate;
+            statement -> args.immediate.immediate = operand -> value.immediate;
             statement -> size = 4;
         }
         else if(operand -> type == LABEL)
@@ -170,7 +170,7 @@ asm_lex_token * asm_parse_two_register_one_immediate(asm_statement * statement, 
 
     statement -> args.reg_reg_immediate.reg_1 = operand_1 -> value.reg;
     statement -> args.reg_reg_immediate.reg_2 = operand_2 -> value.reg;
-    statement -> args.reg_reg_immediate.immidiate = operand_3 -> value.immediate;
+    statement -> args.reg_reg_immediate.immediate = operand_3 -> value.immediate;
 
     statement -> size = 3;
     
@@ -279,7 +279,7 @@ asm_lex_token * asm_parse_two_operand(asm_statement * statement, asm_lex_token *
         if(operand_2 -> type == IMMEDIATE)
         {
             statement -> args.reg_immediate.reg_1 = operand_1 -> value.reg;
-            statement -> args.reg_immediate.immidiate= operand_2 -> value.immediate;
+            statement -> args.reg_immediate.immediate= operand_2 -> value.immediate;
         }
         else
         {
@@ -314,7 +314,7 @@ asm_lex_token * asm_parse_data(asm_statement * statement, asm_lex_token * token,
     statement -> size = 4;
     if(operand_1 -> type == IMMEDIATE)
     {
-        statement -> args.immediate.immidiate = operand_1 -> value.immediate;
+        statement -> args.immediate.immediate = operand_1 -> value.immediate;
         statement -> label_to_resolve = FALSE;
     }
     else if(operand_1 -> type == LABEL)
