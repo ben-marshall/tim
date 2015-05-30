@@ -134,9 +134,13 @@ int main(int argc, char ** argv)
 
     int error_count = 0;
     
-    log("Lexing input file...\n");
-    cxt -> token_stream = asm_lex_input_file(cxt -> source, &error_count);
+    log("Lexing Input File...\n");
+    asm_lex_token * token_stream = asm_lex_input_file(cxt -> source, &error_count);
+    if(error_count > 0) fatal("%d Lexer Errors\n", error_count);
 
+    log("Parsing Token Stream...\n");
+    cxt -> statements   = asm_parse_token_stream(token_stream, cxt -> symbol_table, &error_count);
+    if(error_count > 0) fatal("%d Parser Errors\n", error_count);
 
     fclose(cxt -> source);
     fclose(cxt -> binary);

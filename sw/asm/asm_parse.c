@@ -8,54 +8,65 @@
 #include "asm.h"
 
 
+asm_lex_token * asm_parse_opcode(asm_statement * statment, asm_lex_token * token, int * errors)
+{
+    assert(token -> type == OPCODE);
+
+    switch(token -> value.opcode)
+    {
+        default:
+            error("Unknown asm opcode: %d\n", token -> value.opcode);
+            break;
+    }
+
+    return token -> next;
+}
+
+asm_lex_token * asm_parse_label_declaration(asm_lex_token * token, asm_hash_table * labels, int * errors)
+{
+    return token -> next;
+}
+
+
 /*!
 @brief Top function to trigger the parsing of an input source file.
 @details Takes an opened for reading text file and parses it into a series of asm statements,
 filling out their arguments and parameters as it goes. It also populates the hash-table of
 labels used for calculating jump target addresses.
 @see The ISA Specification contains more information on the grammar of the assembly language.
-@param [in] source - Opened source file pointer. Open in "r" mode.
 @param [inout] labels - Hashtable which is apopulated with any encountered labels.
 @param [inout] errors - Pointer to a error counter. If the counter has the same value before
 and after being called, all of the parsing was a success.
 @returns The parsed statements as a doublely linked list.
 */
-asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors)
+asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * labels, int * errors)
 {
-    int lines_read = 0;
-    char * line = NULL;
+    asm_statement * to_return = NULL;
+    asm_lex_token * current_token = tokens;
 
-    asm_statement * walker = NULL;
-    asm_statement * head   = NULL;
-
-    while(feof(source) == 0)
+    // Iterate over all of the tokens in the stream.
+    while(current_token != NULL)
     {
-        line = NULL;
-        if(line == NULL) break;
+        asm_statement * to_add = calloc(1, sizeof(asm_statement));
 
-        lines_read ++;
-        fflush(stdout);
+        switch(current_token -> type)
+        {
+            case (OPCODE):
+                current_token = asm_parse_opcode(to_add, current_token, errors);
+                break;
 
-        if(walker == NULL)
-        {
-            walker = calloc(1, sizeof(asm_statement));
-            head = walker;
-        }
-        else
-        {
-            walker -> next = calloc(1, sizeof(asm_statement));
-            if(walker -> next != NULL)
-            {
-                walker -> next -> prev = walker;
-                walker  = walker -> next;
-            }
+            case (LABEL):
+                current_token = asm_parse_label_declaration(current_token, labels, errors);
+                break;
+
+            default:
+                error("Unexpected token type: %d\n", current_token -> type);
+                *errors += 1;
+                break;
         }
 
-        free(line);
+        current_token = current_token -> next;
     }
 
-    if(head == NULL)
-        error("Returning NULL walker in parser.\n");
-
-    return head;
+    return to_return;
 }

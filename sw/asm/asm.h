@@ -13,6 +13,8 @@
 
 #include "common.h"
 
+#include "asm_lex.h"
+
 #ifndef ASM_H
 #define ASM_H
 
@@ -84,9 +86,6 @@ typedef struct asm_hash_table_t
 
 } asm_hash_table;
 
-//! Dirty forward declaration to avoid complaint about the token_stream member of asm_context.
-typedef struct asm_lex_token_t asm_lex_token;
-
 /*!
 @brief Contains all information for the program in a format that can be easily passed around.
 */
@@ -132,13 +131,12 @@ int asm_calculate_addresses(asm_statement * statements, unsigned int base_addres
 filling out their arguments and parameters as it goes. It also populates the hash-table of
 labels used for calculating jump target addresses.
 @see The ISA Specification contains more information on the grammar of the assembly language.
-@param [in] source - Opened source file pointer. Open in "r" mode.
 @param [inout] labels - Hashtable which is apopulated with any encountered labels.
 @param [inout] errors - Pointer to a error counter. If the counter has the same value before
 and after being called, all of the parsing was a success.
 @returns The parsed statements as a doublely linked list.
 */
-asm_statement * asm_parse_input(FILE * source, asm_hash_table * labels, int * errors);
+asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * labels, int * errors);
 
 
 /*!
