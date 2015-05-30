@@ -119,6 +119,22 @@ The `DATA` instruction does not actually execute anything. It simply reserves 4 
 space for its single immediate value. It should be used to load constants into global or heap
 memory.
 
+@section condition-codes Conditional Execution Codes
+
+Any instruction (but not a label) may be preceded by a condtional execution code which defines
+a predicate that must be satisfied, lest it be treated as a NOP instruction. These codes are
+defined thus:
+
+Code | Predicate
+-----|--------------------------------------------------------
+`?A` | Always executed. This is the default.
+`?T` | Execute only if the result of the last TEST instruction was TRUE.
+`?F` | Execute only if the result of the last TEST instruction was FALSE.
+`?Z` | Execute only if the zero flag is set.
+
+If a condition code is omitted from the instruction statement, it is assumed to be `?A` and the
+instruction will always execute by default.
+
 ---
 
 @section grammar Grammar
@@ -147,10 +163,12 @@ IMM_HEX               ::= '0h' ('0'..'9' | 'A'..'F')+
 IMM_FLOAT             ::= '0f' ('0'..'9')+ ('.' ('0'..'9')+)? ('e' ('-')? ('0'..'9')+)?
 IMMEDIATE             ::= (IMM_BINARY | IMM_HEX | IMM_DECIMAL | IMM_FLOAT)
 
+CONDITION_CODE        ::= '?' ('A' | 'T' | 'F' | 'Z')
+
 PROGRAM               ::= (LINE NEWLINE)+
 
 LINE                  ::= COMMENT | 
-                          LABEL_DECLARATION (INSTRUCTION)? COMMENT |
+                          LABEL_DECLARATION ((CONDITION_CODE)? INSTRUCTION)? COMMENT |
                           NULL
                           
 
