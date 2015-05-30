@@ -205,94 +205,94 @@ INSTRUCTION           ::= I_LOAD   |
                           I_DATA   
 
 I_LOAD                ::= 'LOAD' GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |
-                          'LOAD' GENERAL_REG IMMEDIATE
+                          'LOAD' GENERAL_REG (IMMEDIATE | LABEL)
 
 I_STORE               ::= 'STORE' GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |
-                          'STORE' GENERAL_REG IMMEDIATE
+                          'STORE' GENERAL_REG (IMMEDIATE | LABEL)
 
 I_PUSH                ::= 'PUSH' REGISTER
     
 I_POP                 ::= 'POP' REGISTER
 
 I_MOV                 ::= 'MOV' REGISTER REGISTER |
-                          'MOV' REGISTER IMMEDIATE
+                          'MOV' REGISTER (LABEL | IMMEDIATE)
 
 I_JUMP                ::= 'JUMP' REGISTER |
-                          'JUMP' IMMEDIATE
+                          'JUMP' (IMMEDIATE | LABEL)
 
 I_CALL                ::= 'CALL' REGISTER |
-                          'CALL' IMMEDIATE
+                          'CALL' (IMMEDIATE | LABEL)
 
 I_RETURN              ::= 'RETURN'
 
 
-I_TEST                ::= TODO!
+I_TEST                ::= 'TEST' REGISTER REGISTER
 
 
 I_HALT                ::= 'HALT'
 
 
-I_AND                 ::= TODO!
+I_AND                 ::= 'AND' REGISTER REGISTER REGISTER |
+                          'AND' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_NAND                ::= 'NAND' REGISTER REGISTER REGISTER |
+                          'NAND' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_OR                  ::= 'OR' REGISTER REGISTER REGISTER |
+                          'OR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_NOR                 ::= 'NOR' REGISTER REGISTER REGISTER |
+                          'NOR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_XOR                 ::= 'XOR' REGISTER REGISTER REGISTER |
+                          'XOR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_LSL                 ::= 'LSL' REGISTER REGISTER REGISTER |
+                          'LSL' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_LSR                 ::= 'LSR' REGISTER REGISTER REGISTER |
+                          'LSR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_NOT                 ::= 'NOT' REGISTER REGISTER
 
 
-I_NAND                ::= TODO!
+I_IADD                ::= 'IADD' REGISTER REGISTER REGISTER |
+                          'IADD' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_ISUB                ::= 'ISUB' REGISTER REGISTER REGISTER |
+                          'ISUB' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_IMUL                ::= 'IMUL' REGISTER REGISTER REGISTER |
+                          'IMUL' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_IDIV                ::= 'IDIV' REGISTER REGISTER REGISTER |
+                          'IDIV' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_IASR                ::= 'IASR' REGISTER REGISTER REGISTER |
+                          'IASR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_FADD                ::=  'FADD' REGISTER REGISTER REGISTER |
+                           'FADD' REGISTER REGISTER (IMMEDIATE | LABEL)
+                                                              
+I_FSUB                ::=  'FSUB' REGISTER REGISTER REGISTER |
+                           'FSUB' REGISTER REGISTER (IMMEDIATE | LABEL)
+                                                              
+I_FMUL                ::=  'FMUL' REGISTER REGISTER REGISTER |
+                           'FMUL' REGISTER REGISTER (IMMEDIATE | LABEL)
+                                                              
+I_FDIV                ::=  'FDIV' REGISTER REGISTER REGISTER |
+                           'FDIV' REGISTER REGISTER (IMMEDIATE | LABEL)
+                                                              
+I_FASR                ::=  'FASR' REGISTER REGISTER REGISTER |
+                           'FASR' REGISTER REGISTER (IMMEDIATE | LABEL)
+
+I_NOP                 ::=  'NOP'
 
 
-I_OR                  ::= TODO!
+I_SLEEP               ::=  'SLEEP' REGISTER
 
 
-I_NOR                 ::= TODO!
-
-
-I_XOR                 ::= TODO!
-
-
-I_LSL                 ::= TODO!
-
-
-I_LSR                 ::= TODO!
-
-
-I_NOT                 ::= TODO!
-
-
-I_IADD                ::= TODO!
-
-
-I_ISUB                ::= TODO!
-
-
-I_IMUL                ::= TODO!
-
-
-I_IDIV                ::= TODO!
-
-
-I_IASR                ::= TODO!
-
-
-I_FADD                ::= TODO!
-
-
-I_FSUB                ::= TODO!
-
-
-I_FMUL                ::= TODO!
-
-
-I_FDIV                ::= TODO!
-
-
-I_FASR                ::= TODO!
-
-
-I_NOP                 ::= TODO!
-
-
-I_SLEEP               ::= TODO! 
-
-
-I_DATA                ::= TODO! 
+I_DATA                ::=  'DATA' (IMMEDIATE | LABEL)
                           
 
 @endcode
