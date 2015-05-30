@@ -164,8 +164,8 @@ destination or source operands.
 This is a 3 byte instruction
 
 @code
-Opcode  | Condition Code |  Destination | Source 1 | Source 2
-000001  |       00       |     DDDD     | RRRR     | rrrr
+Opcode  | Condition Code |  Destination | Source 1 | Source 2 | Bit Mask
+000001  |       00       |     DDDD     | RRRR     | rrrr     | bbbb
 @endcode
 
 ### Assembly Code Examples
