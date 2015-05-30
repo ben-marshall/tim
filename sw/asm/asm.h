@@ -90,6 +90,9 @@ struct asm_statement_t
     //! The size in bytes of this instruction.
     tim_instruction_size   size;
 
+    //! The conditional execution code for this statement.
+    tim_condition           condition;
+
     //! Arguments to the instruction.
     asm_opcode_args args;
 

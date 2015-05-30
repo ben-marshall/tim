@@ -508,8 +508,14 @@ asm_statement * asm_parse_token_stream(asm_lex_token * tokens, asm_hash_table * 
 
         switch(current_token -> type)
         {
+            case (CONDITION):
+                to_add -> condition = current_token -> value.condition;
+                current_token = asm_parse_opcode(to_add, current_token -> next, errors);
+                break;
+
             case (OPCODE):
                 current_token = asm_parse_opcode(to_add, current_token, errors);
+                to_add -> condition = ALWAYS;
                 break;
 
             case (LABEL):

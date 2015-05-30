@@ -207,6 +207,20 @@ asm_lex_token *  asm_lex_input_file(FILE * input, int * errors)
                 skip = 1;
                 break;
             }
+            else if(token[0] == '?')
+            {
+                to_add -> type = CONDITION;
+                switch(token[1])
+                {
+                    case('A'): to_add -> value.condition = ALWAYS; break;
+                    case('T'): to_add -> value.condition = IFTRUE; break;
+                    case('F'): to_add -> value.condition = IFFALSE; break;
+                    case('Z'): to_add -> value.condition = IFZERO; break;
+                    default:
+                        error("Unknown condition code: '%c'\n", token[1]);
+                        break;
+                }
+            }
             else if(token[0] == '$')
             {
                 // It is a register!

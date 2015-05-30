@@ -185,6 +185,13 @@ tim_instruction_opcode opcode;
 //! The number of bytes the instruction occupies in memory.
 tim_instruction_size   size;
 
+//! A condition code for conditional execution.
+typedef enum tim_condition_e{
+    ALWAYS = 0,
+    IFTRUE   = 1,
+    IFFALSE  = 2,
+    IFZERO   = 3
+} tim_condition;
 
 /*!
 @brief Checks if the supplied register is a general purpose register or not.

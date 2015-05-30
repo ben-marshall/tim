@@ -85,6 +85,7 @@ typedef char asm_lex_label;
 typedef union asm_lex_token_value_e{
     tim_register     reg;
     tim_immediate    immediate;
+    tim_condition    condition;
     asm_lex_opcode   opcode;
     asm_lex_label  * label;
 } asm_lex_token_value;
@@ -94,7 +95,8 @@ typedef enum asm_lex_token_type_e{
     OPCODE, 
     LABEL,
     REGISTER,
-    IMMEDIATE
+    IMMEDIATE,
+    CONDITION
 } asm_lex_token_type;
 
 
