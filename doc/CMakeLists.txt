@@ -18,10 +18,16 @@ if(DOXYGEN_FOUND)
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating Software Documentation" VERBATIM
     )
+    
+    add_custom_target(docs-hw
+    ${DOXYGEN_EXECUTABLE} doxygen-hw.config 2>&1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating Hardware Documentation" VERBATIM
+    )
 
     add_custom_target(docs
     echo "Built All Documentation."
-    DEPENDS docs-isa docs-sw
+    DEPENDS docs-isa docs-sw docs-hw
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating All Documentation" VERBATIM
     )
