@@ -16,4 +16,5 @@ package tim_bus is
     --! The number of bits used to represent the length of a burst.
     constant tim_bus_burst_width    : integer := 2;
 
+
 end package;
