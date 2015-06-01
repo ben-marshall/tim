@@ -12,6 +12,7 @@ use ieee.numeric_std.ALL;
 
 use work.tim_common.opcode_length;
 
+--! Package that contains declarations and definitions for all instruction opcodes and their lengths.
 package tim_instructions is
     
     --! Load to register X from address in register Y with offset in register Z.     
