@@ -97,19 +97,28 @@ architecture mem_dummy_sim of mem_dummy is
     -- Internal signals.
     --
 
+    --! Whether or not the memory controller is responding to a read (low) or write (high).
     signal request_read_write      : std_logic;
+    --! THe address of the memory request.
     signal request_address_lines   : std_logic_vector(data_width-1 downto 0);
+    --! The write data of the memory request.
     signal request_data_lines      : std_logic_vector(data_width-1 downto 0);
+    --! High if the data, address and read_write request lines are valid and should be responded too.
     signal request_pending         : std_logic;
+    --! Used to signal to the memory controller than the request has been dealt with and it can read back requst_data_lines.
     signal request_done            : std_logic;
 
     type memory_state is (MEM_RESET, IDLE, READ, WRITE);
 
+    --! Current state of the dummy memory.
     signal current_state        : memory_state := MEM_RESET;
+    --! Next state of the dummy memory.
     signal next_state           : memory_state := IDLE;
 
+    --! Datatype that pretends to be an array of memory words.
     type memory_array is array (0 to mem_size) of std_logic_vector(data_width-1 downto 0);
 
+    --! The memory array variable that stores all of the values.
     shared variable memory               : memory_array;
 
 begin
