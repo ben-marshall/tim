@@ -38,6 +38,11 @@
 }
 #nav-tree .item{
     margin: 7px;
+    padding: 3px;
+    padding-right:0px;
+    padding-left:0px;
+    margin-right:0px;
+    margin-left:0px;
 }
 #nav-tree .label{
     font-size : 14px;
@@ -48,6 +53,63 @@
 .ui-resizable-e{
     background-color: silver;
     background-image: none;
+}
+#titlearea table{
+    width:100%;
+}
+#projectname{
+    text-align: center;
+}
+#projectlogo{
+    width:80px;
+}
+.head-navbar{
+    width:270px;
+    padding-right:12px;
+}
+.head-navbar ul {
+    list-style:none;
+    height:40px;
+    padding:0;
+    background: #eee;
+    background: -moz-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
+    background: -webkit-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -o-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -ms-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    border-radius:5px;
+    border:1px solid #d2d2d2;
+    box-shadow:inset #fff 0 1px 0, inset rgba(0,0,0,0.03) 0 -1px 0;
+    width:270px;
+}
+.head-navbar li {
+    width:89px;
+    float:left;
+    border-right:1px solid #d2d2d2;
+    height:40px;
+}
+.head-navbar ul a {
+    line-height:1;
+    font-size:11px;
+    color:#999;
+    display:block;
+    text-align:center;
+    padding-top:6px;
+    height:40px;
+}
+.head-navbar ul li + li {
+      width:88px;
+        border-left:1px solid #fff;
+}
+.head-navbar ul li + li + li {
+      border-right:none;
+        width:89px;
+}
+.head-navbar ul a strong {
+      font-size:14px;
+        display:block;
+          color:#222;
 }
 </style>
 </head>
@@ -62,7 +124,14 @@
    <div id="projectname">T.I.M | ISA Specification
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
+  <td class="head-navbar">
+    <ul>
+        <li><a href="../isa/index.html">Instruction Set<strong>Architecture</strong></a></li>
+        <li><a href="../hw/index.html">Documentation<strong>Hardware</strong></a></li>
+        <li><a href="../sw/index.html">Documentation<strong>Software</strong></a></li>
+    </ul>
+  </td>
+   <td style="width:0px;">        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.png"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -120,8 +189,264 @@ $(document).ready(function(){initNavTree('ISA.html','');});
 <div class="title">Assembly </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This page lists all information on the ISA assembly code structure, syntax and semantics. </p>
-</div></div><!-- contents -->
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#comments">Comments</a></li>
+<li class="level1"><a href="#tokens">Tokens</a><ul><li class="level2"><a href="#tokens-labels">Labels</a><ul><li class="level3"><a href="#tokens-labels-examples">Examples</a></li>
+</ul>
+</li>
+<li class="level2"><a href="#tokens-registers">Registers</a><ul><li class="level3"><a href="#tokens-registers-examples">Examples</a></li>
+</ul>
+</li>
+<li class="level2"><a href="#tokens-literals">Imediates & Literals</a><ul><li class="level3"><a href="#tokens-literals-examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="level1"><a href="#asm-macros">Macros and Special Instructions.</a><ul><li class="level2"><a href="#asm-macros-nop">NOP</a></li>
+<li class="level2"><a href="#asm-macros-data">DATA</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#condition-codes">Conditional Execution Codes</a></li>
+<li class="level1"><a href="#grammar">Grammar</a></li>
+</ul>
+</div>
+<div class="textblock"><p>This page lists all information on the ISA assembly code structure, syntax and semantics.</p>
+<h1><a class="anchor" id="comments"></a>
+Comments</h1>
+<p>All comments are single line only. The start of a commone is signified by a semicolon <code>;</code> and implicitly ended by a newline.</p>
+<h1><a class="anchor" id="tokens"></a>
+Tokens</h1>
+<p>This section details how to refer to registers and create labels &amp; immediate/literal values.</p>
+<p>These tokens are refered too later in the main assembly language grammar.</p>
+<dl class="section note"><dt>Note</dt><dd>The assembly language is <em>case sensitive</em>. If you refer to a token in any case other than the one specified, you will get an error.</dd></dl>
+<h2><a class="anchor" id="tokens-labels"></a>
+Labels</h2>
+<p>All label declarations are preceded by a single full stop or dot. They may contain alpha-numeric characters, dashes (<code>-</code>) and underscores (<code>_</code>). Labels must start with a letter however.</p>
+<p>Labels may be placed on their own line, or immedietly preceding an assembly instruction/opcode. They may not appear after an instruction on the same line. The exception to this is that some instructions (such as <a class="el" href="JUMPI.html">JUMPI</a> and <a class="el" href="JUMPR.html">JUMPR</a>) allow labels to be immediates/arguments. When used inside an instruction, the preceding dot should be omitted.</p>
+<h3><a class="anchor" id="tokens-labels-examples"></a>
+Examples</h3>
+<div class="fragment"><div class="line">.main</div>
+<div class="line">.text</div>
+<div class="line">.quick-stort</div>
+<div class="line">.quick-sort-aux</div>
+<div class="line">.printf_formatted</div>
+<div class="line">.array_start_1</div>
+<div class="line">.function2</div>
+</div><!-- fragment --><hr/>
+<h2><a class="anchor" id="tokens-registers"></a>
+Registers</h2>
+<p>All Registers are preceded by a <code>$</code> sign. Special purpose registers are refered to by their memonics detailed in <a class="el" href="isa-registers.html#registers-sp">Special Purpose Registers</a>. Hence to refer to the link register, we would use the token <code>$LR</code>. Remember that register memonics are case sensitive.</p>
+<p><a class="el" href="isa-registers.html#registers-gp">General Purpose Registers</a> are refered to by the letter <code>R</code> followed by their number. There are 16 general purpose registers numbered 0 to 15.</p>
+<p><a class="el" href="registers-sp-tmp.html">Temporary Registers</a> are refered to by the letter <code>T</code> followed by their number. There are 8 temporary registers numbered 0 to 7.</p>
+<h3><a class="anchor" id="tokens-registers-examples"></a>
+Examples</h3>
+<div class="fragment"><div class="line">$PC     ; Program Counter</div>
+<div class="line">$SP     ; Stack Pointer</div>
+<div class="line">$LR     ; Link Register</div>
+<div class="line">$R0     ; </div>
+<div class="line">$R9     ; General Purpose Registers</div>
+<div class="line">$R14    ; </div>
+<div class="line">$T6     ; Temporary <span class="keyword">register</span> six.</div>
+</div><!-- fragment --><hr/>
+<h2><a class="anchor" id="tokens-literals"></a>
+Imediates &amp; Literals</h2>
+<p>Immediates and literals simply refer to all constant values passed as arguments to instructions. Binary, Hexadecimal, Decimal and floating point literals are supported.</p>
+<ul>
+<li>Binary literals are refered to by prefixing their value with <code>0b</code> followed by ones and zeros as appropriate.</li>
+<li>Hex literals are prefixed with <code>0x</code> followed by a string of hex characters <code>0</code>..<code>F</code>.</li>
+<li>Decimal literals are prefixed with <code>0d</code> followed by decimal digits as needed. This is the default literal type, so if a literal is encountered with no <code>0?</code> prefix it is assumed to be a decimal.</li>
+<li>Floating point literals are prefixed with <code>0f</code> followed by decimal digits and a decimal point where needed.</li>
+</ul>
+<p>Not all literal types are valid as arguments to all instructions. Floating point literals for example make no sense as an argment to an integer arithmetic instruction.</p>
+<h3><a class="anchor" id="tokens-literals-examples"></a>
+Examples</h3>
+<div class="fragment"><div class="line">0b01010101  ; Binary literal.</div>
+<div class="line">0d50013     ; Eplicitly Decimal literal</div>
+<div class="line">0xAB50C     ; Hex literal.</div>
+<div class="line">0f3.141     ; Floating literal <span class="keywordflow">for</span> PI.</div>
+<div class="line">40823       ; An unprefixed literal, implicitly assumed to be decimal.</div>
+</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>Different instructions will accept literals of different sizes. When the supplied literal cannot be represented in the desired number of bits, the upper bits that do not fit are simply discarded.</dd></dl>
+<h1><a class="anchor" id="asm-macros"></a>
+Macros and Special Instructions.</h1>
+<p>There are some assembly instructions that are actually aliases for other instructions in a particular form, or that do not actually represent an operation.</p>
+<h2><a class="anchor" id="asm-macros-nop"></a>
+NOP</h2>
+<p>The <code>NOP</code> instruction stands for <em>no-operation</em> and has no side effects, it simply takes a single instruction cycle to execute. It is an alias for the <a class="el" href="ANDR.html">ANDR</a> instruction with all register operands set to R0.</p>
+<h2><a class="anchor" id="asm-macros-data"></a>
+DATA</h2>
+<p>The <code>DATA</code> instruction does not actually execute anything. It simply reserves 4 bytes of memory space for its single immediate value. It should be used to load constants into global or heap memory.</p>
+<h1><a class="anchor" id="condition-codes"></a>
+Conditional Execution Codes</h1>
+<p>Any instruction (but not a label) may be preceded by a condtional execution code which defines a predicate that must be satisfied, lest it be treated as a NOP instruction. These codes are defined thus:</p>
+<table class="doxtable">
+<tr>
+<th>Code </th><th>Predicate  </th></tr>
+<tr>
+<td><code>?A</code> </td><td>Always executed. This is the default. </td></tr>
+<tr>
+<td><code>?T</code> </td><td>Execute only if the result of the last TEST instruction was TRUE. </td></tr>
+<tr>
+<td><code>?F</code> </td><td>Execute only if the result of the last TEST instruction was FALSE. </td></tr>
+<tr>
+<td><code>?Z</code> </td><td>Execute only if the zero flag is set. </td></tr>
+</table>
+<p>If a condition code is omitted from the instruction statement, it is assumed to be <code>?A</code> and the instruction will always execute by default. </p>
+<hr/>
+<h1><a class="anchor" id="grammar"></a>
+Grammar</h1>
+<div class="fragment"><div class="line">NULL                  ::= </div>
+<div class="line"></div>
+<div class="line">NEWLINE               ::= <span class="charliteral">&#39;\r&#39;</span> | <span class="charliteral">&#39;\n&#39;</span> | <span class="stringliteral">&#39;\r\n&#39;</span></div>
+<div class="line"></div>
+<div class="line">BYTE_MASK             ::= (<span class="charliteral">&#39;0&#39;</span> | <span class="charliteral">&#39;1&#39;</span>) (<span class="charliteral">&#39;0&#39;</span> | <span class="charliteral">&#39;1&#39;</span>) (<span class="charliteral">&#39;0&#39;</span> | <span class="charliteral">&#39;1&#39;</span>) (<span class="charliteral">&#39;0&#39;</span> | <span class="charliteral">&#39;1&#39;</span>)</div>
+<div class="line"></div>
+<div class="line">LABEL_NAME            ::= <span class="charliteral">&#39;.&#39;</span> (<span class="charliteral">&#39;a&#39;</span>..<span class="charliteral">&#39;z&#39;</span> | <span class="charliteral">&#39;A&#39;</span>..<span class="charliteral">&#39;Z&#39;</span>) (<span class="charliteral">&#39;a&#39;</span>..<span class="charliteral">&#39;z&#39;</span> | <span class="charliteral">&#39;A&#39;</span>..<span class="charliteral">&#39;Z&#39;</span> | <span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span> | <span class="charliteral">&#39;-&#39;</span> | <span class="charliteral">&#39;_&#39;</span>)*</div>
+<div class="line">LABEL_DECLARATION     ::= LABEL_NAME</div>
+<div class="line"></div>
+<div class="line">COMMENT               ::= <span class="charliteral">&#39;;&#39;</span> (.*) NEWLINE</div>
+<div class="line"></div>
+<div class="line">SPECIAL_REG           ::= <span class="charliteral">&#39;$&#39;</span>  (<span class="stringliteral">&#39;SP&#39;</span> | <span class="stringliteral">&#39;PC&#39;</span> | <span class="stringliteral">&#39;LR&#39;</span> | <span class="stringliteral">&#39;IR&#39;</span> | <span class="stringliteral">&#39;IS&#39;</span> | <span class="stringliteral">&#39;SR&#39;</span> | <span class="stringliteral">&#39;TR&#39;</span>)</div>
+<div class="line">GENERAL_REG           ::= <span class="stringliteral">&#39;$R&#39;</span> (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span>) (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;5&#39;</span>)?</div>
+<div class="line">TEMP_REG              ::= <span class="stringliteral">&#39;$T&#39;</span> (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;7&#39;</span>)</div>
+<div class="line">REGISTER              ::= (SPECIAL_REG | GENERAL_REG | TEMP_REG)</div>
+<div class="line"></div>
+<div class="line">IMM_BINARY            ::= <span class="stringliteral">&#39;0b&#39;</span> (<span class="charliteral">&#39;0&#39;</span> | <span class="charliteral">&#39;1&#39;</span>)+</div>
+<div class="line">IMM_DECIMAL           ::= (<span class="stringliteral">&#39;0d&#39;</span>)? (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span>)+</div>
+<div class="line">IMM_HEX               ::= <span class="stringliteral">&#39;0h&#39;</span> (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span> | <span class="charliteral">&#39;A&#39;</span>..<span class="charliteral">&#39;F&#39;</span>)+</div>
+<div class="line">IMM_FLOAT             ::= <span class="stringliteral">&#39;0f&#39;</span> (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span>)+ (<span class="charliteral">&#39;.&#39;</span> (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span>)+)? (<span class="charliteral">&#39;e&#39;</span> (<span class="charliteral">&#39;-&#39;</span>)? (<span class="charliteral">&#39;0&#39;</span>..<span class="charliteral">&#39;9&#39;</span>)+)?</div>
+<div class="line">IMMEDIATE             ::= (IMM_BINARY | IMM_HEX | IMM_DECIMAL | IMM_FLOAT)</div>
+<div class="line"></div>
+<div class="line">CONDITION_CODE        ::= <span class="charliteral">&#39;?&#39;</span> (<span class="charliteral">&#39;A&#39;</span> | <span class="charliteral">&#39;T&#39;</span> | <span class="charliteral">&#39;F&#39;</span> | <span class="charliteral">&#39;Z&#39;</span>)</div>
+<div class="line"></div>
+<div class="line">PROGRAM               ::= (LINE NEWLINE)+</div>
+<div class="line"></div>
+<div class="line">LINE                  ::= COMMENT | </div>
+<div class="line">                          LABEL_DECLARATION ((CONDITION_CODE)? INSTRUCTION)? COMMENT |</div>
+<div class="line">                          NULL</div>
+<div class="line">                          </div>
+<div class="line"></div>
+<div class="line">INSTRUCTION           ::= I_LOAD   |</div>
+<div class="line">                          I_STORE  |</div>
+<div class="line">                          I_PUSH   |    </div>
+<div class="line">                          I_POP    |</div>
+<div class="line">                          I_MOV    |</div>
+<div class="line">                          I_JUMP   |</div>
+<div class="line">                          I_CALL   |</div>
+<div class="line">                          I_RETURN |</div>
+<div class="line">                          I_TEST   |</div>
+<div class="line">                          I_HALT   |</div>
+<div class="line">                          I_AND    |</div>
+<div class="line">                          I_NAND   |</div>
+<div class="line">                          I_OR     |</div>
+<div class="line">                          I_NOR    |</div>
+<div class="line">                          I_XOR    |</div>
+<div class="line">                          I_LSL    |</div>
+<div class="line">                          I_LSR    |</div>
+<div class="line">                          I_NOT    |</div>
+<div class="line">                          I_IADD   |</div>
+<div class="line">                          I_ISUB   |</div>
+<div class="line">                          I_IMUL   |</div>
+<div class="line">                          I_IDIV   |</div>
+<div class="line">                          I_IASR   |</div>
+<div class="line">                          I_FADD   |</div>
+<div class="line">                          I_FSUB   |</div>
+<div class="line">                          I_FMUL   |</div>
+<div class="line">                          I_FDIV   |</div>
+<div class="line">                          I_FASR   |</div>
+<div class="line">                          I_NOP    |</div>
+<div class="line">                          I_SLEEP  |</div>
+<div class="line">                          I_DATA   </div>
+<div class="line"></div>
+<div class="line">I_LOAD                ::= <span class="stringliteral">&#39;LOAD&#39;</span> GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |</div>
+<div class="line">                          <span class="stringliteral">&#39;LOAD&#39;</span> GENERAL_REG (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_STORE               ::= &#39;STORE&#39; GENERAL_REG GENERAL_REG GENERAL_REG (BYTE_MASK)? |</div>
+<div class="line">                          &#39;STORE&#39; GENERAL_REG (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_PUSH                ::= &#39;PUSH&#39; REGISTER</div>
+<div class="line">    </div>
+<div class="line">I_POP                 ::= &#39;POP&#39; REGISTER</div>
+<div class="line"></div>
+<div class="line">I_MOV                 ::= &#39;MOV&#39; REGISTER REGISTER |</div>
+<div class="line">                          &#39;MOV&#39; REGISTER (LABEL | IMMEDIATE)</div>
+<div class="line"></div>
+<div class="line">I_JUMP                ::= &#39;JUMP&#39; REGISTER |</div>
+<div class="line">                          &#39;JUMP&#39; (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_CALL                ::= &#39;CALL&#39; REGISTER |</div>
+<div class="line">                          &#39;CALL&#39; (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_RETURN              ::= &#39;RETURN&#39;</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_TEST                ::= &#39;TEST&#39; REGISTER REGISTER</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_HALT                ::= &#39;HALT&#39;</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_AND                 ::= &#39;AND&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;AND&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_NAND                ::= &#39;NAND&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;NAND&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_OR                  ::= &#39;OR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;OR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_NOR                 ::= &#39;NOR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;NOR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_XOR                 ::= &#39;XOR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;XOR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_LSL                 ::= &#39;LSL&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;LSL&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_LSR                 ::= &#39;LSR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;LSR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_NOT                 ::= &#39;NOT&#39; REGISTER REGISTER</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_IADD                ::= &#39;IADD&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;IADD&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_ISUB                ::= &#39;ISUB&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;ISUB&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_IMUL                ::= &#39;IMUL&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;IMUL&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_IDIV                ::= &#39;IDIV&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;IDIV&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_IASR                ::= &#39;IASR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                          &#39;IASR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_FADD                ::=  &#39;FADD&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                           &#39;FADD&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line">                                                              </div>
+<div class="line">I_FSUB                ::=  &#39;FSUB&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                           &#39;FSUB&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line">                                                              </div>
+<div class="line">I_FMUL                ::=  &#39;FMUL&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                           &#39;FMUL&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line">                                                              </div>
+<div class="line">I_FDIV                ::=  &#39;FDIV&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                           &#39;FDIV&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line">                                                              </div>
+<div class="line">I_FASR                ::=  &#39;FASR&#39; REGISTER REGISTER REGISTER |</div>
+<div class="line">                           &#39;FASR&#39; REGISTER REGISTER (IMMEDIATE | LABEL)</div>
+<div class="line"></div>
+<div class="line">I_NOP                 ::=  &#39;NOP&#39;</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_SLEEP               ::=  &#39;SLEEP&#39; REGISTER</div>
+<div class="line"></div>
+<div class="line"></div>
+<div class="line">I_DATA                ::=  &#39;DATA&#39; (IMMEDIATE | LABEL)</div>
+</div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.6-->
 <!-- start footer part -->

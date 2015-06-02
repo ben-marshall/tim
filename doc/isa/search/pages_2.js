@@ -2,8 +2,6 @@ var searchData=
 [
   ['faddi',['FADDI',['../FADDI.html',1,'instructions']]],
   ['faddr',['FADDR',['../FADDR.html',1,'instructions']]],
-  ['fasli',['FASLI',['../FASLI.html',1,'instructions']]],
-  ['faslr',['FASLR',['../FASLR.html',1,'instructions']]],
   ['fasri',['FASRI',['../FASRI.html',1,'instructions']]],
   ['fasrr',['FASRR',['../FASRR.html',1,'instructions']]],
   ['fdivi',['FDIVI',['../FDIVI.html',1,'instructions']]],

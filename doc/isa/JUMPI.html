@@ -38,6 +38,11 @@
 }
 #nav-tree .item{
     margin: 7px;
+    padding: 3px;
+    padding-right:0px;
+    padding-left:0px;
+    margin-right:0px;
+    margin-left:0px;
 }
 #nav-tree .label{
     font-size : 14px;
@@ -48,6 +53,63 @@
 .ui-resizable-e{
     background-color: silver;
     background-image: none;
+}
+#titlearea table{
+    width:100%;
+}
+#projectname{
+    text-align: center;
+}
+#projectlogo{
+    width:80px;
+}
+.head-navbar{
+    width:270px;
+    padding-right:12px;
+}
+.head-navbar ul {
+    list-style:none;
+    height:40px;
+    padding:0;
+    background: #eee;
+    background: -moz-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
+    background: -webkit-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -o-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -ms-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    border-radius:5px;
+    border:1px solid #d2d2d2;
+    box-shadow:inset #fff 0 1px 0, inset rgba(0,0,0,0.03) 0 -1px 0;
+    width:270px;
+}
+.head-navbar li {
+    width:89px;
+    float:left;
+    border-right:1px solid #d2d2d2;
+    height:40px;
+}
+.head-navbar ul a {
+    line-height:1;
+    font-size:11px;
+    color:#999;
+    display:block;
+    text-align:center;
+    padding-top:6px;
+    height:40px;
+}
+.head-navbar ul li + li {
+      width:88px;
+        border-left:1px solid #fff;
+}
+.head-navbar ul li + li + li {
+      border-right:none;
+        width:89px;
+}
+.head-navbar ul a strong {
+      font-size:14px;
+        display:block;
+          color:#222;
 }
 </style>
 </head>
@@ -62,7 +124,14 @@
    <div id="projectname">T.I.M | ISA Specification
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
+  <td class="head-navbar">
+    <ul>
+        <li><a href="../isa/index.html">Instruction Set<strong>Architecture</strong></a></li>
+        <li><a href="../hw/index.html">Documentation<strong>Hardware</strong></a></li>
+        <li><a href="../sw/index.html">Documentation<strong>Software</strong></a></li>
+    </ul>
+  </td>
+   <td style="width:0px;">        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.png"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -121,15 +190,18 @@ $(document).ready(function(){initNavTree('JUMPI.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h3>Description</h3>
+<p>Set the program counter to the value of the immediate. Used for jumping over data sections and non-return based control flow. The immediate is treated as an unsigned byte aligned value and the PC is simply set to that value.</p>
 <h3>Register Access</h3>
+<p>Has no explicit source or destination registers. It only implicitly sets the value of the program counter.</p>
 <h3>Memory Layout</h3>
-<p>This is a X byte instruction</p>
-<p>```</p>
-<p>```</p>
-<h3>Assembly Code Examples</h3>
-<p>```</p>
-<p>```</p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="instructions.html#instructions-list">Instructions Quick Reference</a></dd></dl>
+<p>This is a 4 byte instruction with 24 bits representing the immediate. </p>
+<div class="fragment"><div class="line">Opcode  | Condition Code |  Immediate</div>
+<div class="line">001000  |       00       |  IIII IIII IIII IIII IIII IIII</div>
+</div><!-- fragment --><h3>Assembly Code Examples</h3>
+<div class="fragment"><div class="line">JUMP 0xA0           ; Absoloute jump to 0xA0</div>
+<div class="line">JUMP 0x3 forward    ; Jump forward three bytes in memory.</div>
+<div class="line">JUMP 0x5 backward   ; Jump backward five bytes in memory.</div>
+</div><!-- fragment --><dl class="section see"><dt>See Also</dt><dd><a class="el" href="instructions.html#instructions-list">Instructions Quick Reference</a>, <a class="el" href="JUMPR.html">JUMPR</a>, <a class="el" href="CALLI.html">CALLI</a>, <a class="el" href="CALLR.html">CALLR</a></dd></dl>
 <hr/>
  </div></div><!-- contents -->
 </div><!-- doc-content -->

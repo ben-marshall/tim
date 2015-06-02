@@ -1,7 +1,26 @@
 var NAVTREE =
 [
   [ "T.I.M | ISA Specification", "index.html", [
-    [ "Assembly", "ISA.html", null ],
+    [ "Assembly", "ISA.html", [
+      [ "Comments", "ISA.html#comments", null ],
+      [ "Tokens", "ISA.html#tokens", [
+        [ "Labels", "ISA.html#tokens-labels", [
+          [ "Examples", "ISA.html#tokens-labels-examples", null ]
+        ] ],
+        [ "Registers", "ISA.html#tokens-registers", [
+          [ "Examples", "ISA.html#tokens-registers-examples", null ]
+        ] ],
+        [ "Imediates & Literals", "ISA.html#tokens-literals", [
+          [ "Examples", "ISA.html#tokens-literals-examples", null ]
+        ] ]
+      ] ],
+      [ "Macros and Special Instructions.", "ISA.html#asm-macros", [
+        [ "NOP", "ISA.html#asm-macros-nop", null ],
+        [ "DATA", "ISA.html#asm-macros-data", null ]
+      ] ],
+      [ "Conditional Execution Codes", "ISA.html#condition-codes", null ],
+      [ "Grammar", "ISA.html#grammar", null ]
+    ] ],
     [ "ISA Instructions", "instructions.html", "instructions" ],
     [ "ISA Registers", "isa-registers.html", "isa-registers" ]
   ] ]

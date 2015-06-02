@@ -38,6 +38,11 @@
 }
 #nav-tree .item{
     margin: 7px;
+    padding: 3px;
+    padding-right:0px;
+    padding-left:0px;
+    margin-right:0px;
+    margin-left:0px;
 }
 #nav-tree .label{
     font-size : 14px;
@@ -48,6 +53,63 @@
 .ui-resizable-e{
     background-color: silver;
     background-image: none;
+}
+#titlearea table{
+    width:100%;
+}
+#projectname{
+    text-align: center;
+}
+#projectlogo{
+    width:80px;
+}
+.head-navbar{
+    width:270px;
+    padding-right:12px;
+}
+.head-navbar ul {
+    list-style:none;
+    height:40px;
+    padding:0;
+    background: #eee;
+    background: -moz-linear-gradient(top, #f8f8f8 0%, #dddddd 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f8f8f8), color-stop(100%,#dddddd));
+    background: -webkit-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -o-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: -ms-linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    background: linear-gradient(top, #f8f8f8 0%,#dddddd 100%);
+    border-radius:5px;
+    border:1px solid #d2d2d2;
+    box-shadow:inset #fff 0 1px 0, inset rgba(0,0,0,0.03) 0 -1px 0;
+    width:270px;
+}
+.head-navbar li {
+    width:89px;
+    float:left;
+    border-right:1px solid #d2d2d2;
+    height:40px;
+}
+.head-navbar ul a {
+    line-height:1;
+    font-size:11px;
+    color:#999;
+    display:block;
+    text-align:center;
+    padding-top:6px;
+    height:40px;
+}
+.head-navbar ul li + li {
+      width:88px;
+        border-left:1px solid #fff;
+}
+.head-navbar ul li + li + li {
+      border-right:none;
+        width:89px;
+}
+.head-navbar ul a strong {
+      font-size:14px;
+        display:block;
+          color:#222;
 }
 </style>
 </head>
@@ -62,7 +124,14 @@
    <div id="projectname">T.I.M | ISA Specification
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
+  <td class="head-navbar">
+    <ul>
+        <li><a href="../isa/index.html">Instruction Set<strong>Architecture</strong></a></li>
+        <li><a href="../hw/index.html">Documentation<strong>Hardware</strong></a></li>
+        <li><a href="../sw/index.html">Documentation<strong>Software</strong></a></li>
+    </ul>
+  </td>
+   <td style="width:0px;">        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.png"
                onmouseover="return searchBox.OnSearchSelectShow()"
@@ -121,15 +190,20 @@ $(document).ready(function(){initNavTree('LOADI.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h3>Description</h3>
+<p>Loads a value into the destination register from memory. The address used is made up of the 16 bit immediate plus the value of a register. The immediate is interpreted as a 4-byte aligned unsigned value. The LOADI instruction does not allow byte masking like the <a class="el" href="LOADR.html">LOADR</a> instruction does, hence it will always load an entire word into the destination register.</p>
 <h3>Register Access</h3>
+<p>The LOADI instruction can use any of the general purpose registers <code>R0</code> to <code>R15</code> as its destination or source operand.</p>
 <h3>Memory Layout</h3>
-<p>This is a X byte instruction</p>
-<p>```</p>
-<p>```</p>
-<h3>Assembly Code Examples</h3>
-<p>```</p>
-<p>```</p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="instructions.html#instructions-list">Instructions Quick Reference</a></dd></dl>
+<p>This is a 4 byte instruction</p>
+<div class="fragment"><div class="line">Opcode  | Condition Code |  Destination | Source |Immediate            </div>
+<div class="line">000010  |       00       |     DDDD     |  ssss  | IIII IIII IIII IIII</div>
+</div><!-- fragment --><h3>Assembly Code Examples</h3>
+<p>When an immediate is supplied that does not fit into 16 bits, the lower 16 bits are used and any upper bits are discarded by the assembler.</p>
+<p>Immediates that specify fewer than 4 bytes are padded with high order zeros to make them 16 bits long explicitly.</p>
+<div class="fragment"><div class="line">1. | LOAD $R0 $R1 0xFF001</div>
+<div class="line">2. | LOAD $R0 $R1 0xAB003</div>
+<div class="line">3. | LOAD $R0 $R1 0dF056</div>
+</div><!-- fragment --><dl class="section see"><dt>See Also</dt><dd><a class="el" href="instructions.html#instructions-list">Instructions Quick Reference</a>, <a class="el" href="LOADR.html">LOADR</a></dd></dl>
 <hr/>
  </div></div><!-- contents -->
 </div><!-- doc-content -->
