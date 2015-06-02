@@ -12,8 +12,6 @@ use ieee.numeric_std.ALL;
 
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
---! Imported from tim_bus package,
-use work.tim_bus.tim_bus_burst_width;
 
 --! The bus master controller module which arbitrates bus requests and responses.
 entity tim_bus_master is

@@ -13,13 +13,13 @@ use ieee.numeric_std.ALL;
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
 --! Imported from tim_bus package,
-use work.tim_bus.tim_bus_burst_width;
+use work.tim_bus.tim_bus_master_state;
 
 --! RTL & synthesisable architecture of the bus master controller.
 architecture tim_bus_master_rtl of tim_bus_master is
 
     --! The current state of the controller.
-    signal current_state    : tim_bus_master_state := RESET;
+    signal current_state    : tim_bus_master_state := BUS_RESET;
     --! The next state of the controller.
     signal next_state       : tim_bus_master_state := IDLE;
 
@@ -29,7 +29,7 @@ begin
     state_machine_progress : process (clk, reset)
     begin
         if(reset='1') then
-            current_state   <= RESET;
+            current_state   <= BUS_RESET;
         elsif(clk'event and clk = '1') then
             current_state   <= next_state;
         end if;
@@ -37,12 +37,12 @@ begin
 
 
     --! Responsible for determining the next state of the statemachine.
-    state_machine_next_state : process(bus_valid, bus_enable, req_read_write, req_pending)
+    state_machine_next_state : process(clk, bus_enable, req_read_write, req_pending)
     begin
         
         case current_state is
             
-            when RESET =>
+            when BUS_RESET =>
                 next_state <= IDLE;
             
             when IDLE =>
@@ -87,7 +87,7 @@ begin
         
         case current_state is
             
-            when RESET =>
+            when BUS_RESET =>
                 bus_lines       <= (others => 'Z');
                 bus_valid       <= '0';
                 bus_read_write  <= '0';
@@ -103,12 +103,12 @@ begin
                 bus_read_write  <= req_read_write;
             
             when READ =>
-                bus_lines       <= 'Z';
+                bus_lines       <= (others => 'Z');
                 bus_valid       <= '1';
                 bus_read_write  <= req_read_write;
             
             when WRITE =>
-                bus_lines       <= 'req_data_lines';
+                bus_lines       <= req_data_lines;
                 bus_valid       <= '0';
                 bus_read_write  <= req_read_write;
         
@@ -123,7 +123,7 @@ begin
         
         case current_state is
             
-            when RESET =>
+            when BUS_RESET =>
                req_data_lines   <= (others => 'Z'); 
                req_acknowledge  <= '0';
             
@@ -145,6 +145,6 @@ begin
         
         end case;
 
-    end process bus_outputs;
+    end process requestor_outputs;
 
 end architecture tim_bus_master_rtl;

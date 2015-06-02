@@ -14,6 +14,6 @@ package tim_bus is
     constant tim_bus_data_width     : integer := 32;
 
     --! The various state machine states of the bus master controller.
-    type tim_bus_master_state is (RESET, IDLE, REQ, READ, WRITE);
+    type tim_bus_master_state is (BUS_RESET, IDLE, REQ, READ, WRITE);
 
 end package;
