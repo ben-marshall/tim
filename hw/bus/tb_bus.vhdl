@@ -40,8 +40,8 @@ component tim_bus_master is
         --! High if this transaction is a write, low if it is a read.
         bus_read_write  : out   std_logic;
         --! Request write data is placed on these lines.
-        req_data_lines      : in    std_logic_vector(data_width-1 downto 0);
-        --! Tells the controller if this is a read or write transaction. High == write, low == read.
+        req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
+        --! The read response data.
         req_read_write      : in    std_logic;
         --! Addresses for read and write operations are placed on these lines.
         req_address_lines   : in    std_logic_vector(data_width-1 downto 0);

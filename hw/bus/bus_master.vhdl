@@ -40,7 +40,7 @@ entity tim_bus_master is
         bus_read_write  : out   std_logic;
 
         --! Request write data is placed on these lines.
-        req_data_lines      : in    std_logic_vector(data_width-1 downto 0);
+        req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
 
         --! Tells the controller if this is a read or write transaction. High == write, low == read.
         req_read_write      : in    std_logic;
@@ -51,7 +51,8 @@ entity tim_bus_master is
         --! This is put high to tell the controller a request is pending.
         req_pending         : in    std_logic;
 
-        --! This is put high to tell the requestor that the response is valid and its transaction is complete.
+        --! This is put high to tell the requestor that the request has been accepted. When it goes low again,
+        --! This signals that the response is available
         req_acknowledge     : out   std_logic
     );
 end entity tim_bus_master;
