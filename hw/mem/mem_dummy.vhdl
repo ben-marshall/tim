@@ -143,7 +143,7 @@ begin
             when IDLE     =>
                 if(request_pending <= '0' and request_read_write = '0') then
                     next_state <= READ;
-                elsif(request_pending <= '0' and request_read_write = '0') then
+                elsif(request_pending <= '0' and request_read_write = '1') then
                     next_state <= WRITE;
                 else
                     next_state <= IDLE;
