@@ -14,6 +14,8 @@ use ieee.numeric_std.ALL;
 use work.tim_common.word_width;
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
+--! Imported from tim_instructions package,
+use work.tim_instructions.tim_instruction;
 
 
 --! The basic architecture of the tim CPU with little or no optimisation.
@@ -30,30 +32,38 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
             data_width  : integer := tim_bus_data_width
         );
         port(
-            --! The main system clock.
             clk             : in    std_logic;
-            --! Asynchonous reset signal.
             reset           : in    std_logic;
-            --! The lines which carry data and addresses;
             bus_lines       : inout std_logic_vector(data_width-1 downto 0);
-            --! Used to assert data written by the bus master to bus_lines is valid.
             bus_valid       : out   std_logic;
-            --! Used to assert that the slave has read the bus lines and they can be updated.
             bus_enable      : in    std_logic;
-            --! High if this transaction is a write, low if it is a read.
             bus_read_write  : out   std_logic;
-            --! Request write data is placed on these lines.
             req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
-            --! The read response data.
             req_read_write      : in    std_logic;
-            --! Addresses for read and write operations are placed on these lines.
             req_address_lines   : in    std_logic_vector(data_width-1 downto 0);
-            --! This is put high to tell the controller a request is pending.
             req_pending         : in    std_logic;
-            --! This is put high to tell the requestor that the response is valid and its transaction is complete.
             req_acknowledge     : out   std_logic
         );
     end component tim_bus_master;
+
+    --! The module responsible for fetching the next instruction from memory and making it available
+    --! To the next pipeline stage.
+    component tim_cpu_fetch is
+        port(
+            clk                     : in    std_logic; 
+            reset                   : in    std_logic;
+            halted                  : in    std_logic;
+            memory_bus_lines        : inout std_logic_vector(word_width-1 downto 0);
+            memory_bus_valid        : out   std_logic;
+            memory_bus_enable       : in    std_logic;
+            memory_bus_read_write   : out   std_logic;
+            program_counter         : in    std_logic_vector(word_width-1 downto 0);
+            decoded_instruction     : out   tim_instruction;
+            instruction_valid       : out   std_logic;
+            instruction_enable      : in    std_logic
+
+        );
+    end component tim_cpu_fetch;
 
     --
     -- Internal Signal Declarations.

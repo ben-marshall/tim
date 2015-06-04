@@ -14,7 +14,14 @@ use work.tim_common.opcode_length;
 
 --! Package that contains declarations and definitions for all instruction opcodes and their lengths.
 package tim_instructions is
-    
+
+    --! A simple way of encoding all of the instructions once they are decoded.
+    type tim_instruction is ( LOADR ,LOADI ,STORI ,STORR ,PUSH  ,POP   ,MOVR  ,MOVI  ,JUMPR ,JUMPI,
+                              CALLR ,CALLI ,RET   ,TEST  ,HALT  ,ANDR  ,NANDR ,ORR   ,NORR  ,XORR,
+                              LSLR  ,LSRR  ,NOTR  ,ANDI  ,NANDI ,ORI   ,NORI  ,XORI  ,LSLI  ,LSRI,
+                              IADDI ,ISUBI ,IMULI ,IDIVI ,IASRI ,IADDR ,ISUBR ,IMULR ,IDIVR ,IASRR,
+                              FADDI ,FSUBI ,FMULI ,FDIVI ,FASRI ,FADDR ,FSUBR ,FMULR ,FDIVR ,FASRR);
+
     --! Load to register X from address in register Y with offset in register Z.     
     constant opcode_LOADR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(0, opcode_length));
  
