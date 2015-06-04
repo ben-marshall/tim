@@ -29,4 +29,7 @@ package tim_common is
     type tim_alu_bool_op   is (alu_bool_and, alu_bool_nand, alu_bool_or, alu_bool_nor, 
                                alu_bool_xor, alu_bool_not, alu_bool_sl, alu_bool_sr);
 
+    --! Index of the program counter in the register file.
+    constant  reg_pc            : integer   := 16;
+
 end package;

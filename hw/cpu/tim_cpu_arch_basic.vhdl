@@ -12,6 +12,7 @@ use ieee.numeric_std.ALL;
 
 --! Imported from tim_common package,
 use work.tim_common.word_width;
+use work.tim_common.reg_pc;
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
 --! Imported from tim_instructions package,
@@ -24,27 +25,6 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
     --
     -- Imported component declarations.
     --
-
-    --! The bus master controller module which arbitrates bus requests and responses.
-    component tim_bus_master is
-        generic(
-            --! The number of data and address lines.
-            data_width  : integer := tim_bus_data_width
-        );
-        port(
-            clk             : in    std_logic;
-            reset           : in    std_logic;
-            bus_lines       : inout std_logic_vector(data_width-1 downto 0);
-            bus_valid       : out   std_logic;
-            bus_enable      : in    std_logic;
-            bus_read_write  : out   std_logic;
-            req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
-            req_read_write      : in    std_logic;
-            req_address_lines   : in    std_logic_vector(data_width-1 downto 0);
-            req_pending         : in    std_logic;
-            req_acknowledge     : out   std_logic
-        );
-    end component tim_bus_master;
 
     --! The module responsible for fetching the next instruction from memory and making it available
     --! To the next pipeline stage.
@@ -69,8 +49,55 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
     -- Internal Signal Declarations.
     --
 
+    signal internal_halted                  : std_logic := '0';
+    
+    -- Internal Memory Bus Lines.
+    signal internal_memory_bus_lines        : std_logic_vector(word_width-1 downto 0);
+    signal internal_memory_bus_valid        : std_logic;
+    signal internal_memory_bus_enable       : std_logic;
+    signal internal_memory_bus_read_write   : std_logic;
+
+    --! Typedef for the register file.
+    type tim_cpu_reg_file   is array (0 to 31) of std_logic_vector(word_width-1 downto 0);
+
+    --! The register file for all special, temporary and general purpose registers.
+    signal internal_register_file           : tim_cpu_reg_file;
+
+    --! The decoded instruction from the fetch module.
+    signal decoded_instruction              : tim_instruction;
+    signal decoded_instruction_valid        : std_logic;
+
 begin
 
+    --
+    -- Continuous Assignments.
+    --
+    
+    memory_bus_lines            <= internal_memory_bus_lines;
+    memory_bus_valid            <= internal_memory_bus_valid;
+    internal_memory_bus_enable  <= memory_bus_enable;
+    memory_bus_read_write       <= internal_memory_bus_read_write;
 
+    halted                      <= internal_halted;
+
+    
+    --
+    -- Component Instances
+    --
+    
+    --! Fetches and decodes instructions from main memory.
+    module_fetch : tim_cpu_fetch port map(
+        clk                     => clk,
+        reset                   => reset,
+        halted                  => internal_halted,
+        memory_bus_lines        => internal_memory_bus_lines,
+        memory_bus_valid        => internal_memory_bus_valid,
+        memory_bus_enable       => internal_memory_bus_enable,
+        memory_bus_read_write   => internal_memory_bus_read_write,
+        program_counter         => internal_register_file(reg_pc),
+        decoded_instruction     => decoded_instruction,
+        instruction_valid       => decoded_instruction_valid,
+        instruction_enable      => '1' -- Permenantly tied high for now.
+    );
 
 end architecture tim_cpu_rtl_basic;
