@@ -9,10 +9,17 @@ library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
+-- pragma translate_off
+use std.textio.all;
+use ieee.std_logic_textio.all;
+-- pragma translate_on
+
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_master_state;
+--! Imported from tim_common package,
+use work.tim_common.word_width;
 
 --! A dummy RAM memory module to be used for simulations.
 entity mem_dummy is
@@ -27,7 +34,10 @@ entity mem_dummy is
         address_range_top    : integer   := 1023;
 
         --! The bottomof the range of addresses to which this memory block will respond to requests.
-        address_range_bottom : integer   := 0
+        address_range_bottom : integer   := 0;
+
+        --! The initial values file which the memory will import when in RESET mode.
+        initial_values_file   : string := ""
     );
     port(
         --! The main system clock.
@@ -122,6 +132,62 @@ architecture mem_dummy_sim of mem_dummy is
     shared variable memory               : memory_array;
 
 begin
+    
+    --!
+    --! Handles the reading of initial memory values from file whenever the control state machine
+    --! Enters its reset state.
+    --!
+    -- pragma translate_off
+    memory_on_reset : process(current_state)
+        file     file_pointer : text;
+        variable line_content : string(1 to word_width);
+        variable line_num     : line;
+        variable j            : integer := 0;
+        variable word_num     : integer := 0;
+        variable char         : character:='0'; 
+    begin
+
+        if(current_state = MEM_RESET and initial_values_file /= "") then
+            report "Reading memory values file: " & initial_values_file;
+
+            --Open the file read.txt from the specified location for reading(READ_MODE).
+            file_open(file_pointer,initial_values_file,READ_MODE);    
+            while not endfile(file_pointer) loop --till the end of file is reached continue.
+                readline (file_pointer,line_num);  --Read the whole line from the file
+                --Read the contents of the line from  the file into a variable.
+                READ (line_num,line_content); 
+                --For each character in the line convert it to binary value.
+                --And then store it in a signal named 'bin_value'.
+                for j in 1 to word_width loop        
+                    char := line_content(j);
+                    if(char = '0') then
+                        memory(word_num)(word_width-j) := '0';
+                    else
+                        memory(word_num)(word_width-j) := '1';
+                    end if; 
+                end loop; 
+                word_num := word_num + 1;
+            end loop;
+            file_close(file_pointer);  --after reading all the lines close the file.  
+
+        --elsif(cpu_halted = '1') then
+        --    report "Writing final memory values file: " & final_values_file;
+        --    -- DUMP the contents of memory_array to file.
+        --    file_open(file_pointer,final_values_file,WRITE_MODE);
+
+        --    for i in 0 to memory_array'length loop
+
+        --        write(line_num, memory_array(i));
+        --        writeline(file_pointer, line_num);
+
+        --    end loop;
+
+        --    file_close(file_pointer);
+        end if;
+
+    end process memory_on_reset;
+    -- pragma translate_on
+
 
     --! Responsible for the synchronous state transitions and asynchronous resets.
     state_machine_progress : process (clk, reset)
