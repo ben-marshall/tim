@@ -16,8 +16,6 @@ use ieee.std_logic_textio.all;
 
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
---! Imported from tim_bus package,
-use work.tim_bus.tim_bus_master_state;
 --! Imported from tim_common package,
 use work.tim_common.word_width;
 
@@ -118,7 +116,7 @@ architecture mem_dummy_sim of mem_dummy is
     --! Used to signal to the memory controller than the request has been dealt with and it can read back requst_data_lines.
     signal request_done            : std_logic;
 
-    type memory_state is (MEM_RESET, IDLE, READ, WRITE);
+    type memory_state is (MEM_RESET, IDLE, MEM_READ, WRITE);
 
     --! Current state of the dummy memory.
     signal current_state        : memory_state := MEM_RESET;
@@ -131,6 +129,9 @@ architecture mem_dummy_sim of mem_dummy is
     --! The memory array variable that stores all of the values.
     shared variable memory               : memory_array;
 
+    --! Used to read binary files.
+    type std_logic_vector_file is file of std_logic_vector(data_width-1 downto 0);
+
 begin
     
     --!
@@ -139,36 +140,23 @@ begin
     --!
     -- pragma translate_off
     memory_on_reset : process(current_state)
-        file     file_pointer : text;
-        variable line_content : string(1 to word_width);
-        variable line_num     : line;
-        variable j            : integer := 0;
-        variable word_num     : integer := 0;
-        variable char         : character:='0'; 
+        file     input_file  : text is initial_values_file;
+        variable file_sample : std_logic_vector(data_width-1 downto 0);
+        variable line_num    : line;
+        variable j           : integer;
     begin
 
         if(current_state = MEM_RESET and initial_values_file /= "") then
             report "Reading memory values file: " & initial_values_file;
 
-            --Open the file read.txt from the specified location for reading(READ_MODE).
-            file_open(file_pointer,initial_values_file,READ_MODE);    
-            while not endfile(file_pointer) loop --till the end of file is reached continue.
-                readline (file_pointer,line_num);  --Read the whole line from the file
-                --Read the contents of the line from  the file into a variable.
-                READ (line_num,line_content); 
-                --For each character in the line convert it to binary value.
-                --And then store it in a signal named 'bin_value'.
-                for j in 1 to word_width loop        
-                    char := line_content(j);
-                    if(char = '0') then
-                        memory(word_num)(word_width-j) := '0';
-                    else
-                        memory(word_num)(word_width-j) := '1';
-                    end if; 
-                end loop; 
-                word_num := word_num + 1;
+            for j in 0 to mem_size loop
+                if not endfile(input_file) then
+                    readline(input_file, line_num);
+                    read(line_num, file_sample);
+                    memory(j) := file_sample;
+                end if;
             end loop;
-            file_close(file_pointer);  --after reading all the lines close the file.  
+
         elsif(current_state = MEM_RESET and initial_values_file = "") then
             report "No default values specified for memory -> filling with spam...";
 
@@ -214,18 +202,18 @@ begin
             
             when IDLE     =>
                 if(request_pending <= '1' and request_read_write = '0') then
-                    next_state <= READ;
+                    next_state <= MEM_READ;
                 elsif(request_pending <= '1' and request_read_write = '1') then
                     next_state <= WRITE;
                 else
                     next_state <= IDLE;
                 end if;
 
-            when READ =>
+            when MEM_READ =>
                 if(request_pending='0') then
                     next_state <= IDLE;
                 else
-                    next_state <= READ;
+                    next_state <= MEM_READ;
                 end if;
             
             when WRITE =>
@@ -247,7 +235,7 @@ begin
                request_data_lines   <= (others => 'Z');
                request_done         <= '0';
 
-            when READ =>
+            when MEM_READ =>
                request_data_lines   <= memory(to_integer(unsigned(request_address_lines)));
                request_done         <= '1';
             

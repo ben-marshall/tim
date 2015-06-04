@@ -49,7 +49,8 @@ architecture testbench of tb_tim_cpu is
             mem_size             : integer   := 1023;
             data_width           : integer   := word_width;
             address_range_top    : integer   := 1023;
-            address_range_bottom : integer   := 0
+            address_range_bottom : integer   := 0;
+            initial_values_file  : string    := ""
         );
         port(
             clk             : in    std_logic;
@@ -130,7 +131,8 @@ begin
         mem_size             => 1023,
         data_width           => word_width,
         address_range_top    => 1023,
-        address_range_bottom => 0
+        address_range_bottom => 0,
+        initial_values_file  => "../build/test.bin"
     ) port map(
         clk                  =>  tb_clk,
         reset                =>  tb_reset,         
