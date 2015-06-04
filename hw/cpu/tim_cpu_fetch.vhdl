@@ -12,6 +12,7 @@ use ieee.numeric_std.ALL;
 
 --! Imported from tim_common package,
 use work.tim_common.word_width;
+use work.tim_common.opcode_length;
 --! Imported from tim_instructions package,
 use work.tim_instructions.tim_instruction;
 
@@ -42,6 +43,8 @@ entity tim_cpu_fetch is
 
         --! The most recently fetched instruction.
         decoded_instruction     : out   tim_instruction;
+        --! The arguments of the most recently fetched instruction.
+        decoded_arguments       : out   std_logic_vector(word_width-opcode_length downto 0);
         --! Whether the fetched instruction is valid.
         instruction_valid       : out   std_logic;
         --! enable the next fetched instruction to be outputed.

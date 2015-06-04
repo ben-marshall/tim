@@ -12,6 +12,7 @@ use ieee.numeric_std.ALL;
 
 --! Imported from tim_common package,
 use work.tim_common.word_width;
+use work.tim_common.opcode_length;
 use work.tim_common.reg_pc;
 --! Imported from tim_bus package,
 use work.tim_bus.tim_bus_data_width;
@@ -39,6 +40,7 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
             memory_bus_read_write   : out   std_logic;
             program_counter         : in    std_logic_vector(word_width-1 downto 0);
             decoded_instruction     : out   tim_instruction;
+            decoded_arguments       : out   std_logic_vector(word_width-opcode_length downto 0);
             instruction_valid       : out   std_logic;
             instruction_enable      : in    std_logic
 
