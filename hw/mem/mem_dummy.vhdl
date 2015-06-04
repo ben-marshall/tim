@@ -169,6 +169,12 @@ begin
                 word_num := word_num + 1;
             end loop;
             file_close(file_pointer);  --after reading all the lines close the file.  
+        elsif(current_state = MEM_RESET and initial_values_file = "") then
+            report "No default values specified for memory -> filling with spam...";
+
+            for j in 0 to mem_size loop
+                memory(j) := (others => '1');
+            end loop;
 
         --elsif(cpu_halted = '1') then
         --    report "Writing final memory values file: " & final_values_file;
@@ -207,16 +213,20 @@ begin
                 next_state <= IDLE;
             
             when IDLE     =>
-                if(request_pending <= '0' and request_read_write = '0') then
+                if(request_pending <= '1' and request_read_write = '0') then
                     next_state <= READ;
-                elsif(request_pending <= '0' and request_read_write = '1') then
+                elsif(request_pending <= '1' and request_read_write = '1') then
                     next_state <= WRITE;
                 else
                     next_state <= IDLE;
                 end if;
 
             when READ =>
-                next_state <= IDLE;
+                if(request_pending='0') then
+                    next_state <= IDLE;
+                else
+                    next_state <= READ;
+                end if;
             
             when WRITE =>
                 next_state <= IDLE;

@@ -50,12 +50,6 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
     --
 
     signal internal_halted                  : std_logic := '0';
-    
-    -- Internal Memory Bus Lines.
-    signal internal_memory_bus_lines        : std_logic_vector(word_width-1 downto 0);
-    signal internal_memory_bus_valid        : std_logic;
-    signal internal_memory_bus_enable       : std_logic;
-    signal internal_memory_bus_read_write   : std_logic;
 
     --! Typedef for the register file.
     type tim_cpu_reg_file   is array (0 to 31) of std_logic_vector(word_width-1 downto 0);
@@ -72,13 +66,26 @@ begin
     --
     -- Continuous Assignments.
     --
-    
-    memory_bus_lines            <= internal_memory_bus_lines;
-    memory_bus_valid            <= internal_memory_bus_valid;
-    internal_memory_bus_enable  <= memory_bus_enable;
-    memory_bus_read_write       <= internal_memory_bus_read_write;
 
     halted                      <= internal_halted;
+
+    --
+    -- Processes
+    --
+
+    --! Responsible for updating the value of the program counter.
+    program_counter_next_value  : process(reset, clk, decoded_instruction_valid)
+    begin
+
+        if(reset = '1') then
+            internal_register_file(reg_pc) <= (others => '0');
+        elsif(decoded_instruction_valid = '1' and clk'event and clk='1') then
+            internal_register_file(reg_pc) <= std_logic_vector(unsigned(internal_register_file(reg_pc))+1);
+        else 
+            internal_register_file(reg_pc) <= internal_register_file(reg_pc);
+        end if;
+
+    end process program_counter_next_value;
 
     
     --
@@ -90,10 +97,10 @@ begin
         clk                     => clk,
         reset                   => reset,
         halted                  => internal_halted,
-        memory_bus_lines        => internal_memory_bus_lines,
-        memory_bus_valid        => internal_memory_bus_valid,
-        memory_bus_enable       => internal_memory_bus_enable,
-        memory_bus_read_write   => internal_memory_bus_read_write,
+        memory_bus_lines        => memory_bus_lines,
+        memory_bus_valid        => memory_bus_valid,
+        memory_bus_enable       => memory_bus_enable,
+        memory_bus_read_write   => memory_bus_read_write,
         program_counter         => internal_register_file(reg_pc),
         decoded_instruction     => decoded_instruction,
         instruction_valid       => decoded_instruction_valid,
