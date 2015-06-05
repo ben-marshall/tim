@@ -10,6 +10,11 @@ library ieee;
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
+--pragma translate_off
+library std;
+use std.env.all;
+--pragma translate_on
+
 --! Imported from tim_common package,
 use work.tim_common.word_width;
 use work.tim_common.opcode_length;
@@ -90,6 +95,17 @@ begin
         end if;
 
     end process program_counter_next_value;
+
+
+    --pragma translate_off
+    simulation_halt : process(decoded_instruction)
+    begin
+        if(decoded_instruction = HALT) then
+            report "HALT instruction encountered. Simulation stopping.";
+            finish(2);
+        end if;
+    end process;
+    --pragma translate_on
 
     
     --
