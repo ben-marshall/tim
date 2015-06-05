@@ -29,9 +29,6 @@ int asm_emit_ascii(unsigned int to_write, unsigned char length, FILE * file)
         }
     }
     
-    printf("%d ", to_write);
-    printf("%d\n", asm_ascii_counter);
-
     return 0;
 }
 
