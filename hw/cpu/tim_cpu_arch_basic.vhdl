@@ -40,6 +40,7 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
             memory_bus_read_write   : out   std_logic;
             program_counter         : in    std_logic_vector(word_width-1 downto 0);
             decoded_instruction     : out   tim_instruction;
+            decoded_instruction_size: out   integer;
             decoded_arguments       : out   std_logic_vector(word_width-opcode_length downto 0);
             instruction_valid       : out   std_logic;
             instruction_enable      : in    std_logic
@@ -60,6 +61,7 @@ architecture  tim_cpu_rtl_basic of tim_cpu is
     signal internal_register_file           : tim_cpu_reg_file;
 
     --! The decoded instruction from the fetch module.
+    signal decoded_instruction_size         : integer;
     signal decoded_instruction              : tim_instruction;
     signal decoded_instruction_valid        : std_logic;
 
@@ -82,7 +84,7 @@ begin
         if(reset = '1') then
             internal_register_file(reg_pc) <= (others => '0');
         elsif(decoded_instruction_valid = '1' and decoded_instruction_valid'event) then
-            internal_register_file(reg_pc) <= std_logic_vector(unsigned(internal_register_file(reg_pc))+3);
+            internal_register_file(reg_pc) <= std_logic_vector(unsigned(internal_register_file(reg_pc))+decoded_instruction_size);
         else 
             internal_register_file(reg_pc) <= internal_register_file(reg_pc);
         end if;
@@ -105,6 +107,7 @@ begin
         memory_bus_read_write   => memory_bus_read_write,
         program_counter         => internal_register_file(reg_pc),
         decoded_instruction     => decoded_instruction,
+        decoded_instruction_size=> decoded_instruction_size,
         instruction_valid       => decoded_instruction_valid,
         instruction_enable      => '1' -- Permenantly tied high for now.
     );

@@ -79,63 +79,68 @@ begin
 
 
     --! Responsible for decoding a returned instruction and putting them onto the output ports.
-    instruction_decode  : process(returned_instruction, internal_mem_acknowledge, memory_bus_enable)
+    instruction_decode  : process(reset,returned_instruction, internal_mem_acknowledge, memory_bus_enable)
     begin
         
-        if(internal_mem_acknowledge = '1' and memory_bus_enable = '0') then
+        if(reset = '1') then
+            decoded_instruction_size    <= 0;
+            decoded_instruction         <= ANDR;
+            decoded_arguments           <= (others => '0');
+
+        elsif(internal_mem_acknowledge = '1' and memory_bus_enable = '0') then
             decoded_arguments <= returned_instruction(word_width-opcode_length downto 0);
 
             case (returned_instruction(word_width-1 downto word_width-opcode_length)) is
-                when opcode_LOADR  => decoded_instruction <= LOADR ;
-                when opcode_LOADI  => decoded_instruction <= LOADI ;
-                when opcode_STORI  => decoded_instruction <= STORI ;
-                when opcode_STORR  => decoded_instruction <= STORR ;
-                when opcode_PUSH   => decoded_instruction <= PUSH  ;
-                when opcode_POP    => decoded_instruction <= POP   ;
-                when opcode_MOVR   => decoded_instruction <= MOVR  ;
-                when opcode_MOVI   => decoded_instruction <= MOVI  ;
-                when opcode_JUMPR  => decoded_instruction <= JUMPR ;
-                when opcode_JUMPI  => decoded_instruction <= JUMPI ;
-                when opcode_CALLR  => decoded_instruction <= CALLR ;
-                when opcode_CALLI  => decoded_instruction <= CALLI ;
-                when opcode_RETURN => decoded_instruction <= RET   ;
-                when opcode_TEST   => decoded_instruction <= TEST  ;
-                when opcode_HALT   => decoded_instruction <= HALT  ;
-                when opcode_ANDR   => decoded_instruction <= ANDR  ;
-                when opcode_NANDR  => decoded_instruction <= NANDR ;
-                when opcode_ORR    => decoded_instruction <= ORR   ;
-                when opcode_NORR   => decoded_instruction <= NORR  ;
-                when opcode_XORR   => decoded_instruction <= XORR  ;
-                when opcode_LSLR   => decoded_instruction <= LSLR  ;
-                when opcode_LSRR   => decoded_instruction <= LSRR  ;
-                when opcode_NOTR   => decoded_instruction <= NOTR  ;
-                when opcode_ANDI   => decoded_instruction <= ANDI  ;
-                when opcode_NANDI  => decoded_instruction <= NANDI ;
-                when opcode_ORI    => decoded_instruction <= ORI   ;
-                when opcode_NORI   => decoded_instruction <= NORI  ;
-                when opcode_XORI   => decoded_instruction <= XORI  ;
-                when opcode_LSLI   => decoded_instruction <= LSLI  ;
-                when opcode_LSRI   => decoded_instruction <= LSRI  ;
-                when opcode_IADDI  => decoded_instruction <= IADDI ;
-                when opcode_ISUBI  => decoded_instruction <= ISUBI ;
-                when opcode_IMULI  => decoded_instruction <= IMULI ;
-                when opcode_IDIVI  => decoded_instruction <= IDIVI ;
-                when opcode_IASRI  => decoded_instruction <= IASRI ;
-                when opcode_IADDR  => decoded_instruction <= IADDR ;
-                when opcode_ISUBR  => decoded_instruction <= ISUBR ;
-                when opcode_IMULR  => decoded_instruction <= IMULR ;
-                when opcode_IDIVR  => decoded_instruction <= IDIVR ;
-                when opcode_IASRR  => decoded_instruction <= IASRR ;
-                when opcode_FADDI  => decoded_instruction <= FADDI ;
-                when opcode_FSUBI  => decoded_instruction <= FSUBI ;
-                when opcode_FMULI  => decoded_instruction <= FMULI ;
-                when opcode_FDIVI  => decoded_instruction <= FDIVI ;
-                when opcode_FASRI  => decoded_instruction <= FASRI ;
-                when opcode_FADDR  => decoded_instruction <= FADDR ;
-                when opcode_FSUBR  => decoded_instruction <= FSUBR ;
-                when opcode_FMULR  => decoded_instruction <= FMULR ;
-                when opcode_FDIVR  => decoded_instruction <= FDIVR ;
-                when opcode_FASRR  => decoded_instruction <= FASRR ;
+                when opcode_LOADR  => decoded_instruction <= LOADR ; decoded_instruction_size <= opcode_length_LOADR;
+                when opcode_LOADI  => decoded_instruction <= LOADI ; decoded_instruction_size <= opcode_length_LOADI  ;
+                when opcode_STORI  => decoded_instruction <= STORI ; decoded_instruction_size <= opcode_length_STORI  ;
+                when opcode_STORR  => decoded_instruction <= STORR ; decoded_instruction_size <= opcode_length_STORR  ;
+                when opcode_PUSH   => decoded_instruction <= PUSH  ; decoded_instruction_size <= opcode_length_PUSH   ;
+                when opcode_POP    => decoded_instruction <= POP   ; decoded_instruction_size <= opcode_length_POP    ;
+                when opcode_MOVR   => decoded_instruction <= MOVR  ; decoded_instruction_size <= opcode_length_MOVR   ;
+                when opcode_MOVI   => decoded_instruction <= MOVI  ; decoded_instruction_size <= opcode_length_MOVI   ;
+                when opcode_JUMPR  => decoded_instruction <= JUMPR ; decoded_instruction_size <= opcode_length_JUMPR  ;
+                when opcode_JUMPI  => decoded_instruction <= JUMPI ; decoded_instruction_size <= opcode_length_JUMPI  ;
+                when opcode_CALLR  => decoded_instruction <= CALLR ; decoded_instruction_size <= opcode_length_CALLR  ;
+                when opcode_CALLI  => decoded_instruction <= CALLI ; decoded_instruction_size <= opcode_length_CALLI  ;
+                when opcode_RETURN => decoded_instruction <= RET   ; decoded_instruction_size <= opcode_length_RETURN ;
+                when opcode_TEST   => decoded_instruction <= TEST  ; decoded_instruction_size <= opcode_length_TEST   ;
+                when opcode_HALT   => decoded_instruction <= HALT  ; decoded_instruction_size <= opcode_length_HALT   ;
+                when opcode_ANDR   => decoded_instruction <= ANDR  ; decoded_instruction_size <= opcode_length_ANDR   ;
+                when opcode_NANDR  => decoded_instruction <= NANDR ; decoded_instruction_size <= opcode_length_NANDR  ;
+                when opcode_ORR    => decoded_instruction <= ORR   ; decoded_instruction_size <= opcode_length_ORR    ;
+                when opcode_NORR   => decoded_instruction <= NORR  ; decoded_instruction_size <= opcode_length_NORR   ;
+                when opcode_XORR   => decoded_instruction <= XORR  ; decoded_instruction_size <= opcode_length_XORR   ;
+                when opcode_LSLR   => decoded_instruction <= LSLR  ; decoded_instruction_size <= opcode_length_LSLR   ;
+                when opcode_LSRR   => decoded_instruction <= LSRR  ; decoded_instruction_size <= opcode_length_LSRR   ;
+                when opcode_NOTR   => decoded_instruction <= NOTR  ; decoded_instruction_size <= opcode_length_NOTR   ;
+                when opcode_ANDI   => decoded_instruction <= ANDI  ; decoded_instruction_size <= opcode_length_ANDI   ;
+                when opcode_NANDI  => decoded_instruction <= NANDI ; decoded_instruction_size <= opcode_length_NANDI  ;
+                when opcode_ORI    => decoded_instruction <= ORI   ; decoded_instruction_size <= opcode_length_ORI    ;
+                when opcode_NORI   => decoded_instruction <= NORI  ; decoded_instruction_size <= opcode_length_NORI   ;
+                when opcode_XORI   => decoded_instruction <= XORI  ; decoded_instruction_size <= opcode_length_XORI   ;
+                when opcode_LSLI   => decoded_instruction <= LSLI  ; decoded_instruction_size <= opcode_length_LSLI   ;
+                when opcode_LSRI   => decoded_instruction <= LSRI  ; decoded_instruction_size <= opcode_length_LSRI   ;
+                when opcode_IADDI  => decoded_instruction <= IADDI ; decoded_instruction_size <= opcode_length_IADDI  ;
+                when opcode_ISUBI  => decoded_instruction <= ISUBI ; decoded_instruction_size <= opcode_length_ISUBI  ;
+                when opcode_IMULI  => decoded_instruction <= IMULI ; decoded_instruction_size <= opcode_length_IMULI  ;
+                when opcode_IDIVI  => decoded_instruction <= IDIVI ; decoded_instruction_size <= opcode_length_IDIVI  ;
+                when opcode_IASRI  => decoded_instruction <= IASRI ; decoded_instruction_size <= opcode_length_IASRI  ;
+                when opcode_IADDR  => decoded_instruction <= IADDR ; decoded_instruction_size <= opcode_length_IADDR  ;
+                when opcode_ISUBR  => decoded_instruction <= ISUBR ; decoded_instruction_size <= opcode_length_ISUBR  ;
+                when opcode_IMULR  => decoded_instruction <= IMULR ; decoded_instruction_size <= opcode_length_IMULR  ;
+                when opcode_IDIVR  => decoded_instruction <= IDIVR ; decoded_instruction_size <= opcode_length_IDIVR  ;
+                when opcode_IASRR  => decoded_instruction <= IASRR ; decoded_instruction_size <= opcode_length_IASRR  ;
+                when opcode_FADDI  => decoded_instruction <= FADDI ; decoded_instruction_size <= opcode_length_FADDI  ;
+                when opcode_FSUBI  => decoded_instruction <= FSUBI ; decoded_instruction_size <= opcode_length_FSUBI  ;
+                when opcode_FMULI  => decoded_instruction <= FMULI ; decoded_instruction_size <= opcode_length_FMULI  ;
+                when opcode_FDIVI  => decoded_instruction <= FDIVI ; decoded_instruction_size <= opcode_length_FDIVI  ;
+                when opcode_FASRI  => decoded_instruction <= FASRI ; decoded_instruction_size <= opcode_length_FASRI  ;
+                when opcode_FADDR  => decoded_instruction <= FADDR ; decoded_instruction_size <= opcode_length_FADDR  ;
+                when opcode_FSUBR  => decoded_instruction <= FSUBR ; decoded_instruction_size <= opcode_length_FSUBR  ;
+                when opcode_FMULR  => decoded_instruction <= FMULR ; decoded_instruction_size <= opcode_length_FMULR  ;
+                when opcode_FDIVR  => decoded_instruction <= FDIVR ; decoded_instruction_size <= opcode_length_FDIVR  ;
+                when opcode_FASRR  => decoded_instruction <= FASRR ; decoded_instruction_size <= opcode_length_FASRR  ;
                 when others =>
                     -- Default to a NOP.
                     decoded_instruction <= ANDR;

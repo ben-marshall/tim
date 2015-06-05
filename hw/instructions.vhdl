@@ -26,7 +26,7 @@ package tim_instructions is
     constant opcode_LOADR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(1, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_LOADR : integer := 4;
+    constant opcode_length_LOADR : integer := 3;
   
     --! Load to register X from address in register Y with immediate offset.         
     constant opcode_LOADI : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(2, opcode_length));
@@ -44,25 +44,25 @@ package tim_instructions is
     constant opcode_STORR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(4, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_STORR : integer := 4;
+    constant opcode_length_STORR : integer := 3;
  
     --! Push register X onto the top of the stack and decrement the stack pointer.   
     constant opcode_PUSH  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(5, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_PUSH  : integer := 4;
+    constant opcode_length_PUSH  : integer := 2;
  
     --! Pop element at top of stack into register X and increment the stack pointer. 
     constant opcode_POP   : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(6, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_POP   : integer := 4;
+    constant opcode_length_POP   : integer := 2;
  
     --! Move the content of register X into register Y                               
     constant opcode_MOVR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(7, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_MOVR  : integer := 4;
+    constant opcode_length_MOVR  : integer := 3;
  
     --! Move immediate I into register X                                             
     constant opcode_MOVI  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(8, opcode_length));

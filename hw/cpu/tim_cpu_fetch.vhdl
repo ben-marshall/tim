@@ -43,6 +43,8 @@ entity tim_cpu_fetch is
 
         --! The most recently fetched instruction.
         decoded_instruction     : out   tim_instruction;
+        --! The length of the instruction in bytes.
+        decoded_instruction_size: out   integer;
         --! The arguments of the most recently fetched instruction.
         decoded_arguments       : out   std_logic_vector(word_width-opcode_length downto 0);
         --! Whether the fetched instruction is valid.
