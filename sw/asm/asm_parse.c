@@ -274,15 +274,17 @@ asm_lex_token * asm_parse_two_operand(asm_statement * statement, asm_lex_token *
     }
     else if(opcode -> value.opcode == LEX_MOV)
     {
-        statement -> opcode = MOVR;
-        statement -> size   = 3;
         if(operand_2 -> type == IMMEDIATE)
         {
+            statement -> opcode = MOVI;
+            statement -> size   = 4;
             statement -> args.reg_immediate.reg_1 = operand_1 -> value.reg;
             statement -> args.reg_immediate.immediate= operand_2 -> value.immediate;
         }
         else
         {
+            statement -> opcode = MOVR;
+            statement -> size   = 3;
             statement -> args.reg_reg.reg_1 = operand_1 -> value.reg;
             statement -> args.reg_reg.reg_2 = operand_2 -> value.reg;
         }
