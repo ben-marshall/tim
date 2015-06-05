@@ -124,13 +124,12 @@ architecture mem_dummy_sim of mem_dummy is
     signal next_state           : memory_state := IDLE;
 
     --! Datatype that pretends to be an array of memory words.
-    type memory_array is array (0 to mem_size) of std_logic_vector(data_width-1 downto 0);
+    type memory_array is array (0 to mem_size) of std_logic_vector(7 downto 0);
 
     --! The memory array variable that stores all of the values.
     shared variable memory               : memory_array;
 
     --! Used to read binary files.
-    type std_logic_vector_file is file of std_logic_vector(data_width-1 downto 0);
 
 begin
     
@@ -141,7 +140,7 @@ begin
     -- pragma translate_off
     memory_on_reset : process(current_state)
         file     input_file  : text is initial_values_file;
-        variable file_sample : std_logic_vector(data_width-1 downto 0);
+        variable file_sample : std_logic_vector(7 downto 0);
         variable line_num    : line;
         variable j           : integer;
     begin
@@ -236,11 +235,14 @@ begin
                request_done         <= '0';
 
             when MEM_READ =>
-               request_data_lines   <= memory(to_integer(unsigned(request_address_lines)));
+               request_data_lines(data_width-1 downto data_width-8)   <= memory(to_integer(unsigned(request_address_lines)+0));
+               request_data_lines(data_width-9 downto data_width-16)   <= memory(to_integer(unsigned(request_address_lines)+1));
+               request_data_lines(data_width-17 downto data_width-24)   <= memory(to_integer(unsigned(request_address_lines)+2));
+               request_data_lines(data_width-25 downto data_width-32)   <= memory(to_integer(unsigned(request_address_lines)+3));
                request_done         <= '1';
             
             when WRITE =>
-               memory(to_integer(unsigned(request_address_lines))) := request_data_lines;
+               memory(to_integer(unsigned(request_address_lines))) := request_data_lines(data_width-1 downto data_width-8);
                request_done         <= '1';
 
         end case;

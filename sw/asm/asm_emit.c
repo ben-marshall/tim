@@ -22,7 +22,7 @@ int asm_emit_ascii(unsigned int to_write, unsigned char length, FILE * file)
     {
         to_write & ((unsigned int)1)<<i ? fprintf(file,"1") : fprintf(file,"0");
         asm_ascii_counter += 1;
-        if(asm_ascii_counter >=31)
+        if(asm_ascii_counter >=8)
         {
             asm_ascii_counter = 0;
             fprintf(file, "\n");
@@ -36,11 +36,11 @@ int asm_emit_ascii(unsigned int to_write, unsigned char length, FILE * file)
 }
 
 int asm_emit_opcode_LOADR (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
-    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4-3);
     to_write |= 0xF;
 
     if(format == ASCII) asm_emit_ascii(to_write, 24, file); else
@@ -49,10 +49,10 @@ int asm_emit_opcode_LOADR (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_LOADI (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
-    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
-    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-3);
     to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
 
     if(format == ASCII) asm_emit_ascii(to_write, 32, file); else
@@ -754,25 +754,21 @@ int asm_emit_instructions(asm_statement * statements, FILE * file, asm_format fo
             case (ISUBI ):   asm_emit_opcode_ISUBI(walker, file, format); break;  
             case (IMULI ):   asm_emit_opcode_IMULI(walker, file, format); break;  
             case (IDIVI ):   asm_emit_opcode_IDIVI(walker, file, format); break;  
-            case (IALSI ):   asm_emit_opcode_IALSI(walker, file, format); break;  
             case (IASRI ):   asm_emit_opcode_IASRI(walker, file, format); break;  
             case (IADDR ):   asm_emit_opcode_IADDR(walker, file, format); break;  
             case (ISUBR ):   asm_emit_opcode_ISUBR(walker, file, format); break;  
             case (IMULR ):   asm_emit_opcode_IMULR(walker, file, format); break;  
             case (IDIVR ):   asm_emit_opcode_IDIVR(walker, file, format); break;  
-            case (IASLR ):   asm_emit_opcode_IASLR(walker, file, format); break;  
             case (IASRR ):   asm_emit_opcode_IASRR(walker, file, format); break;  
             case (FADDI ):   asm_emit_opcode_FADDI(walker, file, format); break;  
             case (FSUBI ):   asm_emit_opcode_FSUBI(walker, file, format); break;  
             case (FMULI ):   asm_emit_opcode_FMULI(walker, file, format); break;  
             case (FDIVI ):   asm_emit_opcode_FDIVI(walker, file, format); break;  
-            case (FASLI ):   asm_emit_opcode_FASLI(walker, file, format); break;  
             case (FASRI ):   asm_emit_opcode_FASRI(walker, file, format); break;  
             case (FADDR ):   asm_emit_opcode_FADDR(walker, file, format); break;  
             case (FSUBR ):   asm_emit_opcode_FSUBR(walker, file, format); break;  
             case (FMULR ):   asm_emit_opcode_FMULR(walker, file, format); break;  
             case (FDIVR ):   asm_emit_opcode_FDIVR(walker, file, format); break;  
-            case (FASLR ):   asm_emit_opcode_FASLR(walker, file, format); break;  
             case (FASRR ):   asm_emit_opcode_FASRR(walker, file, format); break;  
             case (SLEEP ):   asm_emit_opcode_SLEEP(walker, file, format); break;  
             case (NOT_EMITTED): asm_emit_opcode_NOT_EMITTED(walker, file,format); break;

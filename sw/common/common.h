@@ -118,62 +118,58 @@ typedef unsigned char tim_instruction_size;
 
 //! Encodes all of the valid instruction opcodes and their bit values.
 typedef enum tim_instruction_opcode_e {
-    LOADR , //!< Load to register X from address in register Y with offset in register Z.
-    LOADI , //!< Load to register X from address in register Y with immediate offset.
-    STORI , //!< Store register X to address in register Y with offset in register Z.
-    STORR , //!< Store register X to address in register Y with immediate offset.
-    PUSH  , //!< Push register X onto the top of the stack and decrement the stack pointer.
-    POP   , //!< Pop element at top of stack into register X and increment the stack pointer.
-    MOVR  , //!< Move the content of register X into register Y
-    MOVI  , //!< Move immediate I into register X
-    JUMPR , //!< Jump to address contained within register X
-    JUMPI , //!< Jump to address contained within instruction immediate.
-    CALLR , //!< Call to function who's address is contained within register X
-    CALLI , //!< Call to function who's address is contained within instruction immediate.
-    RETURN, //!< Return from the last function call.
-    TEST  , //!< Test two general or special registers and set comparison bits.
-    HALT  , //!< Stop processing and wait to be reset.
-    ANDR  , //!< Bitwise AND two registers together.
-    NANDR , //!< Bitwise NAND two registers together.
-    ORR   , //!< Bitwise OR two registers together.
-    NORR  , //!< Bitwise NOR two registers together.
-    XORR  , //!< Bitwise XOR two registers together.
-    LSLR  , //!< Logical shift left the bits in register X by the value in register Y.
-    LSRR  , //!< Logical shift right the bits in register X by the value in register Y.
-    NOTR  , //!< Bitwise invert the specificed register.
-    ANDI  , //!< Bitwise AND two registers together.
-    NANDI , //!< Bitwise NAND two registers together.
-    ORI   , //!< Bitwise OR two registers together.
-    NORI  , //!< Bitwise NOR two registers together.
-    XORI  , //!< Bitwise XOR two registers together.
-    LSLI  , //!< Logical shift left the bits in register X by the immediate value
-    LSRI  , //!< Logical shift right the bits in register X by the immediate value
-    IADDI , //!< Integer Add register X to immediate value.
-    ISUBI , //!< Integer Subtract immediate value from register X.
-    IMULI , //!< Integer Multiply register X by immediate value.
-    IDIVI , //!< Integer Divide register X by immediate value.
-    IALSI , //!< Integer Arithmetic shift register X left by immediate value.
-    IASRI , //!< Integer Arithmetic shift register X right immediate value.
-    IADDR , //!< Integer Add register X to register Y.
-    ISUBR , //!< Integer Subtract register X from register Y.
-    IMULR , //!< Integer Multiply register X by register Y.
-    IDIVR , //!< Integer Divide register X by register Y.
-    IASLR , //!< Integer Arithmetic shift register X left by value in register Y.
-    IASRR , //!< Integer Arithmetic shift register X right value in register Y.
-    FADDI , //!< Floating point Add register X to immediate value.
-    FSUBI , //!< Floating point Subtract immediate value from register X.
-    FMULI , //!< Floating point Multiply register X by immediate value.
-    FDIVI , //!< Floating point Divide register X by immediate value.
-    FASLI , //!< Floating point Arithmetic shift register X left by immediate value.
-    FASRI , //!< Floating point Arithmetic shift register X right immediate value.
-    FADDR , //!< Floating point Add register X to register Y.
-    FSUBR , //!< Floating point Subtract register X from register Y.
-    FMULR , //!< Floating point Multiply register X by register Y.
-    FDIVR , //!< Floating point Divide register X by register Y.
-    FASLR , //!< Floating point Arithmetic shift register X left by value in register Y.
-    FASRR , //!< Floating point Arithmetic shift register X right value in register Y.
-    SLEEP , //!< Sleeps the core for a certain number of cycles.
-    NOT_EMITTED //!< Used in the parse tree for instruction like DATA that are not emitted.
+    LOADR = 1 , //!< Load to register X from address in register Y with offset in register Z.
+    LOADI = 2 , //!< Load to register X from address in register Y with immediate offset.
+    STORI = 3 , //!< Store register X to address in register Y with offset in register Z.
+    STORR = 4 , //!< Store register X to address in register Y with immediate offset.
+    PUSH  = 5 , //!< Push register X onto the top of the stack and decrement the stack pointer.
+    POP   = 6 , //!< Pop element at top of stack into register X and increment the stack pointer.
+    MOVR  = 7 , //!< Move the content of register X into register Y
+    MOVI  = 8 , //!< Move immediate I into register X
+    JUMPR = 9 , //!< Jump to address contained within register X
+    JUMPI = 10, //!< Jump to address contained within instruction immediate.
+    CALLR = 11, //!< Call to function who's address is contained within register X
+    CALLI = 12, //!< Call to function who's address is contained within instruction immediate.
+    RETURN= 13, //!< Return from the last function call.
+    TEST  = 14, //!< Test two general or special registers and set comparison bits.
+    HALT  = 15, //!< Stop processing and wait to be reset.
+    ANDR  = 0 , //!< Bitwise AND two registers together.
+    NANDR = 16, //!< Bitwise NAND two registers together.
+    ORR   = 17, //!< Bitwise OR two registers together.
+    NORR  = 18, //!< Bitwise NOR two registers together.
+    XORR  = 19, //!< Bitwise XOR two registers together.
+    LSLR  = 20, //!< Logical shift left the bits in register X by the value in register Y.
+    LSRR  = 21, //!< Logical shift right the bits in register X by the value in register Y.
+    NOTR  = 22, //!< Bitwise invert the specificed register.
+    ANDI  = 23, //!< Bitwise AND two registers together.
+    NANDI = 24, //!< Bitwise NAND two registers together.
+    ORI   = 25, //!< Bitwise OR two registers together.
+    NORI  = 26, //!< Bitwise NOR two registers together.
+    XORI  = 27, //!< Bitwise XOR two registers together.
+    LSLI  = 28, //!< Logical shift left the bits in register X by the immediate value
+    LSRI  = 29, //!< Logical shift right the bits in register X by the immediate value
+    IADDI = 30, //!< Integer Add register X to immediate value.
+    ISUBI = 31, //!< Integer Subtract immediate value from register X.
+    IMULI = 32, //!< Integer Multiply register X by immediate value.
+    IDIVI = 33, //!< Integer Divide register X by immediate value.
+    IASRI = 34, //!< Integer Arithmetic shift register X right immediate value.
+    IADDR = 35, //!< Integer Add register X to register Y.
+    ISUBR = 36, //!< Integer Subtract register X from register Y.
+    IMULR = 37, //!< Integer Multiply register X by register Y.
+    IDIVR = 38, //!< Integer Divide register X by register Y.
+    IASRR = 39, //!< Integer Arithmetic shift register X right value in register Y.
+    FADDI = 40, //!< Floating point Add register X to immediate value.
+    FSUBI = 41, //!< Floating point Subtract immediate value from register X.
+    FMULI = 42, //!< Floating point Multiply register X by immediate value.
+    FDIVI = 43, //!< Floating point Divide register X by immediate value.
+    FASRI = 44, //!< Floating point Arithmetic shift register X right immediate value.
+    FADDR = 45, //!< Floating point Add register X to register Y.
+    FSUBR = 46, //!< Floating point Subtract register X from register Y.
+    FMULR = 47, //!< Floating point Multiply register X by register Y.
+    FDIVR = 48, //!< Floating point Divide register X by register Y.
+    FASRR = 49, //!< Floating point Arithmetic shift register X right value in register Y.
+    SLEEP = 50, //!< Sleeps the core for a certain number of cycles.
+    NOT_EMITTED=51 //!< Used in the parse tree for instruction like DATA that are not emitted.
 } tim_instruction_opcode;
     
 

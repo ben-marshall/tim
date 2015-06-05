@@ -132,7 +132,7 @@ begin
         data_width           => word_width,
         address_range_top    => 1023,
         address_range_bottom => 0,
-        initial_values_file  => "../build/test.bin"
+        initial_values_file  => "../build/test.ascii"
     ) port map(
         clk                  =>  tb_clk,
         reset                =>  tb_reset,         
