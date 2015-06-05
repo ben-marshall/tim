@@ -177,8 +177,8 @@ int asm_emit_opcode_RETURN(asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_TEST  (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
-    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
     to_write |= ((unsigned int)statement -> args.reg_reg.reg_1) << (23-6-2-5);
     to_write |= ((unsigned int)statement -> args.reg_reg.reg_2) << (23-6-2-5-5);
 
@@ -188,11 +188,11 @@ int asm_emit_opcode_TEST  (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_HALT  (asm_statement * statement, FILE * file, asm_format format){
-    unsigned char to_write  = ((unsigned char)statement -> opcode)    << (7-6);
-    to_write |= ((unsigned char)statement -> condition);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
      
     if(format == ASCII) asm_emit_ascii(to_write, 8, file); else
-    fwrite(&to_write, sizeof(to_write), 1, file);
+    fwrite(&to_write, 1, 1, file);
     return 0;
 }
 
