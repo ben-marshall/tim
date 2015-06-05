@@ -74,7 +74,7 @@ package tim_instructions is
     constant opcode_JUMPR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(9, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_JUMPR : integer := 4;
+    constant opcode_length_JUMPR : integer := 2;
  
     --! Jump to address contained within instruction immediate.                      
     constant opcode_JUMPI : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(10,opcode_length));
@@ -86,7 +86,7 @@ package tim_instructions is
     constant opcode_CALLR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(11,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_CALLR : integer := 4;
+    constant opcode_length_CALLR : integer := 2;
  
     --! Call to function who's address is contained within instruction immediate.    
     constant opcode_CALLI : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(12,opcode_length));
@@ -98,7 +98,7 @@ package tim_instructions is
     constant opcode_RETURN: std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(13,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_RETURN : integer := 4;
+    constant opcode_length_RETURN : integer := 1;
     
     --! Test two general or special registers and set comparison bits.               
     constant opcode_TEST  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(14,opcode_length));
@@ -110,55 +110,55 @@ package tim_instructions is
     constant opcode_HALT  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(15,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_HALT  : integer := 4;
+    constant opcode_length_HALT  : integer := 1;
  
     --! Bitwise AND two registers together.                                          
     constant opcode_ANDR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(0, opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_ANDR  : integer := 4;
+    constant opcode_length_ANDR  : integer := 3;
  
     --! Bitwise NAND two registers together.                                         
     constant opcode_NANDR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(16,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_NANDR : integer := 4;
+    constant opcode_length_NANDR : integer := 3;
  
     --! Bitwise OR two registers together.                                           
     constant opcode_ORR   : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(17,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_ORR   : integer := 4;
+    constant opcode_length_ORR   : integer := 3;
  
     --! Bitwise NOR two registers together.                                          
     constant opcode_NORR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(18,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_NORR  : integer := 4;
+    constant opcode_length_NORR  : integer := 3;
  
     --! Bitwise XOR two registers together.                                          
     constant opcode_XORR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(19,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_XORR  : integer := 4;
+    constant opcode_length_XORR  : integer := 3;
  
     --! Logical shift left the bits in register X by the value in register Y.        
     constant opcode_LSLR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(20,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_LSLR  : integer := 4;
+    constant opcode_length_LSLR  : integer := 3;
  
     --! Logical shift right the bits in register X by the value in register Y.       
     constant opcode_LSRR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(21,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_LSRR  : integer := 4;
+    constant opcode_length_LSRR  : integer := 3;
  
     --! Bitwise invert the specificed register.                                      
     constant opcode_NOTR  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(22,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_NOTR  : integer := 4;
+    constant opcode_length_NOTR  : integer := 2;
  
     --! Bitwise AND two registers together.                                          
     constant opcode_ANDI  : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(23,opcode_length));
@@ -236,31 +236,31 @@ package tim_instructions is
     constant opcode_IADDR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(35,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_IADDR : integer := 4;
+    constant opcode_length_IADDR : integer := 3;
  
     --! Integer Subtract register X from register Y.                                 
     constant opcode_ISUBR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(36,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_ISUBR : integer := 4;
+    constant opcode_length_ISUBR : integer := 3;
  
     --! Integer Multiply register X by register Y.                                   
     constant opcode_IMULR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(37,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_IMULR : integer := 4;
+    constant opcode_length_IMULR : integer := 3;
  
     --! Integer Divide register X by register Y.                                     
     constant opcode_IDIVR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(38,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_IDIVR : integer := 4;
+    constant opcode_length_IDIVR : integer := 3;
  
     --! Integer Arithmetic shift register X right value in register Y.               
     constant opcode_IASRR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(39,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_IASRR : integer := 4;
+    constant opcode_length_IASRR : integer := 3;
  
     --! Floating point Add register X to immediate value.                            
     constant opcode_FADDI : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(40,opcode_length));
@@ -296,30 +296,36 @@ package tim_instructions is
     constant opcode_FADDR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(45,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_FADDR : integer := 4;
+    constant opcode_length_FADDR : integer := 3;
  
     --! Floating point Subtract register X from register Y.                          
     constant opcode_FSUBR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(46,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_FSUBR : integer := 4;
+    constant opcode_length_FSUBR : integer := 3;
  
     --! Floating point Multiply register X by register Y.                            
     constant opcode_FMULR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(47,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_FMULR : integer := 4;
+    constant opcode_length_FMULR : integer := 3;
  
     --! Floating point Divide register X by register Y.                              
     constant opcode_FDIVR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(48,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_FDIVR : integer := 4;
+    constant opcode_length_FDIVR : integer := 3;
  
     --! Floating point Arithmetic shift register X right value in register Y.        
     constant opcode_FASRR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(49,opcode_length));
  
     --! The length in bytes of the instruction 
-    constant opcode_length_FASRR : integer := 4;
+    constant opcode_length_FASRR : integer := 3;
+ 
+    --! SLEEP for a while
+    constant opcode_SLEEP : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(50,opcode_length));
+ 
+    --! The length in bytes of the instruction 
+    constant opcode_length_SLEEP : integer := 2;
 
 end package;
