@@ -81,8 +81,8 @@ begin
 
         if(reset = '1') then
             internal_register_file(reg_pc) <= (others => '0');
-        elsif(decoded_instruction_valid = '1' and clk'event and clk='1') then
-            internal_register_file(reg_pc) <= std_logic_vector(unsigned(internal_register_file(reg_pc))+1);
+        elsif(decoded_instruction_valid = '1' and decoded_instruction_valid'event) then
+            internal_register_file(reg_pc) <= std_logic_vector(unsigned(internal_register_file(reg_pc))+3);
         else 
             internal_register_file(reg_pc) <= internal_register_file(reg_pc);
         end if;
