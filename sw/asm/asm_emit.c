@@ -83,9 +83,9 @@ int asm_emit_opcode_STORR (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_PUSH  (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
-    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
-    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (31-6-2-5);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (31-6-2-4);
 
     if(format == ASCII) asm_emit_ascii(to_write, 16, file); else
     fwrite(&to_write, 2, 1, file);
@@ -93,9 +93,9 @@ int asm_emit_opcode_PUSH  (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_POP   (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
-    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
-    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (31-6-2-5);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg.reg_1) << (31-6-2-4);
 
     if(format == ASCII) asm_emit_ascii(to_write, 16, file); else
     fwrite(&to_write, 2, 1, file);
