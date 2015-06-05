@@ -58,10 +58,10 @@ int asm_emit_opcode_LOADI (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_STORI (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-6);
-    to_write |= ((unsigned int)statement -> condition) << (31-6-2);
-    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-4);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_1) << (31-6-2-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_immediate.reg_2) << (31-6-2-4-3);
     to_write |= ((unsigned short)statement -> args.reg_reg_immediate.immediate);
 
     if(format == ASCII) asm_emit_ascii(to_write, 32, file); else
@@ -70,11 +70,11 @@ int asm_emit_opcode_STORI (asm_statement * statement, FILE * file, asm_format fo
 }
 
 int asm_emit_opcode_STORR (asm_statement * statement, FILE * file, asm_format format){
-    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (23-6);
-    to_write |= ((unsigned int)statement -> condition) << (23-6-2);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (23-6-2-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (23-6-2-4-4);
-    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (23-6-2-4-4);
+    unsigned int to_write  = ((unsigned int)statement -> opcode)    << (31-5);
+    to_write |= ((unsigned int)statement -> condition) << (31-6-1);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_1) << (31-6-2-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_2) << (31-6-2-4-3);
+    to_write |= ((unsigned int)statement -> args.reg_reg_reg.reg_3) << (31-6-2-4-4-3);
     to_write |= 0xF;
 
     if(format == ASCII) asm_emit_ascii(to_write, 24, file); else
