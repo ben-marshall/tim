@@ -22,7 +22,9 @@ architecture master of bus_device is
     --! Defines the state of the master bus device.
     type master_state is (BUS_RESET, BUS_IDLE, BUS_READ, BUS_WRITE);
 
+    --! Current state of the master bus device.
     signal current_state    : master_state  := BUS_RESET;
+    --! Next state of the master bus device.
     signal next_state       : master_state  := BUS_IDLE;
 
 begin

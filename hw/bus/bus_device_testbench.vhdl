@@ -22,28 +22,47 @@ end entity bus_device_testbench;
 --! Testbench architecture for bus devices.
 architecture testbench of bus_device_testbench is
 
+    --! Testbench clock.
     signal clk                  : std_Logic := '0';
+    --! Testbench reset signal.
     signal reset                : std_Logic := '1';
 
+    --! Dummy constant to set the width of the bus.
     constant bus_width          : integer := memory_word_width;
 
+    --! Shared bus signal.
     signal bus_address_lines    : unsigned(bus_width-1 downto 0);
+    --! Shared bus signal.
     signal bus_data_lines       : std_logic_vector(bus_width-1 downto 0);
+    --! Shared bus signal.
     signal bus_address_valid    : std_logic;
+    --! Shared bus signal.
     signal bus_data_valid       : std_logic;
+    --! Shared bus signal.
     signal bus_enable           : std_logic;
+    --! Shared bus signal.
     signal bus_write_enable     : std_logic;
 
+    --! Master signal
     signal master_address_lines : unsigned(bus_width-1 downto 0);
+    --! Master signal
     signal master_data_lines    : std_logic_vector(bus_width-1 downto 0);
+    --! Master signal
     signal master_pending       : std_logic := '0';
+    --! Master signal
     signal master_complete      : std_logic := '0';
+    --! Master signal
     signal master_write         : std_logic := '0';
 
+    --! Slave signal
     signal slave_address_lines : unsigned(bus_width-1 downto 0);
+    --! Slave signal
     signal slave_data_lines    : std_logic_vector(bus_width-1 downto 0);
+    --! Slave signal
     signal slave_pending       : std_logic := '0';
+    --! Slave signal
     signal slave_complete      : std_logic := '0';
+    --! Slave signal
     signal slave_write         : std_logic := '0';
 
 begin
