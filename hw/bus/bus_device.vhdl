@@ -38,7 +38,7 @@ entity  bus_device  is
         reset               : in    std_logic;
 
         --! The current address of the thing being accessed on the bus.
-        bus_address_lines   : inout std_logic_vector(address_width-1 downto 0);
+        bus_address_lines   : inout unsigned(address_width-1 downto 0);
         --! The data being carried on the bus.
         bus_data_lines      : inout std_logic_vector(data_width-1 downto 0);
         --! Signal to tell the rest of the bus that the address lines are valid, initiating a transaction.
@@ -51,7 +51,7 @@ entity  bus_device  is
         bus_write_enable    : inout std_logic;
         
         --! The current address of the thing being accessed on the bus.
-        req_address_lines   : inout std_logic_vector(address_width-1 downto 0);
+        req_address_lines   : inout unsigned(address_width-1 downto 0);
         --! The data being carried on the bus.
         req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
         --! Signal to tell the controller/device that a request is pending and needs attention.
