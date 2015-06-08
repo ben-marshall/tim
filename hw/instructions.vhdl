@@ -6,14 +6,21 @@
 --!
 --! ------------------------------------------------------------------------------------------------
 
+--! Use the standard IEEE libraries
 library ieee;
+--! Import standard logic interfaces.
 use ieee.std_logic_1164.ALL;
+--! Standard numeric operations and types.
 use ieee.numeric_std.ALL;
-
-use work.tim_common.opcode_length;
 
 --! Package that contains declarations and definitions for all instruction opcodes and their lengths.
 package tim_instructions is
+
+    --! @brief The number of bits used to represent an instruction opcode.
+    constant opcode_length      : integer    := 6;
+    
+    --! @brief The number of bits used to represent an instruction's condition code.
+    constant condition_length   : integer  := 2; 
 
     --! A simple way of encoding all of the instructions once they are decoded.
     type tim_instruction is ( LOADR ,LOADI ,STORI ,STORR ,PUSH  ,POP   ,MOVR  ,MOVI  ,JUMPR ,JUMPI,
