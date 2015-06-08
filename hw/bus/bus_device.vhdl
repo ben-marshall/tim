@@ -29,7 +29,7 @@ entity  bus_device  is
         --! The bottom of the address range to which this device will respond.
         address_bottom  : unsigned  := to_unsigned(0);
         --! The top of the address range to which this device will respond.
-        address_top     : unsigned  := to_unsigned(0);
+        address_top     : unsigned  := to_unsigned(0)
     );
     port(
         --! The main system clock.
@@ -60,6 +60,6 @@ entity  bus_device  is
         --! is available on the data lines.
         req_complete        : inout std_logic;
         --! high = write, low = read operation.
-        req_write_enable    : inout std_logic;
+        req_write_enable    : inout std_logic
     );
 end entity bus_device;

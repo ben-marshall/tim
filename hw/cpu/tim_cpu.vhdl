@@ -40,7 +40,7 @@ entity tim_cpu is
         --! Enable signal to let slaves tell the master they are finished with the data on the bus.
         mem_bus_enable          : inout std_logic;
         --! high = write, low = read operation.
-        mem_bus_write_enable    : inout std_logic;
+        mem_bus_write_enable    : inout std_logic
     );
 end entity tim_cpu;
 
