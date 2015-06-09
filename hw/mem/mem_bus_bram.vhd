@@ -125,8 +125,8 @@ begin
     --! An instance of a bus slave device.
     slave_device   : entity work.bus_device(slave)
     generic map(
-        address_width   => 31,
-        data_width      => 31,
+        address_width   => 32,
+        data_width      => 32,
         address_bottom  => address_bottom,
         address_top     => address_top
     )

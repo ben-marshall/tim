@@ -116,14 +116,8 @@ begin
                 req_pending     <= '0';
 
             when BUS_IDLE   =>
-                if(next_state = BUS_IDLE) then
-                    bus_data_lines  <= (others => 'Z');
-                    bus_data_valid  <= 'Z';
-                    bus_enable      <= 'Z';
-                    req_data_lines  <= (others => 'Z');
-                    req_pending     <= '0';
 
-                elsif(next_state = BUS_READ) then
+                if(next_state = BUS_READ) then
                     bus_data_lines  <= req_data_lines;
                     bus_data_valid  <= req_complete;
                     bus_enable      <= req_complete;
@@ -136,6 +130,12 @@ begin
                     bus_enable      <= req_complete;
                     req_data_lines  <= bus_data_lines;
                     req_pending     <= '1';
+                else
+                    bus_data_lines  <= (others => 'Z');
+                    bus_data_valid  <= 'Z';
+                    bus_enable      <= 'Z';
+                    req_data_lines  <= (others => 'Z');
+                    req_pending     <= '0';
 
                 end if;
 
