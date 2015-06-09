@@ -17,10 +17,14 @@ use ieee.numeric_std.ALL;
 package tim_instructions is
 
     --! @brief The number of bits used to represent an instruction opcode.
-    constant opcode_length      : integer    := 6;
+    constant opcode_width               : integer    := 6;
     
     --! @brief The number of bits used to represent an instruction's condition code.
-    constant condition_length   : integer  := 2; 
+    constant condition_width            : integer  := 2; 
+    
+    --! The maximum width of an instruction immediate.
+    constant immediate_width            : integer   := 16;
+
 
     --! A simple way of encoding all of the instructions once they are decoded.
     type tim_instruction is ( LOADR ,LOADI ,STORI ,STORR ,PUSH  ,POP   ,MOVR  ,MOVI  ,JUMPR ,JUMPI,
@@ -28,6 +32,11 @@ package tim_instructions is
                               LSLR  ,LSRR  ,NOTR  ,ANDI  ,NANDI ,ORI   ,NORI  ,XORI  ,LSLI  ,LSRI,
                               IADDI ,ISUBI ,IMULI ,IDIVI ,IASRI ,IADDR ,ISUBR ,IMULR ,IDIVR ,IASRR,
                               FADDI ,FSUBI ,FMULI ,FDIVI ,FASRI ,FADDR ,FSUBR ,FMULR ,FDIVR ,FASRR);
+
+    
+    --! An easy way to encode the conditional execution bits of an instruction.
+    type tim_instruction_condition is (ALWAYS, IF_TRUE, IF_FALSE, IF_ZERO);
+
 
     --! Load to register X from address in register Y with offset in register Z.     
     constant opcode_LOADR : std_logic_vector(opcode_length-1 downto 0) := std_logic_vector(to_unsigned(1, opcode_length));

@@ -13,6 +13,10 @@ use ieee.std_logic_1164.ALL;
 --! Standard numeric operations and types.
 use ieee.numeric_std.ALL;
 
+--! Imported from tim_common package.
+use word.tim_common.address_bus_width;
+--! Imported from tim_common package.
+use word.tim_common.data_bus_width;
 
 --! The top module of the tim CPU core.
 entity tim_cpu is
@@ -30,9 +34,9 @@ entity tim_cpu is
         --
         
         --! The current address of the thing being accessed on the bus.
-        mem_bus_address_lines   : inout std_logic_vector(address_width-1 downto 0);
+        mem_bus_address_lines   : inout std_logic_vector(address_bus_width-1 downto 0);
         --! The data being carried on the bus.
-        mem_bus_data_lines      : inout std_logic_vector(data_width-1 downto 0);
+        mem_bus_data_lines      : inout std_logic_vector(data_bus_width-1 downto 0);
         --! Signal to tell the rest of the bus that the address lines are valid, initiating a transaction.
         mem_bus_address_valid   : inout std_logic;
         --! Signal to tell the rest of the bus that the data lines are valid.
