@@ -13,15 +13,15 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 --! Imported from tim_common package.
-use word.tim_common.address_bus_width;
+use work.tim_common.address_bus_width;
 --! Imported from tim_common package.
-use word.tim_common.data_bus_width;
+use work.tim_common.data_bus_width;
 --! Imported from tim_instructions package,
-use word.tim_instructions.immediate_width;
+use work.tim_instructions.immediate_width;
 --! Imported from tim_instructions package,
-use word.tim_instructions.tim_instruction;
+use work.tim_instructions.tim_instruction;
 --! Imported from tim_instructions package,
-use word.tim_instructions.tim_instruction_condition;
+use work.tim_instructions.tim_instruction_condition;
 
 --! Entity of the instruction fetch & decode module.
 entity tim_cpu_fetch_decode is
@@ -61,17 +61,16 @@ entity tim_cpu_fetch_decode is
         --
         
         --! The current address of the thing being accessed on the bus.
-        mem_bus_address_lines   : inout std_logic_vector(address_bus_width-1 downto 0);
+        req_address_lines   : out unsigned(address_width-1 downto 0);
         --! The data being carried on the bus.
-        mem_bus_data_lines      : inout std_logic_vector(data_bus_width-1 downto 0);
-        --! Signal to tell the rest of the bus that the address lines are valid, initiating a transaction.
-        mem_bus_address_valid   : inout std_logic;
-        --! Signal to tell the rest of the bus that the data lines are valid.
-        mem_bus_data_valid      : inout std_logic;
-        --! Enable signal to let slaves tell the master they are finished with the data on the bus.
-        mem_bus_enable          : inout std_logic;
+        req_data_lines      : in std_logic_vector(data_width-1 downto 0);
+        --! Signal to tell the controller/device that a request is pending and needs attention.
+        req_pending         : out std_logic;
+        --! Asserted high to tell the device/bus controller that the request has been completed and that the response
+        --! is available on the data lines.
+        req_complete        : in std_logic;
         --! high = write, low = read operation.
-        mem_bus_write_enable    : inout std_logic
+        req_write_enable    : out std_logic
 
     );
 end entity tim_cpu_fetch_decode;
