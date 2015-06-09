@@ -49,8 +49,8 @@ end entity mem_bus_bram;
 architecture rtl of mem_bus_bram is
 
     --! Forward declaration of the generated BRAM controller.
-    component mem_bram
-      port (
+    COMPONENT mem_bram
+      PORT (
         clka : IN STD_LOGIC;
         ena : IN STD_LOGIC;
         wea : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
@@ -58,10 +58,12 @@ architecture rtl of mem_bus_bram is
         dina : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         douta : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
       );
-    end component;
+    END COMPONENT;
     
     signal internal_address_lines : unsigned(31 downto 0);
     signal internal_data_lines    : std_logic_vector(31 downto 0);
+    signal internal_write_data_lines    : std_logic_vector(31 downto 0);
+    signal internal_read_data_lines    : std_logic_vector(31 downto 0);
     signal internal_pending       : std_logic := '0';
     signal internal_complete      : std_logic := '0';
     signal internal_write_enable  : std_logic := '0';
@@ -86,6 +88,17 @@ begin
             current_state <= next_state;
         end if;
     end process;
+
+    read_write_connect  : process(internal_write_data_lines, internal_read_data_lines, internal_write_enable)
+    begin
+        
+        if(internal_write_enable = '1') then
+            internal_data_lines <= internal_write_data_lines;
+        else
+            internal_data_lines <= internal_read_data_lines;
+        end if;
+        
+    end process read_write_connect;
 
     --! Handles next state logic and request complete signal.
     state_logic :   process(current_state, internal_pending)
@@ -118,8 +131,8 @@ begin
       ena   => internal_pending,
       wea   => write_enable_vector,
       addra => std_logic_vector(internal_address_lines),
-      dina  => internal_data_lines,
-      douta => internal_data_lines
+      dina  => internal_write_data_lines,
+      douta => internal_read_data_lines
     );
 
     --! An instance of a bus slave device.
