@@ -27,9 +27,9 @@ entity  bus_device  is
         --! The number of data bits on the bus.
         data_width      : integer   := memory_word_width;
         --! The bottom of the address range to which this device will respond.
-        address_bottom  : unsigned  := to_unsigned(0);
+        address_bottom  : unsigned  := to_unsigned(0, memory_word_width);
         --! The top of the address range to which this device will respond.
-        address_top     : unsigned  := to_unsigned(0)
+        address_top     : unsigned  := to_unsigned(0, memory_word_width)
     );
     port(
         --! The main system clock.

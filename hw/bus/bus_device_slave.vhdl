@@ -54,7 +54,7 @@ begin
     address_response_logic  : process(bus_address_valid, bus_address_lines)
     begin
 
-        if(bus_address_valid = '1')
+        if(bus_address_valid = '1') then
             if(bus_address_lines <= address_top and bus_address_lines >= address_bottom) then
                 bus_pending <= '1';
             else
@@ -64,7 +64,7 @@ begin
             bus_pending <= '0';
         end if;
 
-    end
+    end process address_response_logic;
 
     --! Responsible for determining the next state of the state machine.
     next_state_logic        : process(current_state, req_complete, bus_write_enable, 

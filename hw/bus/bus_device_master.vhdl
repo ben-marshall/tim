@@ -107,7 +107,7 @@ begin
                     bus_address_valid   <= '1';
                     bus_data_valid      <= 'Z';
                     req_complete        <= '0';
-                    bus_address_lines   <= req_address_lines
+                    bus_address_lines   <= req_address_lines;
                     bus_data_lines      <= (others => 'Z');
 
                 elsif(next_state = BUS_WRITE) then

@@ -44,7 +44,7 @@ architecture testbench of bus_device_testbench is
     signal bus_write_enable     : std_logic;
 
     --! Master signal
-    signal master_address_lines : unsigned(bus_width-1 downto 0);
+    signal master_address_lines : unsigned(bus_width-1 downto 0) := (others => '0');
     --! Master signal
     signal master_data_lines    : std_logic_vector(bus_width-1 downto 0);
     --! Master signal
@@ -70,13 +70,14 @@ begin
     reset   <= '0' after 60 ns;
     clk     <= not clk after 50 ns;
 
+
     --! An instance of the bus master device.
     master_device   : entity work.bus_device(master)
     generic map(
         address_width   => bus_width,
         data_width      => bus_width,
-        address_bottom  => 0,
-        address_top     => 0
+        address_bottom  => to_unsigned(0, bus_width),
+        address_top     => to_unsigned(0, bus_width)
     )
     port map(
         clk               => clk,
@@ -99,8 +100,8 @@ begin
     generic map(
         address_width   => bus_width,
         data_width      => bus_width,
-        address_bottom  => 0,
-        address_top     => 1024
+        address_bottom  => to_unsigned(0, bus_width),
+        address_top     => to_unsigned(1024, bus_width)
     )
     port map(
         clk               => clk,
