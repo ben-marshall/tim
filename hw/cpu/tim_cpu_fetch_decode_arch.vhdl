@@ -41,7 +41,7 @@ architecture rtl of tim_cpu_fetch_decode is
     --! Tells the module an instruction has been fetched from memory.
     signal  word_load_complete  : std_logic := '0';
     --! The most recently fetched word from memory.
-    signal  fetched_word        : std_logic_vector(data_bus_width-1, downto 0);
+    signal  fetched_word        : std_logic_vector(data_bus_width-1 downto 0);
 
 begin
     
@@ -50,15 +50,17 @@ begin
     --! This module will always ask for the current value of the program counter.
     req_address_lines   <= program_counter;
 
+    decoded_instruction_size    <= 0;
+
     --! Responsible for advancing the current state of the fetcher and buffer.
     state_machine_progress  : process(clk, reset)
     begin
         if(reset = '1') then
-            current_state       <= BUS_RESET;
+            current_state       <= FETCH_RESET;
             instruction_buffer  <= (others => '0');
         elsif(clk = '1' and clk'event) then
             current_state       <= next_state;
-            instruction_buffer  <= next_buffer
+            instruction_buffer  <= next_buffer;
         end if;
     end process state_machine_progress;
 
@@ -148,14 +150,14 @@ begin
                     next_stored_bytes   <= stored_bytes - 4;
 
                 when others =>
-                    report "Invalid instruction size!" severity failure;
+                    report "Invalid instruction size!" severity warning;
 
             end case;
 
-        else(current_state = FILL_BUFFER) then
+        elsif(current_state = FILL_BUFFER) then
                     
             next_stored_bytes   <= stored_bytes + 4;
-            next_buffer(buf_size-1 downto buf_size-stored_bytes*8) <= instruction_buffer(buf_size-1 downto buf_size-stored_bytes*8)
+            next_buffer(buf_size-1 downto buf_size-stored_bytes*8) <= instruction_buffer(buf_size-1 downto buf_size-stored_bytes*8);
             next_buffer(buf_size-stored_bytes*8 -1 downto buf_size-stored_bytes*16) <= fetched_word;
 
         else

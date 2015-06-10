@@ -61,9 +61,9 @@ entity tim_cpu_fetch_decode is
         --
         
         --! The current address of the thing being accessed on the bus.
-        req_address_lines   : out unsigned(address_width-1 downto 0);
+        req_address_lines   : out unsigned(address_bus_width-1 downto 0);
         --! The data being carried on the bus.
-        req_data_lines      : in std_logic_vector(data_width-1 downto 0);
+        req_data_lines      : in std_logic_vector(data_bus_width-1 downto 0);
         --! Signal to tell the controller/device that a request is pending and needs attention.
         req_pending         : out std_logic;
         --! Asserted high to tell the device/bus controller that the request has been completed and that the response
