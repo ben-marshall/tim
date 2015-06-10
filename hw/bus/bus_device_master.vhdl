@@ -71,7 +71,7 @@ begin
                 end if;
 
             when BUS_READ   =>
-                if(bus_data_valid = '1' and bus_enable='1' and req_pending='0') then
+                if(bus_data_valid = '1' and bus_enable='1') then
                     next_state <= BUS_IDLE;
                 else
                     next_state <= BUS_READ;
@@ -89,7 +89,7 @@ begin
 
 
     --! Responsible for setting the correct IO signal levels for requestor and bus lines.
-    signal_control           : process(current_state, next_state)
+    signal_control           : process(current_state, next_state, bus_data_lines, bus_enable)
     begin
         case (current_state) is
             
@@ -103,7 +103,7 @@ begin
             when BUS_IDLE   =>
                 if(next_state = BUS_IDLE) then
                     bus_address_valid   <= '0';
-                    bus_data_valid      <= '0';
+                    bus_data_valid      <= 'Z';
                     req_complete        <= '0';
                     bus_address_lines   <= (others => 'Z');
                     bus_data_lines      <= (others => 'Z');
@@ -113,7 +113,7 @@ begin
                     bus_data_valid      <= 'Z';
                     req_complete        <= '0';
                     bus_address_lines   <= req_address_lines;
-                    bus_data_lines      <= (others => 'Z');
+                    req_data_lines      <= bus_data_lines;
 
                 elsif(next_state = BUS_WRITE) then
                     bus_address_valid   <= '1';

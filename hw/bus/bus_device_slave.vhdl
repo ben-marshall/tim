@@ -126,6 +126,7 @@ begin
                     bus_data_valid  <= req_complete;
                     bus_enable      <= req_complete;
                     req_data_lines  <= (others => 'Z');
+                    req_address_lines  <= bus_address_lines;
                     req_pending     <= '1';
 
                 elsif(next_state = BUS_WRITE) then
@@ -133,12 +134,14 @@ begin
                     bus_data_valid  <= req_complete;
                     bus_enable      <= req_complete;
                     req_data_lines  <= bus_data_lines;
+                    req_address_lines  <= bus_address_lines;
                     req_pending     <= '1';
                 else
                     bus_data_lines  <= (others => 'Z');
                     bus_data_valid  <= 'Z';
                     bus_enable      <= 'Z';
                     req_data_lines  <= (others => 'Z');
+                    req_address_lines  <= (others => 'Z');
                     req_pending     <= '0';
 
                 end if;
@@ -148,6 +151,7 @@ begin
                     bus_data_valid  <= req_complete;
                     bus_enable      <= req_complete;
                     req_data_lines  <= (others => 'Z');
+                    req_address_lines  <= bus_address_lines;
                     req_pending     <= '1';
 
             when BUS_WRITE  => 
@@ -155,6 +159,7 @@ begin
                     bus_data_valid  <= req_complete;
                     bus_enable      <= req_complete;
                     req_data_lines  <= bus_data_lines;
+                    req_address_lines  <= bus_address_lines;
                     req_pending     <= '1';
         
         end case;

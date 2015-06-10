@@ -46,6 +46,10 @@ architecture testbench of fetch_decode_testbench is
     signal  clk                     : std_logic   := '0'; 
     --! Asynchonous reset signal.
     signal  reset                   : std_logic   := '1';
+
+    signal program_counter          : unsigned(address_bus_width-1 downto 0) := (others => '0');
+    signal instruction_valid        : std_logic;
+    signal decoded_instruction_size : integer := 0;
             
     --
     -- Main system bus signals.
@@ -69,18 +73,29 @@ begin
     reset   <= '0' after 50 ns;
     clk     <= not clk  after 20 ns;
 
+    program_counter_update  : process(clk, reset, instruction_valid)
+    begin
+        if(clk = '1' and clk'event) then
+            if(instruction_valid = '1') then
+                program_counter <= program_counter + to_unsigned(decoded_instruction_size, 32);
+            end if;
+        end if;
+    end process program_counter_update;
+
     --! The fetch decode module.
     fetch_module    : entity work.tim_cpu_fetch_decode
     port map(
         clk                   => clk, 
         reset                 => reset,
-        program_counter       => (others => '0'),
+        program_counter       => program_counter,
         instruction_recieved  => '1',
-        req_address_lines     =>  req_bus_address_lines,
-        req_data_lines        =>  req_bus_data_lines,
-        req_pending           =>  req_bus_pending,   
-        req_complete          =>  req_bus_complete,
-        req_write_enable      =>  req_bus_write_enable
+        instruction_valid     => instruction_valid,
+        decoded_instruction_size => decoded_instruction_size,
+        req_address_lines     => req_bus_address_lines,
+        req_data_lines        => req_bus_data_lines,
+        req_pending           => req_bus_pending,   
+        req_complete          => req_bus_complete,
+        req_write_enable      => req_bus_write_enable
     );
 
 
