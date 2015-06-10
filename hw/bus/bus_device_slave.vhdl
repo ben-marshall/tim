@@ -37,6 +37,10 @@ begin
     req_complete        <= 'Z';
     --! The bus_address_lines signal is always controlled by the master.
     bus_address_lines   <= (others => 'Z');
+    --! Slave never alters the address bus.
+    bus_address_valid   <= 'Z';
+    --! Slave never calls reads or writes.
+    bus_write_enable    <= 'Z';
 
     --! Responsible for advancing the current state of the bus slave.
     state_machine_progress  : process(clk, reset)

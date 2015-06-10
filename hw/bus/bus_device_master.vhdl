@@ -35,6 +35,11 @@ begin
     bus_enable       <= 'Z';
     --! The req_pending signal is always controlled by the masters parent device.
     req_pending      <= 'Z';
+    
+    --! Master always reads from request address lines.
+    req_address_lines   <= (others => 'Z');
+    --! Master always reads from write_enable lines.
+    req_write_enable    <= 'Z';
 
     --! Responsible for advancing the current state of the bus master.
     state_machine_progress  : process(clk, reset)
@@ -49,7 +54,7 @@ begin
 
     --! Responsible for determining the next state of the state machine.
     next_state_logic        : process(current_state, bus_enable, req_pending, bus_data_valid,
-                                      req_write_enable)
+                                      req_write_enable, clk)
     begin
         case (current_state) is
             
