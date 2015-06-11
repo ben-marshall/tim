@@ -101,14 +101,8 @@ begin
                 bus_data_lines      <= (others => 'Z');
 
             when BUS_IDLE   =>
-                if(next_state = BUS_IDLE) then
-                    bus_address_valid   <= '0';
-                    bus_data_valid      <= 'Z';
-                    req_complete        <= '0';
-                    bus_address_lines   <= (others => 'Z');
-                    bus_data_lines      <= (others => 'Z');
 
-                elsif(next_state = BUS_READ) then
+                if(next_state = BUS_READ) then
                     bus_address_valid   <= '1';
                     bus_data_valid      <= 'Z';
                     req_complete        <= '0';
@@ -121,6 +115,12 @@ begin
                     req_complete        <= '0';
                     bus_address_lines   <= req_address_lines;
                     bus_data_lines      <= req_data_lines;
+                else
+                    bus_address_valid   <= '0';
+                    bus_data_valid      <= 'Z';
+                    req_complete        <= '0';
+                    bus_address_lines   <= (others => 'Z');
+                    bus_data_lines      <= (others => 'Z');
 
                 end if;
 
