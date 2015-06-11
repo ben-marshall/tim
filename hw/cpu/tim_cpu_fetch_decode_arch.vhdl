@@ -25,15 +25,23 @@ architecture rtl of tim_cpu_fetch_decode is
     signal current_state        : fetch_state   := FETCH_RESET;
     --! Next state of the instruction_fetcher.
     signal next_state           : fetch_state   := IDLE;
-    
-    signal stored_bytes         : integer   := 0;
 
     --! Tells the module an instruction has been fetched from memory.
     signal  word_load_complete  : std_logic := '0';
     --! The most recently fetched word from memory.
     signal  fetched_word        : std_logic_vector(data_bus_width-1 downto 0);
 
+    constant buf_size           : integer   := data_bus_width * 2;
 
+    --! The number of bytes currently stored in the memory buffer.
+    signal stored_bytes         : integer   := 0;
+    signal stored_bytes_next    : integer   := 0;
+    --! Memory buffer for upto two memory words.
+    signal  mem_buf             : std_logic_vector(buf_size-1 downto 0);
+    --! The next value of the memory buffer.
+    signal  mem_buf_next        : std_logic_vector(buf_size-1 downto 0);
+
+    --! The 6 bit opcode for the instruction currently being decoded.
     signal  current_decode      : std_logic_vector(opcode_width-1 downto 0) := (others => '0');
 
 begin
@@ -44,14 +52,20 @@ begin
     req_address_lines   <= program_counter;
 
     word_load_complete  <= req_complete;
+    
+    current_decode <= mem_buf(buf_size-1 downto buf_size-6);
 
     --! Responsible for advancing the current state of the fetcher and buffer.
     state_machine_progress  : process(clk, reset)
     begin
         if(reset = '1') then
             current_state       <= FETCH_RESET;
+            mem_buf             <= (others => '0');
+            stored_bytes        <= 0;
         elsif(clk = '1' and clk'event) then
             current_state       <= next_state;
+            mem_buf             <= mem_buf_next;
+            stored_bytes        <= stored_bytes_next;
         end if;
     end process state_machine_progress;
 
@@ -84,7 +98,11 @@ begin
                 next_state <= IDLE;
             
             when EMPTY_BUFFER   =>
-                next_state <= IDLE;
+                if(stored_bytes <= 4) then
+                    next_state <= LOAD_WORD;
+                else
+                    next_state <= IDLE;
+                end if;
 
         end case;
     end process;
@@ -103,7 +121,11 @@ begin
             when IDLE           =>
                req_pending          <= '0';
                fetched_word         <= fetched_word;
-               instruction_valid    <= '1';
+               if(stored_bytes >= decoded_instruction_size) then
+                  instruction_valid    <= '1';
+               else
+                  instruction_valid    <= '0';
+                end if;
 
             when LOAD_WORD      =>
                req_pending          <= '1';
@@ -123,6 +145,61 @@ begin
         end case;
 
     end process fetch_io_control;
+
+    --! Responsible for updating the buffer based on the current state.
+    buffer_value_control    : process(current_state)
+    begin
+
+        case(current_state) is
+            when FILL_BUFFER =>
+                -- Set the empty four bytes after the currently loaded bytes to the most recently
+                -- fetched memory word and increment stored_bytes by 4.
+
+                stored_bytes_next   <= stored_bytes + 4;
+
+                case(stored_bytes) is
+                    when 0 =>
+                        mem_buf_next(buf_size-1 downto buf_size-32) <= fetched_word;
+                    when 1 =>
+                        mem_buf_next(buf_size-9 downto buf_size-40) <= fetched_word;
+                    when 2 =>
+                        mem_buf_next(buf_size-17 downto buf_size-48) <= fetched_word;
+                    when 3 =>
+                        mem_buf_next(buf_size-25 downto buf_size-56) <= fetched_word;
+                    when 4 =>
+                        mem_buf_next(buf_size-33 downto buf_size-64) <= fetched_word;
+                    when others =>
+                        mem_buf_next <= mem_buf;
+                end case;
+                
+            when EMPTY_BUFFER =>
+                -- Shift the buffer right by the lenght of the decoded instruction and
+                -- decrement stored_bytes by the length in bytes of the decoded instruction.
+
+                stored_bytes_next   <= stored_bytes - decoded_instruction_size;
+                
+                case(decoded_instruction_size) is
+                    when 0 =>
+                        mem_buf_next    <= mem_buf;
+                    when 1 =>
+                        mem_buf_next(buf_size-1 downto 8)    <= mem_buf(buf_size-9 downto 0);
+                    when 2 =>
+                        mem_buf_next(buf_size-1 downto 16)    <= mem_buf(buf_size-17 downto 0);
+                    when 3 =>
+                        mem_buf_next(buf_size-1 downto 24)    <= mem_buf(buf_size-25 downto 0);
+                    when 4 =>
+                        mem_buf_next(buf_size-1 downto 32)    <= mem_buf(buf_size-33 downto 0);
+                    when others =>
+                        mem_buf_next <= mem_buf;
+                end case;
+
+            when others =>
+                mem_buf_next <= mem_buf;
+                stored_bytes_next   <= stored_bytes;
+        end case;
+
+    end process buffer_value_control;
+
 
     --! Responsible for decoding the current length of an instruction.
     instruction_length_decode : process(current_decode, clk)
