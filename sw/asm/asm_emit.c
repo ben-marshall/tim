@@ -22,7 +22,7 @@ int asm_emit_ascii(unsigned int to_write, unsigned char length, FILE * file)
     {
         to_write & ((unsigned int)1)<<i ? fprintf(file,"1") : fprintf(file,"0");
         asm_ascii_counter += 1;
-        if(asm_ascii_counter >=8)
+        if(asm_ascii_counter >=32)
         {
             asm_ascii_counter = 0;
             fprintf(file, "\n");
@@ -776,6 +776,12 @@ int asm_emit_instructions(asm_statement * statements, FILE * file, asm_format fo
                 break;
         }
         walker = walker -> next;
+    }
+
+    while(asm_ascii_counter < 32)
+    {
+        fprintf(file,"0");
+        asm_ascii_counter += 1;
     }
 
     return errors;

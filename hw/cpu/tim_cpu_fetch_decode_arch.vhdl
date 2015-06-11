@@ -49,7 +49,7 @@ begin
     --! This module will never perform writes, so tie this line to zero.
     req_write_enable    <= '0';
     --! This module will always ask for the current value of the program counter.
-    req_address_lines   <= program_counter;
+    req_address_lines   <= program_counter + to_unsigned(stored_bytes, 32);
 
     word_load_complete  <= req_complete;
     
@@ -114,33 +114,42 @@ begin
         case(current_state) is
 
             when FETCH_RESET    =>
-               req_pending          <= '0';
-               fetched_word         <= (others => '0');
-               instruction_valid    <= '0';
+                req_pending          <= '0';
+                fetched_word         <= (others => '0');
+                instruction_valid    <= '0';
 
             when IDLE           =>
-               req_pending          <= '0';
-               fetched_word         <= fetched_word;
-               if(stored_bytes >= decoded_instruction_size) then
-                  instruction_valid    <= '1';
-               else
-                  instruction_valid    <= '0';
+                req_pending          <= '0';
+                fetched_word         <= fetched_word;
+                if(stored_bytes >= decoded_instruction_size) then
+                    instruction_valid    <= '1';
+                else
+                    instruction_valid    <= '0';
                 end if;
 
             when LOAD_WORD      =>
-               req_pending          <= '1';
-               fetched_word         <= req_data_lines;
-               instruction_valid    <= '0';
+                req_pending          <= '1';
+                case(program_counter(1 downto 0)) is
+                    --when "01" =>
+                    --    fetched_word(data_bus_width-1 downto 8) <= req_data_lines(data_bus_width-8 downto 0);
+                    --when "10" =>
+                    --    fetched_word(data_bus_width-1 downto 16) <= req_data_lines(data_bus_width-16 downto 0);
+                    --when "11" =>
+                    --    fetched_word(data_bus_width-1 downto 24) <= req_data_lines(data_bus_width-24 downto 0);
+                    when others =>
+                        fetched_word         <= req_data_lines;
+                end case;
+                instruction_valid    <= '0';
 
             when FILL_BUFFER    =>
-               req_pending          <= '0';
-               fetched_word         <= fetched_word;
-               instruction_valid    <= '0';
+                req_pending          <= '0';
+                fetched_word         <= fetched_word;
+                instruction_valid    <= '0';
 
             when EMPTY_BUFFER    =>
-               req_pending          <= '0';
-               fetched_word         <= fetched_word;
-               instruction_valid    <= '0';
+                req_pending          <= '0';
+                fetched_word         <= fetched_word;
+                instruction_valid    <= '0';
 
         end case;
 
@@ -259,7 +268,7 @@ begin
         when others =>
         -- Default to a NOP.
         decoded_instruction <= ANDR;
-        decoded_instruction_size <= 1;
+        decoded_instruction_size <= 0;
         end case;
     end if;
 
