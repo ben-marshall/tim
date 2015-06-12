@@ -31,7 +31,7 @@ architecture rtl of tim_cpu_fetch_decode is
     --! The most recently fetched word from memory.
     signal  fetched_word        : std_logic_vector(data_bus_width-1 downto 0);
 
-    constant buf_size           : integer   := data_bus_width * 2;
+    constant buf_size           : integer   := data_bus_width + data_bus_width;
 
     --! The number of bytes currently stored in the memory buffer.
     signal stored_bytes         : integer   := 0;
@@ -98,11 +98,7 @@ begin
                 next_state <= IDLE;
             
             when EMPTY_BUFFER   =>
-                if(stored_bytes <= 4) then
-                    next_state <= LOAD_WORD;
-                else
-                    next_state <= IDLE;
-                end if;
+                next_state <= IDLE;
 
         end case;
     end process;
@@ -121,17 +117,14 @@ begin
             when IDLE           =>
                 req_pending          <= '0';
                 fetched_word         <= fetched_word;
-                if(stored_bytes >= decoded_instruction_size) then
-                    instruction_valid    <= '1';
-                else
-                    instruction_valid    <= '0';
-                end if;
+                instruction_valid    <= '0';
 
             when LOAD_WORD      =>
                 req_pending          <= '1';
                 case(program_counter(1 downto 0)) is
                     --when "01" =>
                     --    fetched_word(data_bus_width-1 downto 8) <= req_data_lines(data_bus_width-8 downto 0);
+                    --    fetched_word(7 downto 0) <= (others => '0');
                     --when "10" =>
                     --    fetched_word(data_bus_width-1 downto 16) <= req_data_lines(data_bus_width-16 downto 0);
                     --when "11" =>
@@ -149,7 +142,7 @@ begin
             when EMPTY_BUFFER    =>
                 req_pending          <= '0';
                 fetched_word         <= fetched_word;
-                instruction_valid    <= '0';
+                instruction_valid    <= '1';
 
         end case;
 
@@ -164,7 +157,7 @@ begin
                 -- Set the empty four bytes after the currently loaded bytes to the most recently
                 -- fetched memory word and increment stored_bytes by 4.
 
-                stored_bytes_next   <= stored_bytes + 4;
+                stored_bytes_next   <= stored_bytes + 4;-- - to_integer(program_counter(1 downto 0));
 
                 case(stored_bytes) is
                     when 0 =>
