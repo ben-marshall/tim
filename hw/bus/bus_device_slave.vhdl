@@ -108,7 +108,7 @@ begin
 
     --! Responsible for setting the correct IO signal levels for requestor and bus lines.
     signal_control           : process(current_state, next_state, req_complete, req_data_lines,
-                                       bus_data_lines)
+                                       bus_data_lines, bus_address_lines)
     begin
         case (current_state) is
             
