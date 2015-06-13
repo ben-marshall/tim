@@ -25,4 +25,11 @@ package tim_common is
     --! The width of the system data bus.
     constant data_bus_width             : integer   := memory_word_width;
 
+    --! type definitions for the bus multiplexer.
+    type bus_mux_address_lines  is array(natural range <>) of std_logic_vector(data_bus_width-1 downto 0);
+    type bus_mux_data_lines     is array(natural range <>) of std_logic_vector(data_bus_width-1 downto 0);
+    type bus_mux_pending        is array(natural range <>) of std_logic;
+    type bus_mux_complete       is array(natural range <>) of std_logic;
+    type bus_mux_write_enable   is array(natural range <>) of std_logic;
+
 end package;

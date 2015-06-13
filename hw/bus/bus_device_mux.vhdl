@@ -15,8 +15,8 @@ use ieee.std_logic_1164.ALL;
 --! Standard numeric operations and types.
 use ieee.numeric_std.ALL;
 
---! Use the width of a single memory word as the default width of the bus.
-use work.tim_common.memory_word_width;
+--! import the tim_common package contents.
+use work.tim_common.all;
 
 --! Allows multiple hardware modules to connect to the same bus controller with no extra logic on
 --! their part. Each device connects to the mux through a port. Each port is numbered, with lower
@@ -30,8 +30,9 @@ entity  bus_device_mux  is
         --! The bottom of the address range to which this device will respond.
         address_bottom  : unsigned  := to_unsigned(0, memory_word_width);
         --! The top of the address range to which this device will respond.
-        address_top     : unsigned  := to_unsigned(0, memory_word_width)
+        address_top     : unsigned  := to_unsigned(0, memory_word_width);
         --! The number of devices that will be multiplexed onto this bus.
+        users           : integer   := 2
     );
     port(
         --! The main system clock.
@@ -54,16 +55,16 @@ entity  bus_device_mux  is
         
         -- Need to make these signals into arrays.
 
-        ----! The current address of the thing being accessed on the bus.
-        --req_address_lines   : inout unsigned(address_width-1 downto 0);
-        ----! The data being carried on the bus.
-        --req_data_lines      : inout std_logic_vector(data_width-1 downto 0);
-        ----! Signal to tell the controller/device that a request is pending and needs attention.
-        --req_pending         : inout std_logic;
-        ----! Asserted high to tell the device/bus controller that the request has been completed and that the response
-        ----! is available on the data lines.
-        --req_complete        : inout std_logic;
-        ----! high = write, low = read operation.
-        --req_write_enable    : inout std_logic
+        --! The current address of the thing being accessed on the bus.
+        req_address_lines   : inout bus_mux_address_lines(users-1 downto 0);
+        --! The data being carried on the bus.
+        req_data_lines      : inout bus_mux_data_lines(users-1 downto 0);
+        --! Signal to tell the controller/device that a request is pending and needs attention.
+        req_pending         : inout bus_mux_pending(users-1 downto 0);
+        --! Asserted high to tell the device/bus controller that the request has been completed and that the response
+        --! is available on the data lines.
+        req_complete        : inout bus_mux_complete(users-1 downto 0);
+        --! high = write, low = read operation.
+        req_write_enable    : inout bus_mux_write_enable(users-1 downto 0)
     );
 end entity bus_device_mux;
