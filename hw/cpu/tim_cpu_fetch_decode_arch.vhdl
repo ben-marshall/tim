@@ -121,17 +121,7 @@ begin
 
             when LOAD_WORD      =>
                 req_pending          <= '1';
-                case(program_counter(1 downto 0)) is
-                    --when "01" =>
-                    --    fetched_word(data_bus_width-1 downto 8) <= req_data_lines(data_bus_width-8 downto 0);
-                    --    fetched_word(7 downto 0) <= (others => '0');
-                    --when "10" =>
-                    --    fetched_word(data_bus_width-1 downto 16) <= req_data_lines(data_bus_width-16 downto 0);
-                    --when "11" =>
-                    --    fetched_word(data_bus_width-1 downto 24) <= req_data_lines(data_bus_width-24 downto 0);
-                    when others =>
-                        fetched_word         <= req_data_lines;
-                end case;
+                fetched_word         <= req_data_lines;
                 instruction_valid    <= '0';
 
             when FILL_BUFFER    =>
@@ -266,6 +256,23 @@ begin
     end if;
 
     end process instruction_length_decode;
+
+    --! Responsible for decoding source and destination registers for the currently decoding instruction.
+    registers_decode    : process(current_decode, clk, mem_buf) begin
+    
+    if(clk = '1' and clk'event) then
+        
+        -- instead of using lots of complicated decode logic to work out which registers to set,
+        -- just decode all potential operands "as if" they are in the current instruction.
+        -- it doesn't matter if they arent as the execute stage will do the picking of relevant
+        -- operands itself, so no need to duplicate that logic here.
+        decoded_reg_1   <= mem_buf(buf_size-3  downto buf_size-7)
+        decoded_reg_2   <= mem_buf(buf_size-8  downto buf_size-12)
+        decoded_reg_3   <= mem_buf(buf_size-13 downto buf_size-17)
+        decoded_immediate <= mem_buf(buf_size-16 downto buf_size - 32);
+        decoded_condition <= mem_buf(buf_size-6 downto buf_size-7);
+
+    end process registers_decode;
 
 
 end architecture rtl;

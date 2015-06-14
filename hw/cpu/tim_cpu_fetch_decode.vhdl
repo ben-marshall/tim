@@ -41,11 +41,11 @@ entity tim_cpu_fetch_decode is
         --! The immediate of the decoded instruction, aligned to the LSB.
         decoded_immediate       : out   std_logic_vector(immediate_width-1 downto 0);
         --! Decoded Register One
-        decoded_reg_1           : out   integer;
+        decoded_reg_1           : out   tim_register;
         --! Decoded Register Two 
-        decoded_reg_2           : out   integer;
+        decoded_reg_2           : out   tim_register;
         --! Decoded Register Three
-        decoded_reg_3           : out   integer;
+        decoded_reg_3           : out   tim_register;
         --! The size in bytes of the decoded instruction.
         decoded_instruction_size: buffer integer;
 

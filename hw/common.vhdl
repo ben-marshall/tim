@@ -25,6 +25,10 @@ package tim_common is
     --! The width of the system data bus.
     constant data_bus_width             : integer   := memory_word_width;
 
+    --! Type definition for an index to the register file. a 5 bit vector.
+    type tim_register is std_logic_vector(4 downto 0);
+
+
     --! type definitions for the bus multiplexer.
     type bus_mux_address_lines  is array(natural range <>) of unsigned(data_bus_width-1 downto 0);
     type bus_mux_data_lines     is array(natural range <>) of std_logic_vector(data_bus_width-1 downto 0);
